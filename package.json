@@ -1,6 +1,6 @@
 {
   "name": "wordrift",
-  "version": "0.23.1",
+  "version": "0.24.0",
   "private": true,
   "dependencies": {
     "three": "0.180.0"

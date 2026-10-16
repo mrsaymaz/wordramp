@@ -544,7 +544,11 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseRace()
 document.addEventListener('graphicslost',()=>{pauseRace();$('graphics-error').hidden=false;});
 try{scene=new RallyScene($('world'));}catch(error){console.error(error);$('graphics-error').hidden=false;$('loading').hidden=true;}
 refreshHome();soundButton();applyPreferences();
-let previous=performance.now();
-function frame(now){let rawDt=(now-previous)/1000,dt=Math.min(rawDt,.06);previous=now;scene?.samplePerformance(rawDt,!!race&&['driving','task','resolving'].includes(race.status));applyAcceleration();if(race)C.tick(race,dt,scene?.currentLane??race.lane);scene?.update(dt,race,mode);updateUI(now);sound.update(race,scene?.spectators?.proximity||0);if(now>toastEnd)$('toast').classList.remove('visible');if(roadFeedbackEnd&&now>roadFeedbackEnd){setText('road-feedback','');roadFeedbackEnd=0;}requestAnimationFrame(frame);}
+let previous=performance.now(),idleFrames=0;
+function frame(now){let rawDt=(now-previous)/1000,dt=Math.min(rawDt,.06);previous=now;scene?.samplePerformance(rawDt,!!race&&['driving','task','resolving'].includes(race.status));applyAcceleration();if(race)C.tick(race,dt,scene?.currentLane??race.lane);
+  // A full-screen panel over an idle or paused scene needs only an occasional
+  // frame; this saves battery and keeps panel transitions smooth on phones.
+  const idleBehindModal=!$('modal-backdrop').hidden&&(!race||['paused','finished','failed'].includes(race.status));idleFrames=idleBehindModal?idleFrames+1:0;
+  if(idleFrames%6===0)scene?.update(dt,race,mode);updateUI(now);sound.update(race,scene?.spectators?.proximity||0);if(now>toastEnd)$('toast').classList.remove('visible');if(roadFeedbackEnd&&now>roadFeedbackEnd){setText('road-feedback','');roadFeedbackEnd=0;}requestAnimationFrame(frame);}
 requestAnimationFrame(frame);setTimeout(()=>$('loading').hidden=true,500);
-window.WORDRIFT=window.WORDSHIFT={version:'0.23.1',ulti:Object.freeze({snapshot:()=>ultiSnapshot(saved),export:()=>exportUlti(saved)}),get race(){return race;},get settings(){return saved;},get scene(){return scene;}};
+window.WORDRIFT=window.WORDSHIFT={version:'0.24.0',ulti:Object.freeze({snapshot:()=>ultiSnapshot(saved),export:()=>exportUlti(saved)}),get race(){return race;},get settings(){return saved;},get scene(){return scene;}};

@@ -1,4 +1,4 @@
-/* Wordrift v0.23.1 — deterministic gameplay and question adapter. */
+/* Wordrift v0.24.0 — deterministic gameplay and question adapter. */
 (function(root){
   'use strict';
   const ARENAS=[
@@ -22,6 +22,14 @@
   function random(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
   function shuffle(items,rng=Math.random){let a=items.slice();for(let i=a.length-1;i>0;i--){let j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
   function distinct(a){return [...new Set(a.map(x=>String(x).trim()))];}
+  // Random distractors must be clearly wrong: skip one that contains the
+  // answer as a whole word or vice versa (kapı → gate vs “school gate”).
+  // The full shuffle keeps RNG use identical, so seeded courses do not move.
+  function decoyPair(item,rng){
+    const words=t=>' '+String(t).toLowerCase().replace(/[^a-z0-9çğıöşü' ]+/g,' ').trim()+' ',a=words(item.answer),pool=shuffle(item.decoys,rng);
+    const clear=pool.filter(d=>{const w=words(d);return !w.includes(a)&&!a.includes(w);});
+    return (clear.length>=2?clear:pool).slice(0,2);
+  }
   function makeTasks(unit,difficulty,arenaIndex,rng){
     const count=ARENAS[arenaIndex].checkpoints,used=new Set(),usedWords=new Set();
     const takeWords=words=>{const key=w=>w.toLowerCase(),fresh=words.filter(w=>!usedWords.has(key(w))),seen=words.filter(w=>usedWords.has(key(w))),picked=[...shuffle(fresh,rng),...shuffle(seen,rng)].slice(0,2);picked.forEach(w=>usedWords.add(key(w)));return picked;};
@@ -50,7 +58,7 @@
         if(type==='question'&&!root.MATCH_BANK?.[unit.id]?.some(x=>x.type===type))type='description';
         const candidates=root.MATCH_BANK?.[unit.id]?.filter(x=>x.type===type);
         if(!candidates?.length)throw new Error('Missing reviewed match bank: '+unit.id);
-        const item=take(candidates),options=shuffle(item.options||[item.answer,...shuffle(item.decoys,rng).slice(0,2)],rng);
+        const item=take(candidates),options=shuffle(item.options||[item.answer,...decoyPair(item,rng)],rng);
         t={kind,type,id:item.id,prompt:item.prompt,answer:item.answer,options,correctIndex:options.indexOf(item.answer),tr:item.tr||'',attempts:0};
       }
       t.at=220+i*(ARENAS[arenaIndex].length-440)/(count-1);
@@ -149,7 +157,7 @@
       t={kind:'light',type:'grammar',prompt:/^PAST TENSE:/.test(original.prompt)?'Choose the sentence in the past tense.':'Choose the correct English sentence.',options,answer,correctIndex:options.indexOf(answer),tr:item.tr};
     }else{
       const bank=root.MATCH_BANK[unit.id],alternative=bank.find(x=>x.answer.toLowerCase()===word.toLowerCase()&&x.prompt!==item.prompt&&x.type!=='grammar');
-      if(alternative){const options=shuffle(alternative.options||[alternative.answer,...shuffle(alternative.decoys,rng).slice(0,2)],rng);t={kind:'light',type:alternative.type,prompt:alternative.prompt,options,answer:alternative.answer,correctIndex:options.indexOf(alternative.answer),tr:alternative.tr};}
+      if(alternative){const options=shuffle(alternative.options||[alternative.answer,...decoyPair(alternative,rng)],rng);t={kind:'light',type:alternative.type,prompt:alternative.prompt,options,answer:alternative.answer,correctIndex:options.indexOf(alternative.answer),tr:alternative.tr};}
       else{
         const category=unit.categories.find(c=>c.yes.some(w=>w.toLowerCase()===word.toLowerCase())),translation=unit.translations.find(w=>w.en.toLowerCase()===word.toLowerCase()),picture=unit.pictures.find(w=>w.word.toLowerCase()===word.toLowerCase());
         let prompt,decoys,answer=word;

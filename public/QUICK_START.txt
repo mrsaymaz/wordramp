@@ -1,5 +1,5 @@
 WORDRIFT — by Mr. Saymaz
-v0.23.1 · Impact & DNF Fix
+v0.24.0 · Grand Prix Polish
 
 NETLIFY DEPLOYMENT
 For a build-based deployment, use the whole extracted project. The included
@@ -9,6 +9,15 @@ with all game files, even if dist has been deleted.
 For manual drag-and-drop, upload the dist folder inside this ZIP. It already
 contains index.html, game.bundle.js, styles and the language banks.
 See README.md at the project root for setup and rebuilding instructions.
+
+WHAT CHANGED IN v0.24.0
+- New cars for you, your rivals and traffic; three art-directed arenas with
+  landmarks, coastal tunnels, rain in Stormcrest and smoother scenery.
+- Phone HUD shows clock, position, Nitro and Pause in one row. Portrait
+  phones see all three lanes beside the car.
+- Rivals race fairly: no brake-checking in your escape lane, no stuck cars,
+  and Relaxed is competitive instead of an automatic win.
+- Richer engine, Nitro and arena sound; the world quietens while you read.
 
 WHAT CHANGED IN v0.23.1
 - Holding acceleration or Nitro commits to open-road driving without

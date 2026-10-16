@@ -1,3 +1,82 @@
+# v0.24.0 · Grand Prix Polish
+
+Graphics, world and presentation
+- New vehicles built from sculpted cross sections: a striped player coupe in
+  team paint, two winged rival GTs (Cobalt 02, Ember 03) and muted civilian
+  sedans, hatches, SUVs and vans. Real glass, painted roofs and flares, wheel
+  wells, five-spoke wheels, head/tail lamps, indicators and soft contact
+  shadows. Damage cracks, bonnet and loose panel now sit on the real body.
+- Three art-directed arenas. Sunlit Boulevard: planted verges, street lamps,
+  shopfronts with awnings, balconies, glass towers, pocket parks and an
+  observation wheel, clock tower, stadium and twin towers. Coastal Overpass:
+  bridge deck with railings and piers, causeway towns with palms, sailboats,
+  buoys, islets, lit tunnels through headlands, a lighthouse, suspension
+  towers and a cargo ship. Stormcrest: rock cuts, guardrails with reflectors,
+  pine forests, snow peaks, wind turbines, an observatory and restrained rain.
+- Sky dome, fog and horizon share one colour, so distant chunks dissolve into
+  the sky instead of popping in. Layered backdrops are pre-tinted, not fogged.
+- Real-time shadows are reserved for cars, hazards and gates near the player.
+  Static scenery carries baked contact shading, removing the shadow pop-in at
+  the frustum edge and the crawling building shadows.
+- Scenery is chosen per course segment (deterministic hash), not per pooled
+  slot, so a segment always looks the same and the city no longer repeats
+  every 380 m. Curbs, sidewalks, rails and bridge decks bend with the road and
+  follow task aprons and fork branches continuously; fork islands are filled.
+- Batched vertex-colour geometry: race-start draw calls fell from about 910 to
+  about 207 in Chromium; obstacles are one draw call each. Rendering behind a
+  full-screen panel is throttled while the race is idle or paused.
+- Portrait phones pull the chase camera back so both neighbouring lanes stay
+  visible. Nitro adds a restrained low camera dive; the speed FOV is capped
+  lower. English focus adds a calm in-world grade (cooler, dimmer world) while
+  the HTML signs stay crisp; reduced motion keeps the grade without motion.
+- Home screen frames the whole showcase car; the label sits below it.
+- Phone HUD fixed: clock, position, Nitro meter and Pause share one row (the
+  Nitro meter was clipped and Pause wrapped). Nitro text and the three
+  condition marks are larger. The launch overlay always hides after the
+  countdown.
+- Audio: engine body and sub, a sustained Nitro layer, arena ambience (city
+  hum, sea swell, rain), richer impact and answer cues, and a low-pass duck of
+  the world during English focus. Task cues are never ducked. Mute, Pause and
+  the browser gesture rule are respected.
+
+Gameplay and fairness fixes (found by the full test matrix)
+- Deadlock: a rival stopped just ahead of a player in protected crosswalk
+  focus could freeze both cars until the clock ran out. A rival parked in the
+  player's following gap may now open it.
+- A player who changed lane as the car's tail cleared an obstacle could be
+  pinned by that obstacle behind it until timeout. Driving away from a body
+  that is behind is always allowed.
+- A civilian already within 50 m of an obstacle entry row parked in place,
+  sometimes in the only escape lane beside the player. It now drives through.
+- Pre-obstacle courtesy no longer makes rivals ahead crawl or brake in front
+  of the player; it applies to rivals at or behind the player, until the row.
+- Held-input open-road impacts use the true body width; the following margin
+  no longer counts a 0.13 m near miss as a hit.
+- The protected (neutral) learning phase no longer charges rivals for their
+  own reading on top of the shared pace cap.
+- Relaxed rival profiles are tuned per arena. A perfect, crash-free driver
+  holding full throttle without Nitro now wins about 58% of Relaxed races
+  (was 97%); Nitro still wins 100%. Challenge is unchanged in profile.
+- Random distractors never contain the answer as a whole word (for example
+  "kapı" → gate is no longer paired with "school gate"). No language item was
+  edited; seeded courses are unchanged.
+
+Tests
+- Legacy stress drivers (fairness, rivals, clear-roads, pacing) held the pedal
+  through every hazard, which v0.23.1 deliberately turned into real impacts.
+  They now release to brake like an attentive student (tests/attentive-driver.cjs)
+  and keep their zero-bump, finish and balance assertions unchanged.
+- Updated fixtures that predated v0.23.1 rules (entry-row waits, physical
+  lane-step window, reckless driver must hold acceleration, swept Nitro stop at
+  the bumper). Added checks for the entry wait, distractor clarity and
+  stand placement. The full gameplay matrix also failed at baseline
+  (g5u4 Relaxed Stormcrest seed 2 deadlock); it now passes.
+
+Verification limits: rendering was inspected in headless Chromium with
+SwiftShader (software WebGL). It confirms layout, composition and draw calls,
+not device frame rate, touch feel or audio quality. No physical phone or
+tablet was available.
+
 # v0.23.1 · Impact & DNF Fix
 
 - Removed proximity braking while holding open-road acceleration or Nitro.

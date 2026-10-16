@@ -94,3 +94,8 @@ const before=outputs.map(hash);
 execFileSync('python3',[path.join(root,'scripts/expand-language-bank.py')],{stdio:'pipe'});
 assert.deepEqual(outputs.map(hash),before,'A repeat import must be byte-for-byte stable');
 console.log(`PASS: all four supplied files mapped within their grades; 44 existing lessons preserved; ${sourceChecks} source/provenance checks, ${matches} playable signs, ${repairs} three-block repairs, ${questionSigns} reviewed Q&A signs and ${categoryPairs} disjoint category pairs. 8,448 generated courses verify item reachability; repeat import is stable.`);
+// v0.24: a random distractor never contains the answer as a whole word (or
+// the reverse), e.g. “kapı” → gate is never paired with “school gate”.
+{const C=window.RallyCore,w=t=>' '+String(t).toLowerCase().replace(/[^a-z0-9çğıöşü' ]+/g,' ').trim()+' ';let signs=0;
+ for(const g of window.LANGUAGE_BANK)for(const u of g.units)for(let arena=0;arena<3;arena++)for(const seed of [1,2]){const s=C.createRace(u,'relaxed',arena,seed);for(const t of s.tasks)if(t.options&&!['pedestrian','repair'].includes(t.kind)&&!['grammar','question'].includes(t.type)){signs++;for(const o of t.options)if(o!==t.answer)assert(!w(o).includes(w(t.answer))&&!w(t.answer).includes(w(o)),`Ambiguous distractor ${u.id}: ${t.answer} / ${o}`);}}
+ console.log(`PASS: ${signs} generated vocabulary signs without answer-containing distractors.`);}

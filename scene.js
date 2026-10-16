@@ -16,6 +16,7 @@ const trimMaterial=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.
 const wheelMaterial=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.6,metalness:.28});
 const lampMaterial=new THREE.MeshBasicMaterial({vertexColors:true});
 const indicatorMaterial=new THREE.MeshBasicMaterial({vertexColors:true});
+const obstacleMaterial=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.6,metalness:.05});
 const rivalFlameA=new THREE.MeshBasicMaterial({color:0x93e5ff,transparent:true,opacity:.85,blending:THREE.AdditiveBlending,depthWrite:false}),rivalFlameB=new THREE.MeshBasicMaterial({color:0xffc697,transparent:true,opacity:.85,blending:THREE.AdditiveBlending,depthWrite:false});
 // Civilian paint is deliberately muted so racers and team colours stand out.
 const TRAFFIC_COLOURS=[0x8fa3ad,0xc9cfd1,0x6f7f8c,0xb7a58f,0x8d9f8a,0xd8d2c4,0x5f6c7a];
@@ -84,8 +85,8 @@ export class RallyScene{
   }
   placeContactShadow(car){const shadow=car.userData.contactShadow;if(shadow){shadow.visible=car.visible;shadow.position.set(car.position.x,.055,car.position.z);shadow.rotation.z=-car.rotation.y;}}
   syncRivals(state){
-    if(this.rivalState===state)return;for(const m of this.rivalCars){if(m.userData.contactShadow)this.scene.remove(m.userData.contactShadow);this.scene.remove(m);m.traverse(n=>{if(n.isMesh&&!Object.values(geo).includes(n.geometry))n.geometry.dispose();});}this.rivalCars=[];this.rivalState=state;
-    for(const r of state?.rivals||[]){const m=this.makeCar(r.color,false,'gt'),a=m.userData.anchors;m.userData.rival=r;const plate=new THREE.Mesh(new THREE.PlaneGeometry(.62,.8).rotateX(-Math.PI/2),liveryPlate('rival'+r.id,String(r.id+2).padStart(2,'0'),r.color));plate.position.set(0,a.roofY+.004,a.roofZ);m.add(plate);const exhaust=new THREE.Group();for(const side of [-1,1]){const flame=mesh(exhaust,'cone',r.id?0xffc697:0x93e5ff,side*a.exhaust[0],a.exhaust[1],a.exhaust[2]+.5,.11,.85,.11,.2,0,r.id?0xff9658:0x45b8ef);flame.rotation.x=-Math.PI/2;flame.material=r.id?rivalFlameB:rivalFlameA;}exhaust.visible=false;m.add(exhaust);m.userData.nitroExhaust=exhaust;this.scene.add(m);this.addContactShadow(m);this.rivalCars.push(m);}
+    if(this.rivalState===state)return;for(const m of this.rivalCars){if(m.userData.contactShadow)this.scene.remove(m.userData.contactShadow);this.scene.remove(m);m.traverse(n=>{if(n.isMesh&&n.userData.ownGeometry)n.geometry.dispose();});}this.rivalCars=[];this.rivalState=state;
+    for(const r of state?.rivals||[]){const m=this.makeCar(r.color,false,'gt'),a=m.userData.anchors;m.userData.rival=r;const plate=new THREE.Mesh(new THREE.PlaneGeometry(.62,.8).rotateX(-Math.PI/2),liveryPlate('rival'+r.id,String(r.id+2).padStart(2,'0'),r.color));plate.userData.ownGeometry=true;plate.position.set(0,a.roofY+.004,a.roofZ);m.add(plate);const exhaust=new THREE.Group();for(const side of [-1,1]){const flame=mesh(exhaust,'cone',r.id?0xffc697:0x93e5ff,side*a.exhaust[0],a.exhaust[1],a.exhaust[2]+.5,.11,.85,.11,.2,0,r.id?0xff9658:0x45b8ef);flame.rotation.x=-Math.PI/2;flame.material=r.id?rivalFlameB:rivalFlameA;}exhaust.visible=false;m.add(exhaust);m.userData.nitroExhaust=exhaust;this.scene.add(m);this.addContactShadow(m);this.rivalCars.push(m);}
   }
   rivalProjection(){this.camera.updateMatrixWorld();return this.rivalCars.map(m=>{const p=m.position.clone();p.y+=2.5;p.project(this.camera);return {id:m.userData.rival.id,x:(p.x*.5+.5)*this.viewport.width,y:(-.5*p.y+.5)*this.viewport.height,visible:m.visible&&p.z>-1&&p.z<1&&m.position.z<-3};});}
   ribbon(g,points,width,color,y=.13){const vertices=[];for(let i=0;i<points.length-1;i++){const a=points[i],b=points[i+1];vertices.push(a.x-width/2,y,-a.at,a.x+width/2,y,-a.at,b.x-width/2,y,-b.at,b.x-width/2,y,-b.at,a.x+width/2,y,-a.at,b.x+width/2,y,-b.at);}const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));geometry.computeVertexNormals();const uvs=[];for(let i=0;i<vertices.length;i+=3)uvs.push(vertices[i]/10.8,-vertices[i+2]/20);geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));const m=new THREE.Mesh(geometry,color===this.palette.road?this.asphaltMaterial:mat(color));m.receiveShadow=true;g.add(m);return m;}
@@ -345,9 +346,11 @@ export class RallyScene{
     }else{
       mesh(g,'box',0xffcf72,0,.85,0,2.6,.75,.4);for(const x of [-.9,0,.9]){const stripe=mesh(g,'box',0x24394b,x,.85,.22,.3,.76,.025);stripe.rotation.z=.25;}for(const x of [-.9,.9])mesh(g,'box',0x637e8e,x,.3,0,.2,.6,.6);
     }
-    g.traverse(m=>{if(m.isMesh){m.castShadow=true;m.receiveShadow=true;}});return g;
+    // Bake the hazard into one vertex-coloured mesh: one draw call each.
+    g.updateMatrixWorld(true);const baked=new PartSet();g.traverse(m=>{if(m.isMesh){const part=m.geometry.clone().applyMatrix4(m.matrixWorld);baked.add('o',part,m.material.color.getHex());part.dispose();}});
+    const body=new THREE.Mesh(baked.merge('o'),obstacleMaterial);body.castShadow=true;body.receiveShadow=true;body.userData.ownGeometry=true;const out=new THREE.Group();out.add(body);return out;
   }
-  syncTraffic(state){if(this.trafficState===state)return;this.traffic.forEach(m=>{if(m.userData.contactShadow)this.scene.remove(m.userData.contactShadow);this.scene.remove(m);m.traverse(n=>{if(n.isMesh&&!Object.values(geo).includes(n.geometry))n.geometry.dispose();});});this.traffic=[];this.trafficState=state;if(!state)return;for(const o of state.obstacles){const m=this.makeObstacle(o);m.userData.obstacle=o;this.scene.add(m);if(o.type==='traffic')this.addContactShadow(m);this.traffic.push(m);}}
+  syncTraffic(state){if(this.trafficState===state)return;this.traffic.forEach(m=>{if(m.userData.contactShadow)this.scene.remove(m.userData.contactShadow);this.scene.remove(m);m.traverse(n=>{if(n.isMesh&&n.userData.ownGeometry)n.geometry.dispose();});});this.traffic=[];this.trafficState=state;if(!state)return;for(const o of state.obstacles){const m=this.makeObstacle(o);m.userData.obstacle=o;this.scene.add(m);if(o.type==='traffic')this.addContactShadow(m);this.traffic.push(m);}}
 
   updateAtmosphere(dt,worldDt,d,base,frozen){
     const reduced=this.preferences.reduced,battery=this.preferences.graphics==='battery';

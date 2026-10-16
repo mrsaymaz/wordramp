@@ -37,9 +37,10 @@ The release keeps the project layout intact, includes prebuilt `dist`, and
 excludes dependencies, local hosting identity and compiled test files.
 
 See `dist/QUICK_START.txt` for controls and `dist/ULTI_INTEGRATION.md` for the
-future team-points receiver contract. Version 0.23.1 fixes open-road collisions, visible rival recovery and DNF
-results on top of the three-strike car condition system.
-The continuous touch-driving controls and expanded language bank remain.
+future team-points receiver contract. Version 0.24.0 rebuilds the cars and the three arenas, fixes the phone HUD
+and several race deadlocks, and rebalances Relaxed rivals. See
+`public/RELEASE_NOTES.md`. Collisions, DNF, touch controls and the language
+bank from earlier versions remain.
 
 ## Car condition
 
@@ -65,10 +66,21 @@ renderer. Real browser and phone rendering still need device play-testing.
 Every failed race shows DNF (Did Not Finish), with no finishing position or
 podium. Damage, failure reasons and incomplete distance also invalidate stale
 finish metadata before win rewards and arena progression are considered.
-Legacy automatic-driver `test:fairness` / `test:rivals` stress checks still flag
-zero-bump assumptions under continuous acceleration/Nitro. The deliberate crash,
-recovery, DNF and full-unit checks cover this patch; those older benchmarks
-remain available for further balance work.
+The `test:fairness`, `test:rivals`, `test:clear-roads` and `test:pacing`
+stress drivers release the pedal to brake like an attentive student
+(`tests/attentive-driver.cjs`) and pass with zero bumps.
+
+## Graphics and performance
+
+Arena art direction lives in `world.js` (looks, scenery kits, landmarks,
+tunnels, sky) and vehicles in `vehicle-geometry.js`; `parts.js` batches
+coloured primitives into one draw call per material. Scenery is chosen per
+course segment, so a stretch always looks the same. `npm run test:scene`
+checks the geometry with a mocked renderer; it does not measure frame rate,
+so test on real phones before relying on performance.
+
+Run the full gameplay matrix faster in four shards with
+`WORDRIFT_TEST_GRADE=5 node tests/gameplay.cjs` (and 6, 7, 8).
 
 ## Phone and tablet controls
 
