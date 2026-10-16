@@ -16,7 +16,9 @@ for(const hz of [30,60,120]){
  const paused=[max.distance,max.nitro,max.nitroLevel,max.fuel];C.pause(max);C.tick(max,.1);assert.deepEqual([max.distance,max.nitro,max.nitroLevel,max.fuel],paused);assert(!C.activateNitro(max));C.resume(max);
  const task=C.createRace(unit,'challenge',2,4,{fuel:100,rivals:false});task.obstacles=[];task.status='driving';for(let i=0;i<3;i++)C.activateNitro(task);task.status='task';task.task=task.tasks[0];task.distance=task.task.at-60;task.speedFactor=3.45;const saved=task.nitro;
  for(let i=0;i<hz/2;i++)C.tick(task,1/hz,task.lane);
- assert.equal(task.nitro,saved);assert.equal(task.nitroLevel,3);assert(!task.nitroActive);assert(!C.activateNitro(task));assert(task.speedFactor<=1.55,'Reading immediately sheds surplus Nitro speed');
+ assert.equal(task.nitro,saved);assert.equal(task.nitroLevel,3);assert(!task.nitroActive);assert(!C.activateNitro(task));// Autopilot deliberately keeps the captured entry pace (focus-control and
+ // repair-cruise suites); reading adds no further thrust and burns no charge.
+ assert(task.focusAuto&&task.speedFactor<=task.focusAuto.entrySpeed+1e-9&&task.speedFactor<3.45,'Reading adds no Nitro thrust beyond the captured entry pace');
  // A very fast frame must stop at a solid model, even if its endpoint is clear.
  const block=open();block.distance=0;block.speedFactor=3.45;block.obstacles=[{id:99,type:'barrier',at:12,lane:0,lanePos:0,speed:0,cruiseSpeed:0,halfWidth:1.35,halfLength:1.6}];for(let i=0;i<3;i++)C.activateNitro(block);
  for(let i=0;i<10;i++)C.tick(block,.1,0);

@@ -35,11 +35,11 @@ export class RallyScene{
     this.scene=new THREE.Scene();this.camera=new THREE.PerspectiveCamera(52,innerWidth/innerHeight,.25,700);this.hemi=new THREE.HemisphereLight(0xd8eeff,0x536e69,1.4);this.scene.add(this.hemi);
     // Real-time shadows are reserved for actors near the car. Static scenery
     // carries baked contact shading, so nothing pops in at the frustum edge.
-    this.sun=new THREE.DirectionalLight(0xffe1b3,3.4);this.sunOffset=new THREE.Vector3(-34,62,38);this.sun.target.position.set(0,0,-14);this.sun.position.copy(this.sun.target.position).add(this.sunOffset);this.sun.castShadow=true;this.sun.shadow.mapSize.set(1024,1024);Object.assign(this.sun.shadow.camera,{left:-26,right:26,top:34,bottom:-34,near:10,far:170});this.sun.shadow.bias=-.0004;this.sun.shadow.normalBias=.035;this.sun.shadow.radius=3;this.scene.add(this.sun,this.sun.target);this.rim=new THREE.DirectionalLight(0x9bdcf0,1.05);this.rim.position.set(30,20,-50);this.scene.add(this.rim);
+    this.sun=new THREE.DirectionalLight(0xffe1b3,3.4);this.sunOffset=new THREE.Vector3(-34,62,38);this.focusTint=new THREE.Color(0x9cc4b4);this.sun.target.position.set(0,0,-14);this.sun.position.copy(this.sun.target.position).add(this.sunOffset);this.sun.castShadow=true;this.sun.shadow.mapSize.set(1024,1024);Object.assign(this.sun.shadow.camera,{left:-26,right:26,top:34,bottom:-34,near:10,far:170});this.sun.shadow.bias=-.0004;this.sun.shadow.normalBias=.035;this.sun.shadow.radius=3;this.scene.add(this.sun,this.sun.target);this.rim=new THREE.DirectionalLight(0x9bdcf0,1.05);this.rim.position.set(30,20,-50);this.scene.add(this.rim);
     this.player=this.makeCar(0xf3bc55,true);this.scene.add(this.player);this.player.position.z=4;
     this.damageFx=new CarDamageEffects(this.scene,this.player);
     this.rivalCars=[];this.spectators=new RaceSpectators(this.scene);this.trail=new THREE.Group();this.scene.add(this.trail);for(let i=0;i<12;i++){const p=mesh(this.trail,'box',0x80cbb8,0,.08,0,.08,.025,.32,.4,0,0x58a58f);p.visible=false;}this.boostFx=new BoostEffects(this.scene,this.player);this.exhaust=this.boostFx.exhaust;this.lookConfig={color:0xf3bc55,badge:0,trail:false};
-    this.shadow=new THREE.Mesh(new THREE.PlaneGeometry(3.6,6.5),new THREE.MeshBasicMaterial({map:canvasTexture((c,w,h)=>{let gr=c.createRadialGradient(w/2,h/2,20,w/2,h/2,w/2);gr.addColorStop(0,'#0007');gr.addColorStop(1,'#0000');c.fillStyle=gr;c.fillRect(0,0,w,h);},128,128),transparent:true,depthWrite:false}));this.shadow.rotation.x=-Math.PI/2;this.shadow.position.set(0,.07,4);this.scene.add(this.shadow);
+    this.shadow=new THREE.Mesh(new THREE.PlaneGeometry(3.2,5.9),new THREE.MeshBasicMaterial({map:canvasTexture((c,w,h)=>{c.shadowColor='rgba(0,0,0,.62)';c.shadowBlur=22;c.fillStyle='rgba(0,0,0,.62)';const x=w*.2,y=h*.14,rw=w*.6,rh=h*.72,r=26;c.beginPath();c.moveTo(x+r,y);c.arcTo(x+rw,y,x+rw,y+rh,r);c.arcTo(x+rw,y+rh,x,y+rh,r);c.arcTo(x,y+rh,x,y,r);c.arcTo(x,y,x+rw,y,r);c.fill();},128,256),transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2}));this.shadow.rotation.x=-Math.PI/2;this.shadow.position.set(0,.07,4);this.scene.add(this.shadow);
     this.nitroReadyGlow=new THREE.Mesh(new THREE.PlaneGeometry(4.8,6.9),new THREE.MeshBasicMaterial({map:canvasTexture((c,w,h)=>{const glow=c.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);glow.addColorStop(0,'#71daff00');glow.addColorStop(.42,'#71daff00');glow.addColorStop(.7,'#71daff88');glow.addColorStop(1,'#71daff00');c.fillStyle=glow;c.fillRect(0,0,w,h);},128,128),transparent:true,depthWrite:false,opacity:.65}));this.nitroReadyGlow.rotation.x=-Math.PI/2;this.nitroReadyGlow.visible=false;this.scene.add(this.nitroReadyGlow);
     this.world=new THREE.Group();this.scene.add(this.world);this.gates=new Map();this.gate=new THREE.Group();this.roadBoards=new THREE.Group();this.scene.add(this.roadBoards);this.signAnchors=[];this.promptAnchor=new THREE.Vector3();this.traffic=[];this.elapsed=0;this.showcaseDistance=0;this.currentLane=0;this.index=-1;this.lastGate='';this.gateTextures=[];this.setup(0);
     this.look=new THREE.Vector3();this.resize();window.addEventListener('resize',()=>this.resize());
@@ -80,7 +80,7 @@ export class RallyScene{
     this.player.traverse(m=>{if(m.userData.paint)m.material=paintMat(look.color);});if(!this.hoodBadge){const badge=this.player.userData.anchors.badge;this.hoodBadge=mesh(this.player,'cylinder',0xf7dfa1,0,badge.y+.006,badge.z,.20,.02,.20,.3,.6,0x584520);this.hoodBadge.userData.cosmetic=true;const shape=new THREE.Shape();for(let i=0;i<10;i++){const a=i*Math.PI/5-Math.PI/2,r=i%2?.065:.15;if(i===0)shape.moveTo(Math.cos(a)*r,Math.sin(a)*r);else shape.lineTo(Math.cos(a)*r,Math.sin(a)*r);}shape.closePath();this.badgeStar=new THREE.Mesh(new THREE.ShapeGeometry(shape),mat(0x3d4d5b,.3,.5));this.badgeStar.rotation.x=-Math.PI/2;this.badgeStar.position.set(0,badge.y+.02,badge.z);this.player.add(this.badgeStar);}this.hoodBadge.visible=this.badgeStar.visible=look.badge>0;this.hoodBadge.material=mat([0xf7dfa1,0xa9d2ce,0xe9c373,0xd2c2ec][look.badge]||0xf7dfa1,.3,.6);}
   addContactShadow(car){
     if(!this.contactMaterial){this.contactMaterial=this.shadow.material.clone();this.contactMaterial.opacity=.52;}
-    const shadow=new THREE.Mesh(geo.contact,this.contactMaterial);shadow.rotation.x=-Math.PI/2;shadow.scale.set(3.3,5.7,1);shadow.position.y=.055;this.scene.add(shadow);car.userData.contactShadow=shadow;
+    const shadow=new THREE.Mesh(geo.contact,this.contactMaterial);shadow.rotation.x=-Math.PI/2;shadow.scale.set(3.0,5.4,1);shadow.position.y=.055;this.scene.add(shadow);car.userData.contactShadow=shadow;
   }
   placeContactShadow(car){const shadow=car.userData.contactShadow;if(shadow){shadow.visible=car.visible;shadow.position.set(car.position.x,.055,car.position.z);shadow.rotation.z=-car.rotation.y;}}
   syncRivals(state){
@@ -391,13 +391,20 @@ export class RallyScene{
     const isPortrait=this.viewport.width<760&&this.viewport.height>this.viewport.width,home=mode==='home';let cx=home?(isPortrait?2:-5):state?.status==='task'?x*.7:x*.35,cy=home?(isPortrait?9:4.4):state?.status==='task'?7.2:6.2,cz=home?(isPortrait?16:20):state?.status==='task'?17:16;
     // A small speed pullback conveys acceleration without shaking the signs.
     if(!home&&!this.preferences.reduced&&state?.status!=='task')cz+=Math.min(2.4,Math.max(0,state.speedFactor-1)*.9);
+    // Nitro: a restrained low dive behind the car, scaled by charge level.
+    if(!home&&!this.preferences.reduced&&state?.status!=='task'){cy-=.45*this.boostFx.intensity;cz+=.9*this.boostFx.intensity;}
     // Narrow portrait screens see too little road beside the car. Pull the
     // chase camera back and up so both neighbouring lanes stay readable.
     if(!home&&state?.status!=='task'){const narrow=THREE.MathUtils.clamp((.95-this.viewport.width/this.viewport.height)/.5,0,1);cz+=6.5*narrow;cy+=2.4*narrow;}
     if(!cameraFrozen){this.camera.position.x=THREE.MathUtils.damp(this.camera.position.x,cx,4,dt);this.camera.position.y=THREE.MathUtils.damp(this.camera.position.y,cy,4,dt);this.camera.position.z=THREE.MathUtils.damp(this.camera.position.z,cz,4,dt);}
     const readingFov=Math.max(24,Math.min(52,2*Math.atan(this.viewport.height*3.35/(2*27*Math.min(140,(this.viewport.width-24)/3)))*180/Math.PI));if(!cameraFrozen)this.camera.fov=THREE.MathUtils.damp(this.camera.fov,state?.status==='task'?readingFov:playing?52+(this.preferences.reduced?0:Math.min(12,Math.max(0,state.speedFactor-1)*5.4)):52,state?.nitroActive?9:4,dt);this.camera.updateProjectionMatrix();const raceTilt=Math.atan2(this.camera.position.y-.8,Math.max(1,this.camera.position.z-4))-Math.atan(.58*Math.tan(this.camera.fov*Math.PI/360));const raceLookY=this.camera.position.y-Math.tan(raceTilt)*(this.camera.position.z+11);if(!cameraFrozen){const bendLook=this.preferences.reduced?0:THREE.MathUtils.clamp(-this.heading(d+10,state?.route)*6,-2.2,2.2);this.look.set(home?(isPortrait?-1.8:-6.5):state?.status==='task'?x*.65:x*.25+bendLook,home?(isPortrait?-1:-.5):raceLookY,home?(isPortrait?-9:-6):-11);this.camera.lookAt(this.look);}
     // A steady dusk light avoids full-screen storm flashes during reading.
-    this.sun.intensity=this.index===2?2.7:3.4;
+    // Focus grade: the world cools and dims slightly while English text
+    // (HTML above the canvas) stays crisp. Reduced motion keeps this calm cue.
+    const look=this.arenaLook,focus=THREE.MathUtils.clamp(state?.focusAmount||0,0,1),boost=this.preferences.reduced?0:this.boostFx.intensity;
+    this.sun.intensity=look.sunIntensity*(1-.2*focus);this.hemi.intensity=look.hemi*(1-.08*focus);
+    this.renderer.toneMappingExposure=look.exposure*(1-.07*focus)+boost*.05;
+    this.scene.fog.color.setHex(look.fog).lerp(this.focusTint,.24*focus);
     this.updateRoadBoards(state,base);this.renderer.render(this.scene,this.camera);
   }
 }

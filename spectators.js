@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 
+// Stands sit on the outer sidewalk edge, clear of curbs, planters and rails.
+export const STAND_OFFSET=13.2;
 const TEAM_COLOURS=[0x399c79,0xe1b746,0xbe4e5e,0x4c85c8];
 const SKINS=[0xe9b999,0xb97c57,0x80553f,0xd29a74];
 const box=new THREE.BoxGeometry(1,1,1),head=new THREE.IcosahedronGeometry(1,1);
@@ -37,7 +39,7 @@ export class RaceSpectators{
   update(dt,state,arena,distance,base,curve,preferences,frozen){this.prepare(state,arena);if(!frozen)this.elapsed+=dt;const first=this.stations.findIndex(s=>s.at>=distance-100),needed=first<0?[]:this.stations.slice(first,first+6).map(s=>s.id),used=new Set(this.stands.filter(s=>needed.includes(s.station)).map(s=>s.station));this.proximity=0;
     for(const stand of this.stands){if(!needed.includes(stand.station)){const target=needed.find(i=>!used.has(i));stand.station=target??-1;if(target!=null)used.add(target);}const station=this.stations[stand.station];if(!station){stand.group.visible=false;continue;}
       const ahead=station.at-distance,covered=(this.blocked||[]).some(t=>station.at>t.start-40&&station.at<t.end+40);stand.group.visible=!covered&&ahead>-85&&ahead<300;if(!stand.group.visible)continue;
-      const side=station.side;stand.group.position.set(curve(station.at)-base+side*13.2,0,4-ahead);stand.group.rotation.y=-Math.atan((curve(station.at+1)-curve(station.at-1))/2);stand.platform.scale.x=side;
+      const side=station.side;stand.group.position.set(curve(station.at)-base+side*STAND_OFFSET,0,4-ahead);stand.group.rotation.y=-Math.atan((curve(station.at+1)-curve(station.at-1))/2);stand.platform.scale.x=side;
       const nearby=Math.min(Math.abs(ahead),...(state?.rivals||[]).map(r=>Math.abs(r.at-station.at))),cheer=frozen?(stand.lastCheer||0):state&&state.status!=='countdown'?THREE.MathUtils.smoothstep(80-nearby,0,65):0;stand.lastCheer=cheer;
       this.proximity=Math.max(this.proximity,THREE.MathUtils.clamp(1-Math.abs(ahead)/90,0,1));
       const count=preferences.graphics==='battery'?4:8;for(const mesh of [stand.bodies,stand.heads,stand.hair])mesh.count=count;for(const mesh of [stand.arms,stand.hands,stand.legs,stand.eyes])mesh.count=count*2;

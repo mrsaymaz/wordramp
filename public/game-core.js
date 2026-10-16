@@ -115,9 +115,7 @@
   function canShortenFocus(s){return focusCruise(s)&&(s.focusAuto?.returning!=null||s.status==='task'&&laneChoice(s.task)&&s.task.focusLane===s.lane);}
   function beginFocusCruise(s){
     if(s.focusAuto?.taskId===s.task.id)return s.focusAuto;
-    // Autopilot keeps the regular driving pace. Nitro waits through tasks, so
-    // a boosted arrival sheds only its surplus rather than cruising at 200.
-    const entrySpeed=clamp(s.speedFactor,0,REGULAR_MAX_SPEED);
+    const entrySpeed=clamp(s.speedFactor,0,MAX_SPEED);
     s.focusAuto={taskId:s.task.id,kind:s.task.kind,entrySpeed,lane:s.task.kind==='pedestrian'?0:s.lane,age:0,scale:Math.min(.18,(s.difficulty==='relaxed'?3.6:4.2)/Math.max(1,s.arena.speed*entrySpeed)),returning:null};
     s.accelerating=false;s.nitroHeld=false;s.nitroActive=false;return s.focusAuto;
   }
@@ -210,6 +208,8 @@
   function playerBody(s,physicalLane){return {id:'player',at:s.distance,lanePos:physicalLane,route:s.route,speed:s.arena.speed*s.speedFactor*(s.worldTimeScale??1),halfLength:2.3,halfWidth:1.25};}
   function actors(s,physicalLane){return [...s.obstacles,...s.rivals,playerBody(s,physicalLane)];}
   function sameRoadSpace(s,a,b){const width=(a.halfWidth??1.25)+(b.halfWidth??1.25)+.2;return Math.abs(actorX(s,a,a.lanePos??a.lane,b.at)-actorX(s,b))<width;}
+  // Held-input impacts use the true body width; braking assists keep a margin.
+  function physicallyAligned(s,a,b){return Math.abs(actorX(s,a,a.lanePos??a.lane,b.at)-actorX(s,b))<(a.halfWidth??1.25)+(b.halfWidth??1.25);}
   function openRoadDriving(s){return s.status==='driving'&&!s.route&&!learningPaceProtected(s)&&(s.accelerationHeld||s.accelerating||s.nitroHeld&&s.nitro>0);}
   function contactDistance(body,o){return (body.halfLength??2.3)+(o.halfLength??2.3)+.25;}
   function laneStepBlocker(s,body,from,to,physicalLane){
@@ -267,8 +267,9 @@
   }
   function forwardSpace(s,body,physicalLane){
     let limit=Infinity,ceiling=Infinity,blocker=null;
-    for(const o of actors(s,physicalLane))if(o!==body&&!(o.id==='player'&&body.id==='player')&&o.at>body.at+.001&&(sameRoadSpace(s,body,o)||mergingAcross(s,body,o))){
-      const impact=body.id==='player'&&openRoadDriving(s),rear=o.at-(impact?contactDistance(body,o):Math.max(VEHICLE_GAP,(body.halfLength??2.3)+(o.halfLength??2.3)+.8)),gap=Math.max(0,rear-body.at);
+    const manualImpact=body.id==='player'&&openRoadDriving(s);
+    for(const o of actors(s,physicalLane))if(o!==body&&!(o.id==='player'&&body.id==='player')&&o.at>body.at+.001&&(manualImpact?physicallyAligned(s,body,o):sameRoadSpace(s,body,o)||mergingAcross(s,body,o))){
+      const impact=manualImpact,rear=o.at-(impact?contactDistance(body,o):Math.max(VEHICLE_GAP,(body.halfLength??2.3)+(o.halfLength??2.3)+.8)),gap=Math.max(0,rear-body.at);
       if(rear<limit){limit=rear;blocker=o;}
       // Open-road contacts are driving decisions. Brake assistance belongs
       // to crossings and task cruise, rather than the whole road.
@@ -401,7 +402,7 @@
       // otherwise cut into the gap the player is reading. Rivals already ahead
       // keep racing, and courtesy ends at the row so no slow car is parked in
       // the player's only escape lane.
-      const yieldHazard=reserved&&s.impactRecovery<=0&&r.at-s.distance>-14&&r.at-s.distance<8&&r.at<reserved.at+2;
+      const yieldHazard=reserved&&s.impactRecovery<=0&&r.at-s.distance>-14&&r.at-s.distance<2&&r.at<reserved.at+2;
       if(yieldHazard)desired=Math.min(desired,s.arena.speed*Math.max(.3,s.speedFactor)*.35);
       const gap=Math.max(0,stopAt-r.at),clearRun=gap>Math.max(45,r.speed*1.4),catching=s.distance-r.at>-32;
       // Once the player is boosting after solving a task, rivals may answer
