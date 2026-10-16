@@ -559,3 +559,40 @@ body.compact-landscape #modal.lessons-modal .lesson-units{overflow:visible;max-h
 .dnf-result .finish-emblem{border-color:#e6a18d;background:radial-gradient(ellipse,#e49b841a,transparent 70%)}
 .dnf-result .finish-emblem span,.dnf-result .finish-emblem small{color:#e8b4a3}.dnf-result .finish-emblem strong{color:#ffd1bf}
 .dnf-result .result-stars{display:none}
+
+/* ===================================================================
+   v0.24 Grand Prix polish layer. Appended last so it settles the earlier
+   layered rules into one HUD system without changing element identities.
+   =================================================================== */
+/* Touch HUD: clock | position | Nitro | Pause in one row (was wrapping). */
+#app #hud .hud-top{grid-template-columns:auto minmax(0,1fr) 44px;column-gap:10px}
+body.touch-controls #app #hud .hud-top{grid-template-columns:auto minmax(0,1fr) minmax(82px,104px) 44px;column-gap:9px}
+#app #hud .race-place{justify-self:end}
+#app #hud #pause{grid-column:-2/-1;grid-row:1}
+body.touch-controls #app #hud #touch-nitro:not([hidden]){display:flex;grid-column:3;grid-row:1;align-self:center;max-width:none;min-width:0;margin:0;padding:6px 8px;gap:5px;border-radius:9px}
+.touch-nitro-heading strong{font-size:9px;letter-spacing:.6px}
+.touch-nitro-heading small{font-size:9px;color:#b9d3d1}
+.touch-nitro-heading svg{width:10px;height:13px}
+.touch-nitro-track{height:5px}
+#touch-nitro.ready{border-color:#8fdde07a;color:#d4f4f2;box-shadow:0 0 0 1px #8fdde01f,0 0 14px #5fc9d633}
+#touch-nitro.boosting{border-color:#bff1ff;color:#effcff;background:linear-gradient(120deg,#1d5874f0,#124055ea)}
+#touch-nitro.boosting #touch-nitro-fill{background:linear-gradient(90deg,#86e6ff,#e8fbff)}
+body[data-nitro-level="2"] #touch-nitro.boosting #touch-nitro-fill{background:linear-gradient(90deg,#b1a8ff,#efeaff)}
+body[data-nitro-level="3"] #touch-nitro.boosting #touch-nitro-fill{background:linear-gradient(90deg,#ffc76a,#fff1cc)}
+@media(max-width:350px){body.touch-controls #app #hud .hud-top{grid-template-columns:auto minmax(0,1fr) 78px 44px;column-gap:7px}body.touch-controls #hud .race-place small{display:none}}
+/* Condition marks: three readable segments under the clock. */
+#car-condition{gap:4px}
+#car-condition i{width:13px;height:4px;border-radius:3px}
+#car-condition[data-damage="2"] i.intact{background:#ff8f78;box-shadow:0 0 8px #ff8f7866}
+/* Focus grade sits outside the answer cards; cards never blur or tint. */
+body.focus-cruise .road-answer,body.focus-cruise .highway-prompt{filter:none}
+.road-answer{transition:transform .14s ease,border-color .14s ease,background .14s ease}
+.road-answer.selected{transform:translate(-50%,-50%) scale(1.05)}
+.road-answer.connected{border-color:#a9f0cc;background:linear-gradient(150deg,#2f7562f5,#1a4a43fa);box-shadow:0 0 0 2px #a9f0cc33,0 6px 18px #0b3b2f55}
+body.reduced-motion .road-answer{transition:none}
+body.reduced-motion .road-answer.selected{transform:translate(-50%,-50%)}
+/* Countdown: one confident centre beat, nothing behind it. */
+#countdown[hidden]{display:none!important}
+/* Showcase label sits under the hero car rather than across it. */
+#home .showcase-label{top:auto;bottom:calc(7vh + 44px);right:6vw}
+#home .showcase-label strong{margin:4px 0}

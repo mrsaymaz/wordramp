@@ -436,6 +436,8 @@ function updateUI(now){
     $('countdown').hidden=false;const n=Math.max(1,Math.ceil(race.countdown));
     if(n!==launchNumber){launchNumber=n;setText('launch-number',n);$('countdown').dataset.step=n;[...$('countdown').querySelectorAll('.launch-lights i')].forEach((lamp,i)=>lamp.classList.toggle('lit',i<4-n));sound.tone('tick');haptic('click');}
   }
+  // The launch overlay belongs to the countdown only, whatever state follows it.
+  if(race.status!=='countdown'&&!$('countdown').hidden)$('countdown').hidden=true;
   if(race.status!==lastStatus){
     const was=lastStatus;lastStatus=race.status;
     if(race.status==='driving'){$('countdown').hidden=true;$('controls').hidden=touchControls;$('road-learning').hidden=true;if(was==='countdown'){sound.tone('go');haptic('go');toast('GO · FIND YOUR LINE');}}
