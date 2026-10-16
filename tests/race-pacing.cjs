@@ -1,4 +1,5 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const {keepHolding}=require('./attentive-driver.cjs');
 global.window={};for(const f of ['language-bank','repair-bank','match-bank','game-core'])require(path.resolve((fs.existsSync('dist/game-core.js')?'dist/':'')+f+'.js'));
 const C=window.RallyCore,{createDrivingFeel,updateDrivingFeel}=require('./driving-feel-compiled.cjs'),unit=window.LANGUAGE_BANK[0].units[0];
 
@@ -26,7 +27,7 @@ function drive(difficulty,arena,style,seed){
    if(threats.length){const at=Math.min(...threats.filter(o=>o.at>s.distance).map(o=>o.at)),row=threats.filter(o=>o.at>=at&&o.at-at<15),safe=[-1,0,1].filter(l=>row.every(o=>Math.abs(l-o.lanePos)>.8)),clear=safe.filter(l=>C.playerLaneClear(s,m.lane,l));if(clear.length)s.lane=clear.sort((a,b)=>Math.abs(a-m.lane)-Math.abs(b-m.lane))[0];}
   }
   if(style==='nitro')C.activateNitro(s);
-  C.tick(s,.05,m.lane);const old=m.lane;updateDrivingFeel(m,s.lane,s.roadTravel,s.arena.speed*s.speedFactor,.05);if(!C.playerLaneClear(s,old,m.lane)){m.lane=old;m.velocity=0;}
+  if(!keepHolding(C,s,m.lane)){C.setAccelerating(s,false);C.setNitroHeld(s,false);}C.tick(s,.05,m.lane);const old=m.lane;updateDrivingFeel(m,s.lane,s.roadTravel,s.arena.speed*s.speedFactor,.05);if(!C.playerLaneClear(s,old,m.lane)){m.lane=old;m.velocity=0;}
  }
  assert.equal(s.status,'finished',`${difficulty}/${arena}/${style}/${seed} at ${s.distance}`);assert.equal(s.correct,s.tasks.length);assert.equal(s.collisions,0);
  return s.elapsed;

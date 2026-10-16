@@ -1,4 +1,5 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const {keepHolding}=require('./attentive-driver.cjs');
 global.window={};for(const f of ['language-bank','repair-bank','match-bank','game-core'])require(path.resolve((fs.existsSync('dist/game-core.js')?'dist/':'')+f+'.js'));
 const C=window.RallyCore,{createDrivingFeel,updateDrivingFeel}=require('./driving-feel-compiled.cjs'),u=window.LANGUAGE_BANK[0].units[0];
 const types=new Set();let races=0,frames=0,pairs=0,clearFrames=0;
@@ -20,7 +21,7 @@ for(const diff of Object.keys(C.DIFFICULTIES))for(let arena=0;arena<3;arena++)fo
    if(s.elapsed-readingAt>.5){if(t.kind==='repair')C.connectRepair(s,[0,1,2]);else if(t.kind==='pedestrian'){if(!t.pedWait&&C.pedestrianReady(s))C.sortPerson(s,t.people[t.personIndex].side);}else C.choose(s,t.correctIndex);}
   }else if(!s.route&&!C.exitAssist(s))avoid(s,m);
   if(seed%2===0)C.activateNitro(s);
-  const previous=[...s.obstacles,...s.rivals].map(o=>({at:o.at,lane:o.lanePos}));C.tick(s,.05,m.lane);const oldLane=m.lane;updateDrivingFeel(m,s.lane,s.roadTravel,s.arena.speed*s.speedFactor,.05);if(!C.playerLaneClear(s,oldLane,m.lane)){m.lane=oldLane;m.velocity=0;}
+  if(!keepHolding(C,s,m.lane)){C.setAccelerating(s,false);C.setNitroHeld(s,false);}const previous=[...s.obstacles,...s.rivals].map(o=>({at:o.at,lane:o.lanePos}));C.tick(s,.05,m.lane);const oldLane=m.lane;updateDrivingFeel(m,s.lane,s.roadTravel,s.arena.speed*s.speedFactor,.05);if(!C.playerLaneClear(s,oldLane,m.lane)){m.lane=oldLane;m.velocity=0;}
   const bodies=[...s.obstacles,...s.rivals];const player={at:s.distance,lanePos:m.lane,route:s.route,halfLength:2.3,halfWidth:1.25};for(const o of bodies){const along=Math.abs(o.at-player.at),across=Math.abs(C.actorX(s,o)-C.actorX(s,player));assert(along>=(o.halfLength??2.3)+2.3-.03||across>=(o.halfWidth??1.25)+1.25-.03,`Player model overlap ${diff}/${arena}/${seed}/${frame}`);}
   for(let i=0;i<bodies.length;i++){
    if(bodies[i].type==='traffic'||s.rivals.includes(bodies[i]))assert(C.vehicleOnRoad(s,bodies[i]),`Vehicle left the asphalt: ${diff}/${arena}/${seed}/${frame} ${JSON.stringify(bodies[i])}`);

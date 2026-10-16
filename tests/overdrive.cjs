@@ -19,7 +19,10 @@ for(const hz of [30,60,120]){
  assert.equal(task.nitro,saved);assert.equal(task.nitroLevel,3);assert(!task.nitroActive);assert(!C.activateNitro(task));assert(task.speedFactor<=1.55,'Reading immediately sheds surplus Nitro speed');
  // A very fast frame must stop at a solid model, even if its endpoint is clear.
  const block=open();block.distance=0;block.speedFactor=3.45;block.obstacles=[{id:99,type:'barrier',at:12,lane:0,lanePos:0,speed:0,cruiseSpeed:0,halfWidth:1.35,halfLength:1.6}];for(let i=0;i<3;i++)C.activateNitro(block);
- for(let i=0;i<10;i++)C.tick(block,.1,0);assert(block.distance<=12-C.VEHICLE_GAP+1e-5,'Boost cannot tunnel through an obstacle');
+ for(let i=0;i<10;i++)C.tick(block,.1,0);
+ // Held Nitro drives into real contact (v0.23.1), so the swept stop is the
+ // physical bumper boundary and exactly one hit is recorded.
+ assert(block.distance<=12-(2.3+1.6+.25)+1e-5,'Boost cannot tunnel through an obstacle');assert.equal(block.collisions,1,'A boosted impact is a single real collision');
 }
 for(const arena of C.ARENAS)for(const factor of [0,.3,1,1.55,2.65,3.05,3.45,20]){const s={status:'driving',arena,speedFactor:factor},value=displaySpeed(s);assert(value>=0&&value<=200);if(factor<=1.55)assert(value<=90);}
 assert.equal(displaySpeed(null),0);

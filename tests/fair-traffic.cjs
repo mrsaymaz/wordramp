@@ -1,4 +1,5 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const {keepHolding}=require('./attentive-driver.cjs');
 global.window={};for(const f of ['language-bank.js','repair-bank.js','match-bank.js','game-core.js'])require(path.resolve((fs.existsSync('dist/language-bank.js')?'dist/':'')+f));
 const C=window.RallyCore,{createDrivingFeel,updateDrivingFeel}=require('./driving-feel-compiled.cjs'),u=window.LANGUAGE_BANK[0].units[0];
 // This driver reads actual vehicles, not the generator's reserved escape lane.
@@ -25,7 +26,7 @@ for(const difficulty of Object.keys(C.DIFFICULTIES))for(let arena=0;arena<3;aren
       else C.choose(s,t.correctIndex);
     }else if(!C.exitAssist(s)&&!s.route)evade(s,m);
     if(useNitro)C.activateNitro(s);
-    const positions=s.obstacles.map(o=>o.at),bumps=s.collisions;C.tick(s,.05,m.lane);if(s.collisions>bumps&&!firstBump)firstBump={distance:s.distance,target:s.lane,task:s.task?.kind,taskIndex:s.taskIndex,lane:m.lane,cars:s.obstacles.filter(o=>o.at-s.distance>-10&&o.at-s.distance<50).map(o=>({at:o.at,lane:o.lanePos,route:o.crosswalkRoute,hit:o.hit}))};const oldLane=m.lane;updateDrivingFeel(m,s.lane,s.distance,s.arena.speed*s.speedFactor,.05);if(!C.playerLaneClear(s,oldLane,m.lane)){m.lane=oldLane;m.velocity=0;}
+    if(!keepHolding(C,s,m.lane)){C.setAccelerating(s,false);C.setNitroHeld(s,false);}const positions=s.obstacles.map(o=>o.at),bumps=s.collisions;C.tick(s,.05,m.lane);if(s.collisions>bumps&&!firstBump)firstBump={distance:s.distance,target:s.lane,task:s.task?.kind,taskIndex:s.taskIndex,lane:m.lane,cars:s.obstacles.filter(o=>o.at-s.distance>-10&&o.at-s.distance<50).map(o=>({at:o.at,lane:o.lanePos,route:o.crosswalkRoute,hit:o.hit}))};const oldLane=m.lane;updateDrivingFeel(m,s.lane,s.distance,s.arena.speed*s.speedFactor,.05);if(!C.playerLaneClear(s,oldLane,m.lane)){m.lane=oldLane;m.velocity=0;}
     s.obstacles.forEach((o,i)=>{assert(o.at>=positions[i]);assert(o.at-positions[i]<=o.cruiseSpeed*.05+1e-8,'Fairness cannot be obtained by teleporting vehicles');});
   }
   assert.equal(s.status,'finished',`${difficulty}/${arena}/${seed}/${accelerating}/${tasks}: ${JSON.stringify({distance:s.distance,lane:m.lane,target:s.lane,following:s.followingTraffic,near:[...s.obstacles,...s.rivals].filter(o=>Math.abs(o.at-s.distance)<80)})}`);
@@ -36,7 +37,8 @@ for(const difficulty of Object.keys(C.DIFFICULTIES))for(let arena=0;arena<3;aren
 // A reckless driver still gets a real traffic penalty: clean-route checks must
 // not pass merely because ordinary collision handling has been disabled.
 const crash=C.createRace(u,'challenge',2,50);crash.tasks=[];crash.status='driving';crash.obstacles=[{id:0,at:25,lane:0,lanePos:0,type:'traffic',speed:0,cruiseSpeed:0,passed:false}];
-for(let i=0;i<40&&!crash.collisions;i++)C.tick(crash,.05,0);assert.equal(crash.collisions,1);assert(crash.slow>0);
+// Recklessness means holding acceleration: an unheld car brakes (v0.23.1).
+C.setAccelerating(crash,true);for(let i=0;i<40&&!crash.collisions;i++)C.tick(crash,.05,0);assert.equal(crash.collisions,1);assert(crash.slow>0);
 // Ordinary close cut-ins stay signaled in their original lane. A merge into
 // another vehicle's footprint must wait even when the player is far away.
 function merge(at,target,other){const s=C.createRace(u);s.tasks=[];s.status='driving';s.obstacles=[{id:0,at,lane:-1,lanePos:-1,type:'traffic',speed:8,cruiseSpeed:8,moving:true,target,changed:false,laneProgress:0},...(other?[{id:1,at:at+1,lane:target,lanePos:target,type:'traffic',speed:8,cruiseSpeed:8,moving:false,target,laneProgress:0}]:[])];return s;}

@@ -12,7 +12,10 @@
   const FOCUS_ENTRY=.42,FOCUS_RETURN=1.35,FOCUS_FAST_RETURN=.25,CHOICE_FOCUS_DISTANCE=52;
   const DAMAGE_LIMIT=3,COLLISION_GRACE={relaxed:3,challenge:2},BREAKDOWN_DURATION=1.15,IMPACT_RECOVERY=4.25;
   const RIVAL_PROFILES={
-    relaxed:[{pace:1.53,think:1.05,readPace:1.35,throttle:5.5,accuracy:.92,lookAhead:3.3,burst:2.8,push:.04,fuel:60},{pace:1.55,think:.90,readPace:1.40,throttle:6,accuracy:.88,lookAhead:3.1,burst:2.9,push:.04,fuel:60}],
+    // Relaxed rivals read a little faster in later arenas, where more tasks,
+    // crossings and hazards would otherwise hand a perfect driver every win.
+    // Arrays are per arena; see createRace. Challenge is unchanged.
+    relaxed:[{pace:1.53,think:[1.05,.7,.35],readPace:[1.35,1.45,1.53],crossWait:[2.6,1.4,.9],throttle:5.5,accuracy:[.92,.93,.95],lookAhead:3.3,burst:2.8,push:.04,fuel:60},{pace:1.55,think:[.9,.6,.3],readPace:[1.4,1.48,1.54],crossWait:[2.6,1.4,.9],throttle:6,accuracy:[.88,.9,.93],lookAhead:3.1,burst:2.9,push:.04,fuel:60}],
     challenge:[{pace:1.62,think:.40,readPace:1.50,throttle:7,accuracy:.985,lookAhead:3.7,burst:2.9,push:.06,fuel:60},{pace:1.66,think:.30,readPace:1.55,throttle:7,accuracy:.95,lookAhead:3.3,burst:2.9,push:.08,fuel:60}]
   };
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
@@ -89,7 +92,8 @@
       if(i%4===2){const lane=blocked[0],id=obstacles.length;obstacles.push({id,patternId:-1,at:end+8,lane,lanePos:lane,type:'traffic',speed,cruiseSpeed:speed,waiting:false,braking:false,color:Math.floor(rng()*5),passed:false,hit:false,moving:false,fromLane:lane,target:lane,changed:false,laneProgress:0});}
     }
     const initialTime=arena.length/arena.speed+diff.extra+tasks.filter(t=>t.kind==='pedestrian').length*6,raceFuel=clamp(Number(settings.fuel)||0,0,100);
-    const rivals=settings.rivals===false?[]:['Cobalt','Ember'].map((name,i)=>{const profile=RIVAL_PROFILES[difficulty][i];return {id:i,name,halfWidth:1.1,halfLength:2.3,color:i?0xe57b75:0x68bbd0,at:12+i*12,lane:i?1:-1,lanePos:i?1:-1,speed:arena.speed,profile,basePace:Math.min(REGULAR_MAX_SPEED,profile.pace+arenaIndex*.025),thinkTime:profile.think,nextTask:0,reading:null,route:null,braking:false,finishedAt:null,decisions:tasks.map(()=>rng()<profile.accuracy),fuel:Math.min(raceFuel,profile.fuel+arenaIndex*10),streak:0,nitro:0,nitroLevel:0,nitroActive:false,nitroUses:0,lastNitroAt:-Infinity,plannedLane:null,signalAt:0,nextLaneChangeAt:0,laneChanges:0};});
+    // Profile fields may be per-arena arrays; resolve them once for this race.
+    const rivals=settings.rivals===false?[]:['Cobalt','Ember'].map((name,i)=>{const profile=Object.fromEntries(Object.entries(RIVAL_PROFILES[difficulty][i]).map(([k,v])=>[k,Array.isArray(v)?v[arenaIndex]??v.at(-1):v]));return {id:i,name,halfWidth:1.1,halfLength:2.3,color:i?0xe57b75:0x68bbd0,at:12+i*12,lane:i?1:-1,lanePos:i?1:-1,speed:arena.speed,profile,basePace:Math.min(REGULAR_MAX_SPEED,profile.pace+arenaIndex*.025),thinkTime:profile.think,nextTask:0,reading:null,route:null,braking:false,finishedAt:null,decisions:tasks.map(()=>rng()<profile.accuracy),fuel:Math.min(raceFuel,profile.fuel+arenaIndex*10),streak:0,nitro:0,nitroLevel:0,nitroActive:false,nitroUses:0,lastNitroAt:-Infinity,plannedLane:null,signalAt:0,nextLaneChangeAt:0,laneChanges:0};});
     const s= {unit,difficulty,arenaIndex,arena,diff,rng,tasks,obstacles,patterns,patternSpacing,reactionTime,rivals,distance:0,roadTravel:0,time:initialTime,initialTime,lane:0,taskIndex:0,task:null,status:'countdown',countdown:3,invulnerable:0,slow:0,boost:0,resolve:0,correct:0,collisions:0,damage:0,damageContacts:[],lastImpact:null,impactRecovery:0,breakdown:null,failureReason:null,review:(settings.reviews||[]).filter(i=>!i.recovered).map(i=>({...i})),notice:null,elapsed:0,steered:false,speedFactor:1,worldTimeScale:1,focusAmount:0,focusAuto:null,clockFactor:1,lastPass:null,detour:0,accelerating:false,accelerationHeld:false,yielding:null,followingTraffic:false,crosswalkQueue:null,exitTask:null,fuel:raceFuel,streak:0,bestStreak:0,nitro:0,nitroLevel:0,nitroActive:false,nitroHeld:false,nitroUses:0,lastNitroAt:-Infinity,answerEvents:[],pendingReview:[],route:null,routeHistory:[],taskRevision:0,learningRecovery:0,reviewLap:false};
     if(s.review.length){const replacement=alternateReview(unit,s.review[0],rng);if(replacement){s.tasks[0]=placeReview(replacement,s.tasks[0].at);s.review[0].scheduled=true;}s.pendingReview=s.review.slice(1);scheduleReview(s);}
     return s;
@@ -111,7 +115,9 @@
   function canShortenFocus(s){return focusCruise(s)&&(s.focusAuto?.returning!=null||s.status==='task'&&laneChoice(s.task)&&s.task.focusLane===s.lane);}
   function beginFocusCruise(s){
     if(s.focusAuto?.taskId===s.task.id)return s.focusAuto;
-    const entrySpeed=clamp(s.speedFactor,0,MAX_SPEED);
+    // Autopilot keeps the regular driving pace. Nitro waits through tasks, so
+    // a boosted arrival sheds only its surplus rather than cruising at 200.
+    const entrySpeed=clamp(s.speedFactor,0,REGULAR_MAX_SPEED);
     s.focusAuto={taskId:s.task.id,kind:s.task.kind,entrySpeed,lane:s.task.kind==='pedestrian'?0:s.lane,age:0,scale:Math.min(.18,(s.difficulty==='relaxed'?3.6:4.2)/Math.max(1,s.arena.speed*entrySpeed)),returning:null};
     s.accelerating=false;s.nitroHeld=false;s.nitroActive=false;return s.focusAuto;
   }
@@ -241,8 +247,10 @@
       if(Math.abs(o.at-at)>length)return true;
       // A contacted leader may leave the extra following margin. Requiring
       // a complete 6 m gap first locks small high-frame-rate steps in place.
-      const physical=(body.halfLength??2.3)+(o.halfLength??2.3)+.2;
-      if(body.at-o.at>=physical&&at>body.at)return true;
+      // Driving away from a body that is already behind can only increase
+      // separation. A car that just changed lane beside an obstacle's tail
+      // must never be pinned by it (that froze the race until timeout).
+      if(o.at<body.at&&at>body.at)return true;
       return Math.abs(actorX(s,body,body.lanePos??body.lane,at)-actorX(s,o))>(body.halfWidth??1.25)+(o.halfWidth??1.25)+.15;
     });
     let safe=0;const steps=Math.max(1,Math.ceil(travel/3));
@@ -316,8 +324,10 @@
       let desired=s.arena.speed*pace,stopAt=Infinity,routeLane=null;
       if(r.reading){
         const q=r.reading.task,occupied=q.kind==='pedestrian'&&r.at<=q.stopAt&&crosswalkOccupied(s,q);
-        const wait=q.kind==='pedestrian'?Math.max(3,profile.think*1.5):r.thinkTime;
-        if(s.elapsed-r.reading.startedAt<wait&&(q.kind!=='pedestrian'||r.at<=q.stopAt)||occupied){desired=s.arena.speed*profile.readPace;stopAt=q.kind==='pedestrian'?q.stopAt:q.at-4;}
+        const crossWait=profile.crossWait??3,wait=q.kind==='pedestrian'?Math.max(crossWait,profile.think*1.5):r.thinkTime;
+        // During the player's protected learning time the phase is neutral: the
+        // rival's own reading costs nothing extra beyond the shared pace cap.
+        if(s.elapsed-r.reading.startedAt<wait&&(q.kind!=='pedestrian'||r.at<=q.stopAt)||occupied){if(protectedTravel===null||occupied)desired=s.arena.speed*profile.readPace;stopAt=q.kind==='pedestrian'?q.stopAt:q.at-4;}
         else {
           let right=r.decisions[r.nextTask]??true,index=right?q.correctIndex:(q.correctIndex+1)%3;
           if(q.kind==='junction')routeLane=index-1;
@@ -387,7 +397,11 @@
       const reserved=s.patterns.find(p=>s.obstacles.some(o=>o.patternId===p.id&&o.type!=='traffic')&&p.at>s.distance&&p.at-s.distance<s.arena.speed*Math.max(1.9,s.nitroActive?nitroSpeed(s.nitroLevel||1):s.speedFactor)*2.5+30);
       // Keep the approach gap readable before contact. After an impact the
       // courtesy window ends and rivals use their own clear racing lanes.
-      const yieldHazard=reserved&&s.impactRecovery<=0&&r.at-s.distance>-14&&r.at-s.distance<60;
+      // Courtesy applies to rivals behind or alongside the player, which could
+      // otherwise cut into the gap the player is reading. Rivals already ahead
+      // keep racing, and courtesy ends at the row so no slow car is parked in
+      // the player's only escape lane.
+      const yieldHazard=reserved&&s.impactRecovery<=0&&r.at-s.distance>-14&&r.at-s.distance<8&&r.at<reserved.at+2;
       if(yieldHazard)desired=Math.min(desired,s.arena.speed*Math.max(.3,s.speedFactor)*.35);
       const gap=Math.max(0,stopAt-r.at),clearRun=gap>Math.max(45,r.speed*1.4),catching=s.distance-r.at>-32;
       // Once the player is boosting after solving a task, rivals may answer
@@ -407,7 +421,12 @@
         // car backwards or add catch-up distance; ordinary blocking still wins.
         // A car already on a crossing must first clear the pedestrians' path.
         const clearance=clearing;
-        const allowance=clearance?Math.max(protectedTravel,qClearanceEnd(clearance)-r.at):protectedTravel;
+        let allowance=clearance?Math.max(protectedTravel,qClearanceEnd(clearance)-r.at):protectedTravel;
+        // A rival parked just ahead of a protected player must open the
+        // following gap. Capping it at the player's (zero) travel while the
+        // player waits behind it would freeze both cars until the clock ends.
+        const lead=r.at-s.distance;
+        if(lead>0&&lead<VEHICLE_GAP+3&&sameRoadSpace(s,playerBody(s,physicalLane),r))allowance=Math.max(allowance,s.distance+VEHICLE_GAP+3-r.at);
         travel=Math.min(travel,Math.max(0,allowance));
         if(dt>0)r.speed=Math.min(r.speed,travel*ratio/dt);
       }
@@ -493,7 +512,9 @@
       // Civilians wait well before a cone sequence while racers pass. Parking
       // in its only opening would combine three individually safe lanes into
       // an unavoidable wall once the player's braking assist is removed.
-      const raceOpening=!zone&&s.patterns.find(p=>p.entry!==false&&p.at>o.at&&p.at-o.at<120&&s.distance<p.at+60);
+      // Only cars that can still stop 50 m out wait. A car already closer is
+      // committed and drives through the gap instead of parking in it.
+      const raceOpening=!zone&&s.patterns.find(p=>p.entry!==false&&p.at-o.at>=50-1e-6&&p.at-o.at<120&&s.distance<p.at+60);
       const openingStop=raceOpening?Math.max(o.at,raceOpening.at-50):Infinity;
       const creep=o.yieldForPlayer!=null&&space.blocker?.cruiseSpeed===0?1:0;
       let limit=Math.min(fork?fork.at-135:Infinity,crossing?crossing.stopAt:Infinity,space.limit+creep,openingStop,zone&&Math.abs(o.lanePos)<2.7&&o.at<zone.start?zone.start-12:Infinity),gap=Math.max(0,limit-o.at);

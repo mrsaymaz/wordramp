@@ -10,10 +10,13 @@ export class CarDamageEffects{
     this.deformable=car.children.filter(m=>m.isMesh&&m.userData.paint).map(mesh=>({mesh,base:mesh.geometry.attributes.position.array.slice()}));
     this.details=new THREE.Group();car.add(this.details);
 
-    const lineMaterial=new THREE.LineBasicMaterial({color:0xe7f5ee,transparent:true,opacity:.86,depthWrite:false});
+    // Anchors come from the vehicle archetype, so damage sits on the real
+    // glass, bonnet and side panel of whichever body the player drives.
+    const a=car.userData.anchors||{windshield:{bottom:[.92,-.945],top:[1.46,-.365]},rearGlass:{bottom:[.92,1.18],top:[1.46,.63]},hood:{y:.965,back:-.57,front:-2.04,frontY:.75,w:.86},side:{x:1.076,y:.78,z:.86}};
+    const lineMaterial=new THREE.LineBasicMaterial({color:0xeef8f3,transparent:true,opacity:.9,depthWrite:false});
     const cracks=[];
-    for(const rear of [false,true])for(const [cx,cy,scale]of [[-.24,.52,.27],[.36,.30,.15]]){
-      const point=(x,t)=>[x,1.025+t*.46,(rear?1.18-t*.55:-.945+t*.58)+(rear?.012:-.012)];
+    for(const glass of [a.windshield,a.rearGlass])for(const [cx,cy,scale]of [[-.24,.52,.27],[.36,.30,.15]]){
+      const rear=glass===a.rearGlass,point=(x,t)=>[x,glass.bottom[0]+t*(glass.top[0]-glass.bottom[0])+.012,glass.bottom[1]+t*(glass.top[1]-glass.bottom[1])+(rear?.014:-.014)];
       const lines=[[-1,-.22],[-.64,.85],[.18,1],[1,.37],[.83,-.65],[-.23,-1]];
       for(let i=0;i<lines.length;i++){
         const [dx,dy]=lines[i],mid=point(cx+dx*scale*.48,clamp(cy+dy*scale*.65,.05,.92)),end=point(cx+dx*scale,clamp(cy+dy*scale*1.15,.05,.92));
@@ -24,15 +27,18 @@ export class CarDamageEffects{
     this.cracks=new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(cracks,3)),lineMaterial);this.cracks.renderOrder=2;this.details.add(this.cracks);
 
     const paint=car.children.find(m=>m.userData.paint)?.material||new THREE.MeshStandardMaterial({color:0xd9b664});
-    this.hood=new THREE.Group();this.hood.position.set(0,.975,-.57);this.details.add(this.hood);
-    const hoodGeometry=new THREE.BufferGeometry();hoodGeometry.setAttribute('position',new THREE.Float32BufferAttribute([-.82,0,0,.82,0,0,.88,.025,-.95,.63,.075,-1.47,-.65,.035,-1.47,-.89,.015,-.95],3));hoodGeometry.setIndex([0,1,2,0,2,5,5,2,3,5,3,4]);hoodGeometry.computeVertexNormals();
+    const h=a.hood,length=h.back-h.front,drop=h.frontY-h.y;
+    this.hood=new THREE.Group();this.hood.position.set(0,h.y+.012,h.back);this.details.add(this.hood);
+    const hoodGeometry=new THREE.BufferGeometry();hoodGeometry.setAttribute('position',new THREE.Float32BufferAttribute([-h.w,0,0,h.w,0,0,h.w*1.04,drop*.45+.02,-length*.62,h.w*.76,drop+.06,-length,-h.w*.78,drop+.03,-length,-h.w*1.05,drop*.45+.01,-length*.62],3));hoodGeometry.setIndex([0,1,2,0,2,5,5,2,3,5,3,4]);hoodGeometry.computeVertexNormals();
     this.hoodPanel=new THREE.Mesh(hoodGeometry,paint);this.hoodPanel.userData.paint=true;this.hoodPanel.castShadow=true;this.hood.add(this.hoodPanel);
     const underside=new THREE.Mesh(hoodGeometry,new THREE.MeshStandardMaterial({color:0x23313b,roughness:.86,side:THREE.BackSide}));this.hood.add(underside);
-    this.engineBay=new THREE.Mesh(new THREE.BoxGeometry(1.42,.025,1.08),new THREE.MeshStandardMaterial({color:0x18252c,roughness:.9}));this.engineBay.position.set(0,.985,-1.30);this.details.add(this.engineBay);
-    this.loosePanel=new THREE.Group();this.loosePanel.position.set(1.065,.78,.86);this.details.add(this.loosePanel);
+    this.engineBay=new THREE.Mesh(new THREE.BoxGeometry(h.w*1.7,.025,length*.75),new THREE.MeshStandardMaterial({color:0x18252c,roughness:.9}));this.engineBay.position.set(0,h.y+drop*.5,h.back-length*.5);this.details.add(this.engineBay);
+    this.loosePanel=new THREE.Group();this.loosePanel.position.set(a.side.x+.005,a.side.y,a.side.z);this.details.add(this.loosePanel);
     const panel=new THREE.Mesh(new THREE.BoxGeometry(.035,.28,.64),paint);panel.position.set(.04,-.10,.20);panel.userData.paint=true;this.loosePanel.add(panel);
-    const scrapeGeometry=new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute([1.096,.69,-.25,1.096,.74,.70,1.098,.61,.02,1.098,.67,.9,1.10,.80,.21,1.10,.83,.73],3));
+    const sx=a.side.x+.022,sy=a.side.y;
+    const scrapeGeometry=new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute([sx,sy-.09,-.25,sx,sy-.04,.70,sx,sy-.17,.02,sx,sy-.11,.9,sx,sy+.02,.21,sx,sy+.05,.73],3));
     this.scrapes=new THREE.LineSegments(scrapeGeometry,new THREE.LineBasicMaterial({color:0xbac6c8}));this.details.add(this.scrapes);
+    this.smokeAnchor=[.35,h.frontY+.06,h.front+.25];
 
     this.particles=new THREE.Group();scene.add(this.particles);
     const canvas=document.createElement('canvas');canvas.width=canvas.height=64;const context=canvas.getContext('2d'),gradient=context.createRadialGradient(32,32,0,32,32,32);gradient.addColorStop(0,'#d3dcdbbb');gradient.addColorStop(.45,'#a4b4b76b');gradient.addColorStop(1,'#73888d00');context.fillStyle=gradient;context.fillRect(0,0,64,64);
@@ -66,7 +72,7 @@ export class CarDamageEffects{
   update(dt,state,preferences={},frozen=false){
     if(this.state!==state)this.reset(state);
     const stage=state?.damage||0;this.setStage(stage);
-    this.car.updateWorldMatrix(true,false);this.origin.set(.35,.98,-1.55).applyMatrix4(this.car.matrixWorld);
+    this.car.updateWorldMatrix(true,false);this.origin.set(...this.smokeAnchor).applyMatrix4(this.car.matrixWorld);
     const reduced=!!preferences.reduced,battery=preferences.graphics==='battery';
     if((state?.lastImpact||null)!==this.lastImpact){
       this.lastImpact=state.lastImpact;

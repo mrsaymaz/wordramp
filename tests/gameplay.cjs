@@ -10,8 +10,10 @@ function roadThreats(C,s,range){
   return [...s.obstacles,...s.rivals].filter(o=>o.at>s.distance&&o.at-s.distance<range&&((o.speed||0)<.1||(o.at-s.distance-5)/Math.max(.01,speed-(o.speed||0))<1.65));
 }
 const requestedSeeds=Number(process.env.WORDRIFT_TEST_SEEDS),seedCount=Number.isInteger(requestedSeeds)&&requestedSeeds>0?Math.min(6,requestedSeeds):6;
+// Optional sharding for parallel local runs; the default covers every grade.
+const onlyGrade=Number(process.env.WORDRIFT_TEST_GRADE)||null;
 let cases=0,totalRows=0,minTime=Infinity;
-for(const grade of bank)for(const unit of grade.units)for(const difficulty of Object.keys(C.DIFFICULTIES))for(let arena=0;arena<3;arena++)for(let seed=1;seed<=seedCount;seed++){
+for(const grade of bank)if(!onlyGrade||grade.grade===onlyGrade)for(const unit of grade.units)for(const difficulty of Object.keys(C.DIFFICULTIES))for(let arena=0;arena<3;arena++)for(let seed=1;seed<=seedCount;seed++){
   let s=C.createRace(unit,difficulty,arena,seed),physical=0,readingId='',started=0;cases++;
   for(const t of s.tasks){if(t.kind==='repair'){assert.equal(t.blocks.length,3);assert.equal(t.rows.length,1);assert.equal(new Set(t.order).size,3);assert(!t.order.every((x,i)=>x===i));}for(const row of t.rows){totalRows++;assert.equal(row.options.length,t.kind==='pedestrian'?2:3);assert.equal(new Set(row.options).size,row.options.length);if(!['repair','pedestrian'].includes(t.kind))assert.equal(row.options[row.correctIndex],row.answer);}}
   for(let steps=0;steps<10000&&!['finished','failed'].includes(s.status);steps++){
