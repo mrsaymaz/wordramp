@@ -51,7 +51,10 @@ Gameplay and fairness fixes (found by the full test matrix)
 - Pre-obstacle courtesy no longer makes rivals ahead crawl or brake in front
   of the player; it applies to rivals at or behind the player, until the row.
 - Held-input open-road impacts use the true body width; the following margin
-  no longer counts a 0.13 m near miss as a hit.
+  no longer counts a 0.13 m near miss as a hit. The player's assisted
+  braking also uses the physical path, so a rival stopped 0.1 m beside the
+  lane can no longer hold the player behind it while it waits for the player
+  (a second deadlock found by the fairness benchmark).
 - The protected (neutral) learning phase no longer charges rivals for their
   own reading on top of the shared pace cap.
 - Relaxed rival profiles are tuned per arena. A perfect, crash-free driver

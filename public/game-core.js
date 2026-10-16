@@ -259,7 +259,9 @@
       // separation. A car that just changed lane beside an obstacle's tail
       // must never be pinned by it (that froze the race until timeout).
       if(o.at<body.at&&at>body.at)return true;
-      return Math.abs(actorX(s,body,body.lanePos??body.lane,at)-actorX(s,o))>(body.halfWidth??1.25)+(o.halfWidth??1.25)+.15;
+      // The player's path is physical: a car stopped 0.1 m beside the lane must
+      // not hold the player back while it waits for the player to pass.
+      return Math.abs(actorX(s,body,body.lanePos??body.lane,at)-actorX(s,o))>(body.halfWidth??1.25)+(o.halfWidth??1.25)+(body.id==='player'?0:.15);
     });
     let safe=0;const steps=Math.max(1,Math.ceil(travel/3));
     for(let step=1;step<=steps;step++){const distance=travel*step/steps;if(clear(body.at+distance)){safe=distance;continue;}let lo=safe,hi=distance;for(let i=0;i<16;i++){const mid=(lo+hi)/2;if(clear(body.at+mid))lo=mid;else hi=mid;}return lo;}return travel;
@@ -276,7 +278,7 @@
   function forwardSpace(s,body,physicalLane){
     let limit=Infinity,ceiling=Infinity,blocker=null;
     const manualImpact=body.id==='player'&&openRoadDriving(s);
-    for(const o of actors(s,physicalLane))if(o!==body&&!(o.id==='player'&&body.id==='player')&&o.at>body.at+.001&&(manualImpact?physicallyAligned(s,body,o):sameRoadSpace(s,body,o)||mergingAcross(s,body,o))){
+    for(const o of actors(s,physicalLane))if(o!==body&&!(o.id==='player'&&body.id==='player')&&o.at>body.at+.001&&(manualImpact?physicallyAligned(s,body,o):body.id==='player'?physicallyAligned(s,body,o)||mergingAcross(s,body,o):sameRoadSpace(s,body,o)||mergingAcross(s,body,o))){
       const impact=manualImpact,rear=o.at-(impact?contactDistance(body,o):Math.max(VEHICLE_GAP,(body.halfLength??2.3)+(o.halfLength??2.3)+.8)),gap=Math.max(0,rear-body.at);
       if(rear<limit){limit=rear;blocker=o;}
       // Open-road contacts are driving decisions. Brake assistance belongs
