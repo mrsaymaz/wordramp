@@ -12,7 +12,8 @@ const requestedSeeds=Number(process.env.WORDRIFT_TEST_SEEDS),seedCount=Number.is
 for(const diff of Object.keys(C.DIFFICULTIES))for(let arena=0;arena<3;arena++)for(let seed=1;seed<=seedCount;seed++){
  const s=C.createRace(u,diff,arena,seed,{fuel:60}),m=createDrivingFeel();s.status='driving';C.setAccelerating(s,seed%2===0);let entered='',readingAt=0;
  for(const o of s.obstacles){types.add(o.type);if(o.type!=='traffic')assert(s.tasks.every(t=>o.at+o.halfLength<C.taskZone(t).start||o.at-o.halfLength>C.taskZone(t).end),'Static obstacles must be outside every task buffer');}
- assert(s.obstacles.filter(o=>o.type==='traffic').length<=4,'Civilian traffic stays sparse');
+ // v0.24: groups of 2-3 civilians, busier per arena, lighter on Relaxed.
+ assert.equal(s.obstacles.filter(o=>o.type==='traffic').length,[6,12,18,10,18,26][(diff==='challenge'?3:0)+arena],'Civilian traffic follows the per-arena group plan');
  for(let frame=0;frame<14000&&!['finished','failed'].includes(s.status);frame++){
   // Resume the requested driving input after the repair handoff.
   C.setAccelerating(s,seed%2===0);

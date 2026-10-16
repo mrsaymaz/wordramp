@@ -77,12 +77,20 @@
     const patterns=[],speed=8+arenaIndex*2,reactionTime={relaxed:2.3,challenge:1.6}[difficulty];
     const patternSpacing=(difficulty==='relaxed'?[66,48,44]:[58,46,42])[arenaIndex];let escape=0;
     const types=['cones','barrier','crates','pothole','barrels','fallen_branch',...(arenaIndex>0?['tire_stack','road_panels']:[]),...(arenaIndex===2?['rockfall']:[])];
-    for(let i=0;i<=tasks.length;i++){
-      // Preserve the full reading approach, fork merge and guided departure.
-      const previous=tasks[i-1],next=tasks[i],start=previous?taskZone(previous).end+80:60,end=next?taskZone(next).start-120:arena.length-60;
-      if(end-start<65)continue;
+    // Plan every clear stretch first, then hand some of them a traffic group.
+    const stretches=[];for(let i=0;i<=tasks.length;i++){const previous=tasks[i-1],next=tasks[i],start=previous?taskZone(previous).end+80:60,end=next?taskZone(next).start-120:arena.length-60;if(end-start>=65)stretches.push({i,start,end});}
+    // Civilian traffic arrives in short groups of 2-3 that make the driver
+    // weave. Relaxed is lighter; each arena is busier than the last.
+    const trafficTarget={relaxed:[6,12,18],challenge:[10,18,26]}[difficulty][arenaIndex],rowGap={relaxed:[48,44,40],challenge:[40,36,34]}[difficulty][arenaIndex];
+    const groups=[];for(let left=trafficTarget;left>=2;){let size=left===4?2:left<=3?left:rng()<(difficulty==='relaxed'?.35:.55)?3:2;groups.push(size);left-=size;}
+    const usable=stretches.slice(0,Math.max(1,stretches.length)),hosts=new Map();
+    groups.slice(0,usable.length).forEach((size,k,list)=>hosts.set(usable[Math.floor(k*usable.length/list.length)].i,size));
+    for(const {i,start,end}of stretches){
+      const groupSize=hosts.get(i)||0,groupPair=groupSize===3||groupSize===2&&rng()<(difficulty==='relaxed'?.3:.55),groupRows=groupPair?groupSize-1:groupSize,reserve=groupSize?(groupRows-1)*rowGap+40:0,rowsEnd=end-reserve;
+      let blocked=[];
+      if(rowsEnd-start>=40){
       escape=shuffle([-1,0,1].filter(l=>Math.abs(l-escape)<=1),rng)[0];
-      const span=end-start-32,rows=1+Math.floor(span/patternSpacing);let blocked=[];
+      const span=rowsEnd-start-32,rows=1+Math.floor(Math.max(0,span)/patternSpacing);
       for(let k=0;k<rows;k++){
         // Two-row beats let a driver read the gap, settle and move again.
         // Adjacent gaps prevent a sudden left-to-right demand at full Nitro.
@@ -90,14 +98,23 @@
         if(turn)escape=shuffle([-1,0,1].filter(l=>Math.abs(l-escape)===1),rng)[0];
         blocked=shuffle([-1,0,1].filter(l=>l!==escape),rng);
         if(turn)blocked.sort((a,b)=>(b===oldEscape)-(a===oldEscape));
-        const at=rows===1?end-16:start+16+k*span/(rows-1),paired=k===0||turn||rng()<(difficulty==='relaxed'?[.35,.5,.6]:[.55,.68,.8])[arenaIndex];
+        const at=rows===1?rowsEnd-16:start+16+k*span/(rows-1),paired=k===0||turn||rng()<(difficulty==='relaxed'?[.35,.5,.6]:[.55,.68,.8])[arenaIndex];
         const pattern={id:patterns.length,sequenceId:i,entry:k===0,beatIndex:Math.floor(k/2),at,escapeLane:escape,turn,kind:paired?'pair':'single',obstacleIds:[]};patterns.push(pattern);
         for(let j=0;j<(paired?2:1);j++){
           const type=types[(i*3+k+arenaIndex+j*2)%types.length],id=obstacles.length,lane=blocked[j];
           obstacles.push({id,patternId:pattern.id,at,lane,lanePos:lane,type,speed:0,cruiseSpeed:0,passed:false,hit:false,halfLength:type==='pothole'?2:1.6,halfWidth:type==='rockfall'?1.3:1.2});pattern.obstacleIds.push(id);
         }
+      }}
+      if(groupSize){
+        // Rows in a group are rowGap apart: at least 0.4 s of lane change at
+        // maximum Nitro closing speed. No row ever blocks all three lanes, and
+        // each open lane is reachable from the one before it.
+        const anchor=Math.max(start+20,rowsEnd+28),open=shuffle([-1,0,1],rng)[0],side=[-1,0,1].filter(l=>l!==open),pair=groupPair;
+        const cars=pair?[[side[0],0],[side[1],0],...(groupSize===3?[[shuffle([-1,0,1].filter(l=>Math.abs(l-open)<=1),rng)[0],rowGap]]:[])]:shuffle([-1,0,1],rng).slice(0,groupSize).map((lane,k)=>[lane,k*rowGap]);
+        const groupId=groups.indexOf(groupSize),colour=Math.floor(rng()*5);
+        for(const [lane,offset]of cars){const id=obstacles.length,partner=pair&&offset===0?cars.find(c=>c!==cars.find(x=>x[0]===lane&&x[1]===offset)&&c[1]===0):null;
+          obstacles.push({id,patternId:-1,trafficGroup:i,at:anchor+offset,lane,lanePos:lane,type:'traffic',speed:0,cruiseSpeed:speed,waiting:false,braking:false,color:(colour+id)%5,passed:false,hit:false,moving:false,fromLane:lane,target:lane,changed:false,laneProgress:0,dormant:true,wakeAt:anchor-300,shoulderSide:lane===0&&partner?-Math.sign(partner[0]):null});}
       }
-      if(i%4===2){const lane=blocked[0],id=obstacles.length;obstacles.push({id,patternId:-1,at:end+8,lane,lanePos:lane,type:'traffic',speed,cruiseSpeed:speed,waiting:false,braking:false,color:Math.floor(rng()*5),passed:false,hit:false,moving:false,fromLane:lane,target:lane,changed:false,laneProgress:0});}
     }
     const initialTime=arena.length/arena.speed+diff.extra+tasks.filter(t=>t.kind==='pedestrian').length*6,raceFuel=clamp(Number(settings.fuel)||0,0,100);
     // Profile fields may be per-arena arrays; resolve them once for this race.
@@ -498,19 +515,29 @@
   function controlledTraffic(s,o){const t=trafficControlZones(s).find(t=>t.id===o.crosswalkRoute);return !!t&&t.activatedAt!=null&&s.distance<t.at+70;}
   function pedestrianReady(s,t=s.task){return t?.kind==='pedestrian'&&t.peopleEntryAt!=null&&s.elapsed-t.peopleEntryAt>=PEDESTRIAN_ENTRY_TIME-1e-8;}
   function crosswalkTimeLeft(s,t=s.task){return t?.kind==='pedestrian'?clamp(t.sortDuration-(s.elapsed-(t.sortStartedAt??s.elapsed)),0,t.sortDuration):0;}
+  // Two civilians must not merge into each other in the same instant: the
+  // car behind (or the higher id when level) waits for the other's sweep.
+  function yieldsToSweep(s,o,lane){
+    return s.obstacles.some(q=>q!==o&&q.type==='traffic'&&!q.dormant&&Math.abs(q.at-o.at)<6&&q.changed&&q.laneProgress<1&&(q.at>o.at||q.at===o.at&&q.id<o.id)&&lane>Math.min(q.lanePos,q.target)-.8&&lane<Math.max(q.lanePos,q.target)+.8);
+  }
   function updateTraffic(s,worldDt,prev,physicalLane,focus,realDt=worldDt){
     const crossings=s.tasks.filter(t=>crosswalkOccupied(s,t));
     for(const t of s.tasks)if(t.kind==='pedestrian'&&t.activatedAt!=null&&!crosswalkOccupied(s,t)&&t.clearedAt==null)t.clearedAt=s.elapsed;
     const cars=s.obstacles.filter(o=>o.type==='traffic').sort((a,b)=>b.at-a.at);
     for(const o of cars){
+      // A group waits, parked out of sight in the fog, until the player is
+      // about 300 m away, so the student meets it instead of chasing it.
+      if(o.dormant){if(s.distance>=o.wakeAt)o.dormant=false;else{o.speed=0;o.waiting=false;o.braking=false;continue;}}
       const dt=vehicleClearingCrosswalk(s,o)?realDt:worldDt;
       const oldSpeed=o.speed,zone=taskRoadZone(s,o.at);
       if(o.route&&o.at>=o.route.end)o.route=null;
       if(zone&&o.clearTask!==zone.id){
         o.roadTarget??=Math.abs(o.lanePos)<=1?o.lanePos:Math.sign(o.lanePos);o.clearTask=zone.id;o.crosswalkRoute=zone.id;
-        o.fromLane=o.lanePos;o.target=(Math.abs(o.lanePos)>.4?Math.sign(o.lanePos):o.id%2?-1:1)*2.9;o.changed=true;o.laneProgress=0;o.routeChanging=true;o.signalAt=s.elapsed;
+        o.fromLane=o.lanePos;o.target=(Math.abs(o.lanePos)>.4?Math.sign(o.lanePos):o.shoulderSide||(o.id%2?-1:1))*2.9;o.changed=true;o.laneProgress=0;o.routeChanging=true;o.signalAt=s.elapsed;
       }else if(!zone&&o.clearTask){
-        o.clearTask=null;o.crosswalkRoute=null;o.fromLane=o.lanePos;o.target=o.roadTarget??Math.sign(o.lanePos);o.changed=true;o.laneProgress=0;o.routeChanging=true;o.signalAt=s.elapsed;
+        // Rejoin on the near side; the remembered lane is used only if it is on
+        // that side, then forgotten so a later zone cannot reuse a stale one.
+        o.clearTask=null;o.crosswalkRoute=null;o.fromLane=o.lanePos;const side=Math.sign(o.lanePos)||1;o.target=o.roadTarget!=null&&Math.sign(o.roadTarget)!==-side?o.roadTarget:side;o.roadTarget=null;o.changed=true;o.laneProgress=0;o.routeChanging=true;o.signalAt=s.elapsed;
       }
       // Civilian queues pass through the central fork after the racers clear.
       // Rejoin before the fork narrows; shoulders are not separate roads.
@@ -544,7 +571,9 @@
       // a newly blocked lane and lock a queue across all three lanes.
       const nextPattern=!zone&&s.patterns.find(p=>p.at>o.at&&p.at-o.at<110&&s.obstacles.some(b=>b.patternId===p.id&&b.type!=='traffic'));
       const nextGap=nextPattern?.escapeLane;
-      if(nextPattern&&o.target!==nextGap&&laneStepClear(s,o,o.lanePos,nextGap,physicalLane)){
+      // Gap moves start from the road itself; a car on a task shoulder first
+      // rejoins its near lane instead of sweeping across the whole road.
+      if(nextPattern&&o.target!==nextGap&&Math.abs(o.lanePos)<=1.05&&laneStepClear(s,o,o.lanePos,nextGap,physicalLane)){
         o.fromLane=o.lanePos;o.target=nextGap;o.changed=true;o.laneProgress=0;o.routeChanging=true;o.signalAt=s.elapsed;
       }else if(!nextPattern&&!zone&&!o.routeChanging&&!o.moving&&gap<55&&gap>16){
         const choices=[-1,0,1].filter(l=>Math.abs(l-o.lanePos)<1.1&&Math.abs(l-o.lanePos)>.3&&laneStepClear(s,o,o.lanePos,l,physicalLane));
@@ -557,7 +586,7 @@
       if(o.changed&&o.laneProgress<1&&signaled&&room&&(zone||gapMove||o.speed>1||o.laneProgress>0||o.yieldForPlayer!=null)&&(zone||o.laneProgress>0||laneStepClear(s,o,o.fromLane,o.target,physicalLane))){
         const laneDt=zone&&(zone.task.kind==='pedestrian'||laneChoice(zone.task))?realDt:dt;
         const progress=Math.min(1,o.laneProgress+laneDt/2.2),a=progress*progress*(3-2*progress),lane=o.fromLane+(o.target-o.fromLane)*a;
-        if(laneStepClear(s,o,o.lanePos,lane,physicalLane)){o.laneProgress=progress;o.lanePos=lane;}
+        if(laneStepClear(s,o,o.lanePos,lane,physicalLane)&&!yieldsToSweep(s,o,lane)){o.laneProgress=progress;o.lanePos=lane;}
       }
     }
     for(const o of s.obstacles)if(!o.passed&&o.at<=s.distance)o.passed=true;

@@ -12,7 +12,7 @@ for(const grade of window.LANGUAGE_BANK)for(const u of grade.units)for(let arena
  const clues=s.tasks.filter(t=>['light','junction'].includes(t.kind));assert.equal(new Set(clues.map(t=>t.prompt)).size,clues.length,'Each checkpoint needs a fresh reviewed clue');
  s.tasks.forEach((t,i)=>{if(i)assert(t.at-s.tasks[i-1].at>=500,'Long driving legs separate consecutive tasks');});
  for(const o of s.obstacles.filter(o=>o.type!=='traffic'))for(const t of s.tasks){const zone=C.taskZone(t);assert(o.at+o.halfLength<zone.start-120||o.at-o.halfLength>zone.end+80,'Hazards stay outside the entire clear approach and departure');}
- assert(s.obstacles.filter(o=>o.type==='traffic').length<=4);courses++;
+ {const n=s.obstacles.filter(o=>o.type==='traffic').length;assert(n>=10&&n<=30,'Challenge traffic stays between 10 and 30 cars');}courses++;
 }
 
 function drive(difficulty,arena,style,seed){
