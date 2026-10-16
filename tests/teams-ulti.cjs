@@ -1,0 +1,20 @@
+const assert=require('node:assert/strict');
+const {TEAMS,normaliseUlti,ultiSnapshot,awardUltiWin,exportUlti,ULTI_LIFETIME_MS,newIdentity}=require('./ulti-compiled.cjs');
+const {normaliseProgress,resolvedLook}=require('./progression-compiled.cjs');
+const saved={difficulty:'standard',progress:{'g5u1:standard':[2,0,1],'g5u1:challenge':[1,3,0],'g5u2:relaxed':[3,0,0]},fuel:73,look:{paint:'ruby',badge:2,trail:true},mastery:{g5u1:{tier:3}}};
+normaliseProgress(saved);assert.equal(saved.difficulty,'challenge');assert.deepEqual(saved.progress['g5u1:challenge'],[2,3,1]);assert(!('g5u1:standard'in saved.progress));assert.equal(saved.fuel,73);assert.equal(saved.look.paint,'ruby');
+assert.equal(TEAMS.length,4);assert.equal(new Set(TEAMS.map(t=>t.color)).size,4);assert.equal(new Set(Array.from({length:1000},()=>newIdentity())).size,1000);
+for(const team of TEAMS){saved.teamId=team.id;assert.equal(resolvedLook(saved).color,team.color);assert.equal(resolvedLook(saved).badge,2);assert(resolvedLook(saved).trail);}
+const start=Date.UTC(2026,9,15,8),race={status:'finished',teamId:'slytherin',runId:'run-one',unit:{id:'g5u1'},difficulty:'relaxed',arena:{id:'boulevard'}};
+saved.teamId='ravenclaw';const first=awardUltiWin(saved,race,1,start);assert.equal(first.teamId,'slytherin','Reward belongs to the team at race start');assert.equal(first.points,10);assert.equal(first.expiresAt,start+ULTI_LIFETIME_MS);assert.equal(first.grade,5);
+assert.equal(awardUltiWin(saved,race,1,start+100),null);assert.equal(awardUltiWin(JSON.parse(JSON.stringify(saved)),race,1,start+200),null,'Reloaded results cannot duplicate rewards');
+for(const bad of [{status:'failed'},{status:'driving'},{damage:3},{failureReason:'breakdown'},{breakdown:{age:1}},{arena:{id:'boulevard',length:7200},distance:7000},{reviewLap:true},{teamId:'unknown'},{runId:null}])assert.equal(awardUltiWin(saved,{...race,runId:'invalid',...bad},1,start),null);
+for(const place of [2,3])assert.equal(awardUltiWin(saved,{...race,runId:'place'+place},place,start),null);
+assert.equal(ultiSnapshot(saved,start-1).totals.slytherin,0);assert.equal(ultiSnapshot(saved,first.expiresAt-1).totals.slytherin,10);assert.equal(ultiSnapshot(saved,first.expiresAt).totals.slytherin,0,'Points expire at exactly 72h');
+const second=awardUltiWin(saved,{...race,runId:'run-two',teamId:'hufflepuff'},1,start+24*3600000);let snapshot=ultiSnapshot(saved,first.expiresAt);assert.equal(snapshot.totals.slytherin,0);assert.equal(snapshot.totals.hufflepuff,10);assert.equal(snapshot.receipts.length,1);
+const exported=JSON.parse(exportUlti(saved,first.expiresAt+1));assert.equal(exported.receipts[0].eventId,second.eventId);assert.equal(exported.receipts[0].expiresAt,second.expiresAt,'Export never renews points');assert.equal(exported.driverId,saved.ulti.driverId);
+snapshot.receipts[0].points=1000;assert.equal(ultiSnapshot(saved,first.expiresAt).totals.hufflepuff,10,'External snapshots are detached');
+assert.equal(awardUltiWin(saved,race,1,first.expiresAt+1),null,'Expired receipts still deduplicate the original run');
+saved.ulti.receipts.push({...second},{...second,eventId:'bad'},null);normaliseUlti(saved);assert.equal(saved.ulti.receipts.length,2,'Malformed and duplicate saved receipts are ignored');
+assert.equal(ultiSnapshot(saved,second.expiresAt).receipts.length,0);
+console.log('PASS: four team liveries, saved-progress migration, unique run IDs, first-place-only rewards, race team snapshot, duplicate prevention across reload/expiry, independent 72h expiries and stable export receipts.');

@@ -1,0 +1,5 @@
+node_modules/
+tests/*-compiled.cjs
+*.zip
+__pycache__/
+*.pyc

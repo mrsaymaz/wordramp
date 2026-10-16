@@ -1,0 +1,3668 @@
+{
+  "importTag": "grade-files-2026-10",
+  "mappings": [
+    {
+      "grade": 5,
+      "sourceId": "g5u1",
+      "sourceTitle": "School Life",
+      "targetId": "g5u1",
+      "targetTitle": "School Life",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 5,
+      "sourceId": "g5u2",
+      "sourceTitle": "Classroom Life",
+      "targetId": "g5u2",
+      "targetTitle": "Classroom Life",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 5,
+      "sourceId": "g5u3",
+      "sourceTitle": "Personal Life",
+      "targetId": "g5u3",
+      "targetTitle": "Personal Life",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 5,
+      "sourceId": "g5u4",
+      "sourceTitle": "Family Life",
+      "targetId": "g5u4",
+      "targetTitle": "Family Life",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 5,
+      "sourceId": "g5u5",
+      "sourceTitle": "Neighbourhood / City Life",
+      "targetId": "g5u5",
+      "targetTitle": "Life in the Neighbourhood & City",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 5,
+      "sourceId": "g5u6",
+      "sourceTitle": "Life In The World",
+      "targetId": "g5u6",
+      "targetTitle": "Life in the World",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 5,
+      "sourceId": "g5u7",
+      "sourceTitle": "Life In Nature",
+      "targetId": "g5u7",
+      "targetTitle": "Life in Nature",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 5,
+      "sourceId": "g5u8",
+      "sourceTitle": "Universe & Future",
+      "targetId": "g5u8",
+      "targetTitle": "Life in the Universe & Future",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 5,
+      "sourceId": "g5u9",
+      "sourceTitle": "Health and Feelings",
+      "targetId": "g5u3",
+      "targetTitle": "Personal Life",
+      "newLesson": false,
+      "connectedSubtheme": true
+    },
+    {
+      "grade": 5,
+      "sourceId": "g5u10",
+      "sourceTitle": "Fun and Games",
+      "targetId": "g5u10",
+      "targetTitle": "At the Toy Shop",
+      "newLesson": false,
+      "connectedSubtheme": true
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u1",
+      "sourceTitle": "School Life",
+      "targetId": "g6u1",
+      "targetTitle": "School Life",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u2",
+      "sourceTitle": "Classroom Life",
+      "targetId": "g6u2",
+      "targetTitle": "Classroom Life",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u3",
+      "sourceTitle": "Personal Life",
+      "targetId": "g6u3",
+      "targetTitle": "Personal Life",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u4",
+      "sourceTitle": "Family Life",
+      "targetId": "g6u4",
+      "targetTitle": "Family Life",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u5",
+      "sourceTitle": "Life in the Neighbourhood & City",
+      "targetId": "g6u5",
+      "targetTitle": "Life in the Neighbourhood & City",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u6",
+      "sourceTitle": "Life in the World & Culture",
+      "targetId": "g6u6",
+      "targetTitle": "Life in the World & Culture",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u7",
+      "sourceTitle": "Life in Nature & Global Problems",
+      "targetId": "g6u7",
+      "targetTitle": "Life in Nature & Global Problems",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u8",
+      "sourceTitle": "Life in the Universe & Future",
+      "targetId": "g6u8",
+      "targetTitle": "Life in the Universe & Future",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u9",
+      "sourceTitle": "Food Shopping and Prices",
+      "targetId": "g6u9",
+      "targetTitle": "Shopping and Money",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u10",
+      "sourceTitle": "Healthy Habits",
+      "targetId": "g6u10",
+      "targetTitle": "Health and Well-being",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u1",
+      "sourceTitle": "Appearance and Personality",
+      "targetId": "g7u1",
+      "targetTitle": "Appearance and Personality",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u2",
+      "sourceTitle": "Sports",
+      "targetId": "g7u2",
+      "targetTitle": "Sports",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u3",
+      "sourceTitle": "Biographies",
+      "targetId": "g7u3",
+      "targetTitle": "Biographies",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u4",
+      "sourceTitle": "Wild Animals",
+      "targetId": "g7u4",
+      "targetTitle": "Wild Animals",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u5",
+      "sourceTitle": "Television",
+      "targetId": "g7u5",
+      "targetTitle": "Television",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u6",
+      "sourceTitle": "Celebrations",
+      "targetId": "g7u6",
+      "targetTitle": "Celebrations",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u7",
+      "sourceTitle": "Dreams",
+      "targetId": "g7u7",
+      "targetTitle": "Dreams",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u8",
+      "sourceTitle": "Public Buildings",
+      "targetId": "g7u8",
+      "targetTitle": "Public Buildings",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u9",
+      "sourceTitle": "Environment",
+      "targetId": "g7u9",
+      "targetTitle": "Environment",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u10",
+      "sourceTitle": "Planets",
+      "targetId": "g7u10",
+      "targetTitle": "Planets",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u11",
+      "sourceTitle": "Digital Life",
+      "targetId": "g7u5",
+      "targetTitle": "Television",
+      "newLesson": false,
+      "connectedSubtheme": true
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u12",
+      "sourceTitle": "Shopping and Money",
+      "targetId": "g7u8",
+      "targetTitle": "Public Buildings",
+      "newLesson": false,
+      "connectedSubtheme": true
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u1",
+      "sourceTitle": "Friendship",
+      "targetId": "g8u1",
+      "targetTitle": "Friendship",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u2",
+      "sourceTitle": "Teen Life",
+      "targetId": "g8u2",
+      "targetTitle": "Teen Life",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u3",
+      "sourceTitle": "In the Kitchen",
+      "targetId": "g8u3",
+      "targetTitle": "In the Kitchen",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u4",
+      "sourceTitle": "On the Phone",
+      "targetId": "g8u4",
+      "targetTitle": "On the Phone",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u5",
+      "sourceTitle": "The Internet",
+      "targetId": "g8u5",
+      "targetTitle": "The Internet",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u6",
+      "sourceTitle": "Adventures",
+      "targetId": "g8u6",
+      "targetTitle": "Adventures",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u7",
+      "sourceTitle": "Tourism",
+      "targetId": "g8u7",
+      "targetTitle": "Tourism",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u8",
+      "sourceTitle": "Chores",
+      "targetId": "g8u8",
+      "targetTitle": "Chores",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u9",
+      "sourceTitle": "Science",
+      "targetId": "g8u9",
+      "targetTitle": "Science",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u10",
+      "sourceTitle": "Natural Forces",
+      "targetId": "g8u10",
+      "targetTitle": "Natural Forces",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u11",
+      "sourceTitle": "At School",
+      "targetId": "g8u2",
+      "targetTitle": "Teen Life",
+      "newLesson": false,
+      "connectedSubtheme": true
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u12",
+      "sourceTitle": "Health and Well-being",
+      "targetId": "g8u2",
+      "targetTitle": "Teen Life",
+      "newLesson": false,
+      "connectedSubtheme": true
+    }
+  ],
+  "grades": {
+    "5": {
+      "unitsBefore": 10,
+      "unitsAfter": 10,
+      "newPlayableMatches": 187,
+      "newRepairs": 99,
+      "playableByType": {
+        "description": 120,
+        "translation": 157,
+        "grammar": 60,
+        "question": 30
+      }
+    },
+    "6": {
+      "unitsBefore": 10,
+      "unitsAfter": 10,
+      "newPlayableMatches": 197,
+      "newRepairs": 100,
+      "playableByType": {
+        "description": 120,
+        "translation": 167,
+        "grammar": 60,
+        "question": 30
+      }
+    },
+    "7": {
+      "unitsBefore": 12,
+      "unitsAfter": 12,
+      "newPlayableMatches": 237,
+      "newRepairs": 119,
+      "playableByType": {
+        "description": 144,
+        "translation": 201,
+        "grammar": 72,
+        "question": 36
+      }
+    },
+    "8": {
+      "unitsBefore": 12,
+      "unitsAfter": 12,
+      "newPlayableMatches": 248,
+      "newRepairs": 120,
+      "playableByType": {
+        "description": 144,
+        "translation": 212,
+        "grammar": 72,
+        "question": 36
+      }
+    }
+  },
+  "skipped": {
+    "pictures": 135,
+    "translations": 55,
+    "questions": 2,
+    "sentences": 2,
+    "repairs": 2
+  },
+  "descriptionEdits": {
+    "g6u4d4": {
+      "clue": "I design bridges and plan how they are built."
+    },
+    "g6u4d5": {
+      "clue": "A garage worker whose job is to repair car engines."
+    },
+    "g6u8d1": {
+      "options": [
+        "planet",
+        "telescope",
+        "rocket"
+      ]
+    },
+    "g6u8d4": {
+      "clue": "Strong wind with thunder and lightning; no rotating funnel."
+    },
+    "g6u8d5": {
+      "options": [
+        "tornado",
+        "drought",
+        "comet"
+      ]
+    },
+    "g6u9d4": {
+      "options": [
+        "cashier",
+        "customer",
+        "receipt"
+      ]
+    },
+    "g7u2d4": {
+      "options": [
+        "athlete",
+        "referee",
+        "spectator"
+      ]
+    },
+    "g7u2d5": {
+      "clue": "A person whose job is to train a team and plan its practice."
+    },
+    "g7u2d6": {
+      "options": [
+        "teammate",
+        "opponent",
+        "spectator"
+      ]
+    },
+    "g7u9d3": {
+      "clue": "A hard, clear material made from sand, used for window panes."
+    },
+    "g7u10d5": {
+      "clue": "The planet famous for wide, bright rings visible through a small telescope."
+    },
+    "g7u12d4": {
+      "options": [
+        "cashier",
+        "customer",
+        "receipt"
+      ]
+    },
+    "g8u5d1": {
+      "clue": "Software that displays web pages, with tabs and an address bar."
+    }
+  },
+  "repairAdaptations": [
+    {
+      "source": "g5u1s4",
+      "id": "g5u1-ext26-g5u1-s4",
+      "blocks": [
+        "Elif",
+        "likes",
+        "the music club."
+      ],
+      "tr": "Elif müzik kulübünü seviyor."
+    },
+    {
+      "source": "g5u1s5",
+      "id": "g5u1-ext26-g5u1-s5",
+      "blocks": [
+        "The pupil",
+        "has got",
+        "a blue uniform."
+      ],
+      "tr": "Öğrencinin mavi bir üniforması var."
+    },
+    {
+      "source": "g5u1s6",
+      "id": "g5u1-ext26-g5u1-s6",
+      "blocks": [
+        "My classmate",
+        "is",
+        "a helpful person."
+      ],
+      "tr": "Sınıf arkadaşım yardımsever bir insan."
+    },
+    {
+      "source": "g5u1s7",
+      "id": "g5u1-ext26-g5u1-s7",
+      "blocks": [
+        "This visitor",
+        "is",
+        "our new coach."
+      ],
+      "tr": "Bu ziyaretçi bizim yeni antrenörümüz."
+    },
+    {
+      "source": "g5u1s8",
+      "id": "g5u1-ext26-g5u1-s8",
+      "blocks": [
+        "Can you",
+        "open",
+        "the blue gate?"
+      ],
+      "tr": "Kapıyı açabilir misin?"
+    },
+    {
+      "source": "g5u1s9",
+      "id": "g5u1-ext26-g5u1-s9",
+      "blocks": [
+        "Our secretary",
+        "has got",
+        "a photo of our school."
+      ],
+      "tr": "Sekreterimizin okulumuzun bir fotoğrafı var."
+    },
+    {
+      "source": "g5u1s10",
+      "id": "g5u1-ext26-g5u1-s10",
+      "blocks": [
+        "This",
+        "is",
+        "the name of our club."
+      ],
+      "tr": "Bu, kulübümüzün adı."
+    },
+    {
+      "source": "g5u2s4",
+      "id": "g5u2-ext26-g5u2-s4",
+      "blocks": [
+        "Zeynep",
+        "has got",
+        "a new notebook."
+      ],
+      "tr": "Zeynep'in yeni bir defteri var."
+    },
+    {
+      "source": "g5u2s5",
+      "id": "g5u2-ext26-g5u2-s5",
+      "blocks": [
+        "This",
+        "is",
+        "my blue pen."
+      ],
+      "tr": "Bu benim mavi kalemim."
+    },
+    {
+      "source": "g5u2s6",
+      "id": "g5u2-ext26-g5u2-s6",
+      "blocks": [
+        "Elif",
+        "needs",
+        "a small eraser."
+      ],
+      "tr": "Elif'in küçük bir silgiye ihtiyacı var."
+    },
+    {
+      "source": "g5u2s7",
+      "id": "g5u2-ext26-g5u2-s7",
+      "blocks": [
+        "My partner",
+        "opens",
+        "the red book."
+      ],
+      "tr": "Eşim kırmızı kitabı açıyor."
+    },
+    {
+      "source": "g5u2s8",
+      "id": "g5u2-ext26-g5u2-s8",
+      "blocks": [
+        "The clock",
+        "has got",
+        "two black hands."
+      ],
+      "tr": "Saatin iki siyah ibresi var."
+    },
+    {
+      "source": "g5u2s9",
+      "id": "g5u2-ext26-g5u2-s9",
+      "blocks": [
+        "Can",
+        "knows",
+        "the names of our lessons."
+      ],
+      "tr": "Can derslerimizin adlarını biliyor."
+    },
+    {
+      "source": "g5u2s10",
+      "id": "g5u2-ext26-g5u2-s10",
+      "blocks": [
+        "My notebook",
+        "has got",
+        "a picture of a classroom."
+      ],
+      "tr": "Defterimde bir sınıf resmi var."
+    },
+    {
+      "source": "g5u3s4",
+      "id": "g5u3-ext26-g5u3-s4",
+      "blocks": [
+        "Elif",
+        "has got",
+        "long brown hair."
+      ],
+      "tr": "Elif'in uzun kahverengi saçları var."
+    },
+    {
+      "source": "g5u3s5",
+      "id": "g5u3-ext26-g5u3-s5",
+      "blocks": [
+        "This",
+        "is",
+        "my favourite shirt."
+      ],
+      "tr": "Bu benim en sevdiğim gömlek."
+    },
+    {
+      "source": "g5u3s6",
+      "id": "g5u3-ext26-g5u3-s6",
+      "blocks": [
+        "Can",
+        "needs",
+        "a warm scarf."
+      ],
+      "tr": "Can'ın sıcak tutan bir atkıya ihtiyacı var."
+    },
+    {
+      "source": "g5u3s7",
+      "id": "g5u3-ext26-g5u3-s7",
+      "blocks": [
+        "My brother",
+        "has got",
+        "a black belt."
+      ],
+      "tr": "Erkek kardeşimin siyah bir kemeri var."
+    },
+    {
+      "source": "g5u3s8",
+      "id": "g5u3-ext26-g5u3-s8",
+      "blocks": [
+        "I",
+        "wear",
+        "my blue raincoat."
+      ],
+      "tr": "Mavi yağmurluğumu giyerim."
+    },
+    {
+      "source": "g5u3s9",
+      "id": "g5u3-ext26-g5u3-s9",
+      "blocks": [
+        "This girl",
+        "has got",
+        "a pair of red gloves."
+      ],
+      "tr": "Bu kızın bir çift kırmızı eldiveni var."
+    },
+    {
+      "source": "g5u3s10",
+      "id": "g5u3-ext26-g5u3-s10",
+      "blocks": [
+        "My father",
+        "has got",
+        "a pair of brown boots."
+      ],
+      "tr": "Babamın bir çift kahverengi botu var."
+    },
+    {
+      "source": "g5u4s4",
+      "id": "g5u4-ext26-g5u4-s4",
+      "blocks": [
+        "My father",
+        "is making",
+        "a small table."
+      ],
+      "tr": "Babam küçük bir masa yapıyor."
+    },
+    {
+      "source": "g5u4s5",
+      "id": "g5u4-ext26-g5u4-s5",
+      "blocks": [
+        "My sister",
+        "is drawing",
+        "our new garden."
+      ],
+      "tr": "Kız kardeşim yeni bahçemizi çiziyor."
+    },
+    {
+      "source": "g5u4s6",
+      "id": "g5u4-ext26-g5u4-s6",
+      "blocks": [
+        "My brother",
+        "is doing",
+        "a big puzzle."
+      ],
+      "tr": "Erkek kardeşim büyük bir yapboz yapıyor."
+    },
+    {
+      "source": "g5u4s7",
+      "id": "g5u4-ext26-g5u4-s7",
+      "blocks": [
+        "This",
+        "is",
+        "our family photo."
+      ],
+      "tr": "Bu bizim aile fotoğrafımız."
+    },
+    {
+      "source": "g5u4s8",
+      "id": "g5u4-ext26-g5u4-s8",
+      "blocks": [
+        "My grandmother",
+        "has got",
+        "a new camera."
+      ],
+      "tr": "Büyükannemin yeni bir fotoğraf makinesi var."
+    },
+    {
+      "source": "g5u4s9",
+      "id": "g5u4-ext26-g5u4-s9",
+      "blocks": [
+        "Elif",
+        "is making",
+        "a picture of her family."
+      ],
+      "tr": "Elif ailesinin bir resmini yapıyor."
+    },
+    {
+      "source": "g5u4s10",
+      "id": "g5u4-ext26-g5u4-s10",
+      "blocks": [
+        "My uncle",
+        "is showing",
+        "a photo of his baby."
+      ],
+      "tr": "Amcam bebeğinin bir fotoğrafını gösteriyor."
+    },
+    {
+      "source": "g5u5s4",
+      "id": "g5u5-ext26-g5u5-s4",
+      "blocks": [
+        "My bedroom",
+        "has got",
+        "a small cupboard."
+      ],
+      "tr": "Yatak odamda küçük bir dolap var."
+    },
+    {
+      "source": "g5u5s5",
+      "id": "g5u5-ext26-g5u5-s5",
+      "blocks": [
+        "This",
+        "is",
+        "our new sofa."
+      ],
+      "tr": "Bu bizim yeni kanepemiz."
+    },
+    {
+      "source": "g5u5s6",
+      "id": "g5u5-ext26-g5u5-s6",
+      "blocks": [
+        "The park",
+        "has got",
+        "a long bench."
+      ],
+      "tr": "Parkta uzun bir bank var."
+    },
+    {
+      "source": "g5u5s7",
+      "id": "g5u5-ext26-g5u5-s7",
+      "blocks": [
+        "Our town",
+        "has got",
+        "a new bridge."
+      ],
+      "tr": "Kasabamızın yeni bir köprüsü var."
+    },
+    {
+      "source": "g5u5s8",
+      "id": "g5u5-ext26-g5u5-s8",
+      "blocks": [
+        "This flat",
+        "has got",
+        "two big windows."
+      ],
+      "tr": "Bu dairenin iki büyük penceresi var."
+    },
+    {
+      "source": "g5u5s9",
+      "id": "g5u5-ext26-g5u5-s9",
+      "blocks": [
+        "Our house",
+        "is",
+        "smaller than that building."
+      ],
+      "tr": "Evimiz o binadan daha küçük."
+    },
+    {
+      "source": "g5u5s10",
+      "id": "g5u5-ext26-g5u5-s10",
+      "blocks": [
+        "This street",
+        "is",
+        "wider than that road."
+      ],
+      "tr": "Bu sokak o yoldan daha geniş."
+    },
+    {
+      "source": "g5u6s4",
+      "id": "g5u6-ext26-g5u6-s4",
+      "blocks": [
+        "Can I",
+        "have",
+        "some fresh bread?"
+      ],
+      "tr": "Biraz ekmek alabilir miyim?"
+    },
+    {
+      "source": "g5u6s5",
+      "id": "g5u6-ext26-g5u6-s5",
+      "blocks": [
+        "Zeynep",
+        "has got",
+        "a cheese sandwich."
+      ],
+      "tr": "Zeynep'in peynirli bir sandviçi var."
+    },
+    {
+      "source": "g5u6s6",
+      "id": "g5u6-ext26-g5u6-s6",
+      "blocks": [
+        "We",
+        "need",
+        "three clean plates."
+      ],
+      "tr": "Üç temiz tabağa ihtiyacımız var."
+    },
+    {
+      "source": "g5u6s7",
+      "id": "g5u6-ext26-g5u6-s7",
+      "blocks": [
+        "This",
+        "is",
+        "my favourite soup."
+      ],
+      "tr": "Bu benim en sevdiğim çorba."
+    },
+    {
+      "source": "g5u6s8",
+      "id": "g5u6-ext26-g5u6-s8",
+      "blocks": [
+        "May I",
+        "use",
+        "this clean spoon?"
+      ],
+      "tr": "Bu kaşığı kullanabilir miyim?"
+    },
+    {
+      "source": "g5u6s9",
+      "id": "g5u6-ext26-g5u6-s9",
+      "blocks": [
+        "Elif",
+        "has got",
+        "a bottle of cold water."
+      ],
+      "tr": "Elif'in bir şişe soğuk suyu var."
+    },
+    {
+      "source": "g5u6s10",
+      "id": "g5u6-ext26-g5u6-s10",
+      "blocks": [
+        "Can",
+        "needs",
+        "a bowl of hot soup."
+      ],
+      "tr": "Can'ın bir kâse sıcak çorbaya ihtiyacı var."
+    },
+    {
+      "source": "g5u7s4",
+      "id": "g5u7-ext26-g5u7-s4",
+      "blocks": [
+        "A lion",
+        "has got",
+        "a long tail."
+      ],
+      "tr": "Aslanın uzun bir kuyruğu vardır."
+    },
+    {
+      "source": "g5u7s5",
+      "id": "g5u7-ext26-g5u7-s5",
+      "blocks": [
+        "This snake",
+        "has got",
+        "a small head."
+      ],
+      "tr": "Bu yılanın küçük bir kafası var."
+    },
+    {
+      "source": "g5u7s6",
+      "id": "g5u7-ext26-g5u7-s6",
+      "blocks": [
+        "A turtle",
+        "has got",
+        "a hard shell."
+      ],
+      "tr": "Kaplumbağanın sert bir kabuğu vardır."
+    },
+    {
+      "source": "g5u7s7",
+      "id": "g5u7-ext26-g5u7-s7",
+      "blocks": [
+        "We",
+        "must protect",
+        "these wild animals."
+      ],
+      "tr": "Bu yabani hayvanları korumalıyız."
+    },
+    {
+      "source": "g5u7s8",
+      "id": "g5u7-ext26-g5u7-s8",
+      "blocks": [
+        "The forest",
+        "is",
+        "their natural habitat."
+      ],
+      "tr": "Orman onların doğal yaşam alanıdır."
+    },
+    {
+      "source": "g5u7s9",
+      "id": "g5u7-ext26-g5u7-s9",
+      "blocks": [
+        "A giraffe",
+        "is",
+        "taller than a fox."
+      ],
+      "tr": "Zürafa tilkiden daha uzundur."
+    },
+    {
+      "source": "g5u7s10",
+      "id": "g5u7-ext26-g5u7-s10",
+      "blocks": [
+        "A whale",
+        "is",
+        "bigger than a dolphin."
+      ],
+      "tr": "Balina yunustan daha büyüktür."
+    },
+    {
+      "source": "g5u8s4",
+      "id": "g5u8-ext26-g5u8-s4",
+      "blocks": [
+        "Elif",
+        "is going to make",
+        "a big sandcastle."
+      ],
+      "tr": "Elif büyük bir kumdan kale yapacak."
+    },
+    {
+      "source": "g5u8s5",
+      "id": "g5u8-ext26-g5u8-s5",
+      "blocks": [
+        "This",
+        "is",
+        "our new tent."
+      ],
+      "tr": "Bu bizim yeni çadırımız."
+    },
+    {
+      "source": "g5u8s6",
+      "id": "g5u8-ext26-g5u8-s6",
+      "blocks": [
+        "We",
+        "are going to use",
+        "this small boat."
+      ],
+      "tr": "Bu küçük tekneyi kullanacağız."
+    },
+    {
+      "source": "g5u8s7",
+      "id": "g5u8-ext26-g5u8-s7",
+      "blocks": [
+        "My father",
+        "has got",
+        "our train tickets."
+      ],
+      "tr": "Tren biletlerimiz babamda."
+    },
+    {
+      "source": "g5u8s8",
+      "id": "g5u8-ext26-g5u8-s8",
+      "blocks": [
+        "Zeynep",
+        "is going to draw",
+        "that high mountain."
+      ],
+      "tr": "Zeynep şu yüksek dağı çizecek."
+    },
+    {
+      "source": "g5u8s9",
+      "id": "g5u8-ext26-g5u8-s9",
+      "blocks": [
+        "This lake",
+        "is",
+        "smaller than the sea."
+      ],
+      "tr": "Bu göl denizden daha küçük."
+    },
+    {
+      "source": "g5u8s10",
+      "id": "g5u8-ext26-g5u8-s10",
+      "blocks": [
+        "This mountain",
+        "is",
+        "higher than that hill."
+      ],
+      "tr": "Bu dağ şu tepeden daha yüksek."
+    },
+    {
+      "source": "g5u9s4",
+      "id": "g5u3-ext26-g5u9-s4",
+      "blocks": [
+        "My brother",
+        "has got",
+        "a bad toothache."
+      ],
+      "tr": "Erkek kardeşimin dişi çok ağrıyor."
+    },
+    {
+      "source": "g5u9s5",
+      "id": "g5u3-ext26-g5u9-s5",
+      "blocks": [
+        "This",
+        "is",
+        "a clean bandage."
+      ],
+      "tr": "Bu temiz bir bandaj."
+    },
+    {
+      "source": "g5u9s6",
+      "id": "g5u3-ext26-g5u9-s6",
+      "blocks": [
+        "The nurse",
+        "has got",
+        "a small thermometer."
+      ],
+      "tr": "Hemşirenin küçük bir termometresi var."
+    },
+    {
+      "source": "g5u9s7",
+      "id": "g5u3-ext26-g5u9-s7",
+      "blocks": [
+        "Elif",
+        "has got",
+        "a happy smile."
+      ],
+      "tr": "Elif'in yüzünde mutlu bir gülümseme var."
+    },
+    {
+      "source": "g5u9s8",
+      "id": "g5u3-ext26-g5u9-s8",
+      "blocks": [
+        "Our doctor",
+        "is",
+        "a kind person."
+      ],
+      "tr": "Doktorumuz nazik bir insan."
+    },
+    {
+      "source": "g5u9s9",
+      "id": "g5u3-ext26-g5u9-s9",
+      "blocks": [
+        "Can",
+        "has got",
+        "a bottle of liquid soap."
+      ],
+      "tr": "Can'ın bir şişe sıvı sabunu var."
+    },
+    {
+      "source": "g5u9s10",
+      "id": "g5u3-ext26-g5u9-s10",
+      "blocks": [
+        "This",
+        "is",
+        "a picture of an ambulance."
+      ],
+      "tr": "Bu bir ambulans resmi."
+    },
+    {
+      "source": "g5u10s4",
+      "id": "g5u10-ext26-g5u10-s4",
+      "blocks": [
+        "Elif",
+        "has got",
+        "a new racket."
+      ],
+      "tr": "Elif'in yeni bir raketi var."
+    },
+    {
+      "source": "g5u10s5",
+      "id": "g5u10-ext26-g5u10-s5",
+      "blocks": [
+        "We",
+        "need",
+        "a big ball."
+      ],
+      "tr": "Büyük bir topa ihtiyacımız var."
+    },
+    {
+      "source": "g5u10s6",
+      "id": "g5u10-ext26-g5u10-s6",
+      "blocks": [
+        "Can",
+        "likes",
+        "this board game."
+      ],
+      "tr": "Can bu kutu oyununu seviyor."
+    },
+    {
+      "source": "g5u10s7",
+      "id": "g5u10-ext26-g5u10-s7",
+      "blocks": [
+        "These",
+        "are",
+        "my glass marbles."
+      ],
+      "tr": "Bunlar benim cam bilyelerim."
+    },
+    {
+      "source": "g5u10s8",
+      "id": "g5u10-ext26-g5u10-s8",
+      "blocks": [
+        "Our team",
+        "has got",
+        "a small goal."
+      ],
+      "tr": "Takımımızın küçük bir kalesi var."
+    },
+    {
+      "source": "g5u10s9",
+      "id": "g5u10-ext26-g5u10-s9",
+      "blocks": [
+        "The coach",
+        "explains",
+        "the rules of this game."
+      ],
+      "tr": "Antrenör bu oyunun kurallarını açıklıyor."
+    },
+    {
+      "source": "g5u10s10",
+      "id": "g5u10-ext26-g5u10-s10",
+      "blocks": [
+        "Zeynep",
+        "has got",
+        "a pair of tennis rackets."
+      ],
+      "tr": "Zeynep'in bir çift tenis raketi var."
+    },
+    {
+      "source": "g6u1s4",
+      "id": "g6u1-ext26-g6u1-s4",
+      "blocks": [
+        "Elif",
+        "is",
+        "a responsible pupil."
+      ],
+      "tr": "Elif sorumluluk sahibi bir öğrenci."
+    },
+    {
+      "source": "g6u1s5",
+      "id": "g6u1-ext26-g6u1-s5",
+      "blocks": [
+        "This",
+        "is",
+        "our school badge."
+      ],
+      "tr": "Bu bizim okul rozetimiz."
+    },
+    {
+      "source": "g6u1s6",
+      "id": "g6u1-ext26-g6u1-s6",
+      "blocks": [
+        "The secretary",
+        "prepares",
+        "the weekly programme."
+      ],
+      "tr": "Sekreter haftalık programı hazırlar."
+    },
+    {
+      "source": "g6u1s7",
+      "id": "g6u1-ext26-g6u1-s7",
+      "blocks": [
+        "Our class",
+        "needs",
+        "a helpful volunteer."
+      ],
+      "tr": "Sınıfımızın yardımsever bir gönüllüye ihtiyacı var."
+    },
+    {
+      "source": "g6u1s8",
+      "id": "g6u1-ext26-g6u1-s8",
+      "blocks": [
+        "The headteacher",
+        "welcomes",
+        "our new visitors."
+      ],
+      "tr": "Okul müdürü yeni ziyaretçilerimizi karşılar."
+    },
+    {
+      "source": "g6u1s9",
+      "id": "g6u1-ext26-g6u1-s9",
+      "blocks": [
+        "Our teacher",
+        "explains",
+        "the duties of each helper."
+      ],
+      "tr": "Öğretmenimiz her yardımcının görevlerini açıklar."
+    },
+    {
+      "source": "g6u1s10",
+      "id": "g6u1-ext26-g6u1-s10",
+      "blocks": [
+        "Can",
+        "has got",
+        "a list of school rules."
+      ],
+      "tr": "Can'ın okul kurallarının bir listesi var."
+    },
+    {
+      "source": "g6u2s4",
+      "id": "g6u2-ext26-g6u2-s4",
+      "blocks": [
+        "Zeynep",
+        "is reading",
+        "the first question."
+      ],
+      "tr": "Zeynep ilk soruyu okuyor."
+    },
+    {
+      "source": "g6u2s5",
+      "id": "g6u2-ext26-g6u2-s5",
+      "blocks": [
+        "My teacher",
+        "explains",
+        "this difficult example."
+      ],
+      "tr": "Öğretmenim bu zor örneği açıklıyor."
+    },
+    {
+      "source": "g6u2s6",
+      "id": "g6u2-ext26-g6u2-s6",
+      "blocks": [
+        "We",
+        "are making",
+        "our own flashcards."
+      ],
+      "tr": "Kendi sözcük kartlarımızı hazırlıyoruz."
+    },
+    {
+      "source": "g6u2s7",
+      "id": "g6u2-ext26-g6u2-s7",
+      "blocks": [
+        "This",
+        "is",
+        "my second notebook."
+      ],
+      "tr": "Bu benim ikinci defterim."
+    },
+    {
+      "source": "g6u2s8",
+      "id": "g6u2-ext26-g6u2-s8",
+      "blocks": [
+        "Can",
+        "is correcting",
+        "a small mistake."
+      ],
+      "tr": "Can küçük bir hatayı düzeltiyor."
+    },
+    {
+      "source": "g6u2s9",
+      "id": "g6u2-ext26-g6u2-s9",
+      "blocks": [
+        "The teacher",
+        "knows",
+        "the answer to this question."
+      ],
+      "tr": "Öğretmen bu sorunun cevabını biliyor."
+    },
+    {
+      "source": "g6u2s10",
+      "id": "g6u2-ext26-g6u2-s10",
+      "blocks": [
+        "Our partner",
+        "explains",
+        "the meaning of this word."
+      ],
+      "tr": "Eşimiz bu sözcüğün anlamını açıklıyor."
+    },
+    {
+      "source": "g6u3s4",
+      "id": "g6u3-ext26-g6u3-s4",
+      "blocks": [
+        "My brother",
+        "wears",
+        "a green jacket."
+      ],
+      "tr": "Erkek kardeşim yeşil bir ceket giyiyor."
+    },
+    {
+      "source": "g6u3s5",
+      "id": "g6u3-ext26-g6u3-s5",
+      "blocks": [
+        "This",
+        "is",
+        "my sister's bracelet."
+      ],
+      "tr": "Bu kız kardeşimin bilekliği."
+    },
+    {
+      "source": "g6u3s6",
+      "id": "g6u3-ext26-g6u3-s6",
+      "blocks": [
+        "Our friend",
+        "is",
+        "a polite person."
+      ],
+      "tr": "Arkadaşımız kibar bir insan."
+    },
+    {
+      "source": "g6u3s7",
+      "id": "g6u3-ext26-g6u3-s7",
+      "blocks": [
+        "Zeynep",
+        "has got",
+        "a small necklace."
+      ],
+      "tr": "Zeynep'in küçük bir kolyesi var."
+    },
+    {
+      "source": "g6u3s8",
+      "id": "g6u3-ext26-g6u3-s8",
+      "blocks": [
+        "My classmate",
+        "has got",
+        "short black hair."
+      ],
+      "tr": "Sınıf arkadaşımın kısa siyah saçları var."
+    },
+    {
+      "source": "g6u3s9",
+      "id": "g6u3-ext26-g6u3-s9",
+      "blocks": [
+        "My brother",
+        "is",
+        "taller than my cousin."
+      ],
+      "tr": "Erkek kardeşim kuzenimden daha uzun."
+    },
+    {
+      "source": "g6u3s10",
+      "id": "g6u3-ext26-g6u3-s10",
+      "blocks": [
+        "This scarf",
+        "is",
+        "longer than that belt."
+      ],
+      "tr": "Bu atkı şu kemerden daha uzun."
+    },
+    {
+      "source": "g6u4s4",
+      "id": "g6u4-ext26-g6u4-s4",
+      "blocks": [
+        "My brother",
+        "is repairing",
+        "his own bicycle."
+      ],
+      "tr": "Erkek kardeşim kendi bisikletini onarıyor."
+    },
+    {
+      "source": "g6u4s5",
+      "id": "g6u4-ext26-g6u4-s5",
+      "blocks": [
+        "We",
+        "are visiting",
+        "our new flat."
+      ],
+      "tr": "Yeni dairemizi ziyaret ediyoruz."
+    },
+    {
+      "source": "g6u4s6",
+      "id": "g6u4-ext26-g6u4-s6",
+      "blocks": [
+        "This",
+        "is",
+        "my father's workshop."
+      ],
+      "tr": "Bu babamın atölyesi."
+    },
+    {
+      "source": "g6u4s7",
+      "id": "g6u4-ext26-g6u4-s7",
+      "blocks": [
+        "The farmer",
+        "has got",
+        "a small garden."
+      ],
+      "tr": "Çiftçinin küçük bir bahçesi var."
+    },
+    {
+      "source": "g6u4s8",
+      "id": "g6u4-ext26-g6u4-s8",
+      "blocks": [
+        "My uncle",
+        "is",
+        "a careful mechanic."
+      ],
+      "tr": "Amcam dikkatli bir tamirci."
+    },
+    {
+      "source": "g6u4s9",
+      "id": "g6u4-ext26-g6u4-s9",
+      "blocks": [
+        "The teacher",
+        "has got",
+        "a photo of her family."
+      ],
+      "tr": "Öğretmenin ailesinin bir fotoğrafı var."
+    },
+    {
+      "source": "g6u4s10",
+      "id": "g6u4-ext26-g6u4-s10",
+      "blocks": [
+        "My mother",
+        "is checking",
+        "the time of her appointment."
+      ],
+      "tr": "Annem randevusunun saatini kontrol ediyor."
+    },
+    {
+      "source": "g6u5s4",
+      "id": "g6u5-ext26-g6u5-s4",
+      "blocks": [
+        "My father",
+        "bought",
+        "a bus ticket."
+      ],
+      "tr": "Babam bir otobüs bileti aldı."
+    },
+    {
+      "source": "g6u5s5",
+      "id": "g6u5-ext26-g6u5-s5",
+      "blocks": [
+        "That",
+        "was",
+        "our first ferry."
+      ],
+      "tr": "O, bindiğimiz ilk feribottu."
+    },
+    {
+      "source": "g6u5s6",
+      "id": "g6u5-ext26-g6u5-s6",
+      "blocks": [
+        "Zeynep",
+        "saw",
+        "a colourful exhibition."
+      ],
+      "tr": "Zeynep renkli bir sergi gördü."
+    },
+    {
+      "source": "g6u5s7",
+      "id": "g6u5-ext26-g6u5-s7",
+      "blocks": [
+        "Our class",
+        "visited",
+        "the old harbour."
+      ],
+      "tr": "Sınıfımız eski limanı ziyaret etti."
+    },
+    {
+      "source": "g6u5s8",
+      "id": "g6u5-ext26-g6u5-s8",
+      "blocks": [
+        "Can",
+        "liked",
+        "the city festival."
+      ],
+      "tr": "Can şehir festivalini beğendi."
+    },
+    {
+      "source": "g6u5s9",
+      "id": "g6u5-ext26-g6u5-s9",
+      "blocks": [
+        "The visitors",
+        "bought",
+        "a map of the city."
+      ],
+      "tr": "Ziyaretçiler şehrin bir haritasını aldı."
+    },
+    {
+      "source": "g6u5s10",
+      "id": "g6u5-ext26-g6u5-s10",
+      "blocks": [
+        "Our teacher",
+        "checked",
+        "the time of the concert."
+      ],
+      "tr": "Öğretmenimiz konserin saatini kontrol etti."
+    },
+    {
+      "source": "g6u6s4",
+      "id": "g6u6-ext26-g6u6-s4",
+      "blocks": [
+        "Can",
+        "tried",
+        "a traditional dish."
+      ],
+      "tr": "Can geleneksel bir yemek denedi."
+    },
+    {
+      "source": "g6u6s5",
+      "id": "g6u6-ext26-g6u6-s5",
+      "blocks": [
+        "Elif",
+        "prepared",
+        "a colourful costume."
+      ],
+      "tr": "Elif renkli bir kostüm hazırladı."
+    },
+    {
+      "source": "g6u6s6",
+      "id": "g6u6-ext26-g6u6-s6",
+      "blocks": [
+        "Our teacher",
+        "explained",
+        "this local custom."
+      ],
+      "tr": "Öğretmenimiz bu yerel âdeti açıkladı."
+    },
+    {
+      "source": "g6u6s7",
+      "id": "g6u6-ext26-g6u6-s7",
+      "blocks": [
+        "My family",
+        "watched",
+        "a music show."
+      ],
+      "tr": "Ailem bir müzik gösterisi izledi."
+    },
+    {
+      "source": "g6u6s8",
+      "id": "g6u6-ext26-g6u6-s8",
+      "blocks": [
+        "The visitors",
+        "liked",
+        "our fresh bread."
+      ],
+      "tr": "Ziyaretçiler taze ekmeğimizi beğendi."
+    },
+    {
+      "source": "g6u6s9",
+      "id": "g6u6-ext26-g6u6-s9",
+      "blocks": [
+        "Zeynep",
+        "learned",
+        "the name of this dish."
+      ],
+      "tr": "Zeynep bu yemeğin adını öğrendi."
+    },
+    {
+      "source": "g6u6s10",
+      "id": "g6u6-ext26-g6u6-s10",
+      "blocks": [
+        "My brother",
+        "took",
+        "a photo of the dancers."
+      ],
+      "tr": "Erkek kardeşim dansçıların bir fotoğrafını çekti."
+    },
+    {
+      "source": "g6u7s4",
+      "id": "g6u7-ext26-g6u7-s4",
+      "blocks": [
+        "Elif",
+        "carried",
+        "a reusable bag."
+      ],
+      "tr": "Elif tekrar kullanılabilir bir çanta taşıdı."
+    },
+    {
+      "source": "g6u7s5",
+      "id": "g6u7-ext26-g6u7-s5",
+      "blocks": [
+        "We",
+        "must protect",
+        "our local wildlife."
+      ],
+      "tr": "Yerel yaban hayatımızı korumalıyız."
+    },
+    {
+      "source": "g6u7s6",
+      "id": "g6u7-ext26-g6u7-s6",
+      "blocks": [
+        "Our team",
+        "cleaned",
+        "the dirty beach."
+      ],
+      "tr": "Ekibimiz kirli plajı temizledi."
+    },
+    {
+      "source": "g6u7s7",
+      "id": "g6u7-ext26-g6u7-s7",
+      "blocks": [
+        "Can",
+        "recycled",
+        "three plastic bottles."
+      ],
+      "tr": "Can üç plastik şişeyi geri dönüşüme verdi."
+    },
+    {
+      "source": "g6u7s8",
+      "id": "g6u7-ext26-g6u7-s8",
+      "blocks": [
+        "My friend",
+        "saved",
+        "a young tree."
+      ],
+      "tr": "Arkadaşım genç bir ağacı kurtardı."
+    },
+    {
+      "source": "g6u7s9",
+      "id": "g6u7-ext26-g6u7-s9",
+      "blocks": [
+        "Our teacher",
+        "explained",
+        "the cause of the pollution."
+      ],
+      "tr": "Öğretmenimiz kirliliğin nedenini açıkladı."
+    },
+    {
+      "source": "g6u7s10",
+      "id": "g6u7-ext26-g6u7-s10",
+      "blocks": [
+        "The volunteers",
+        "made",
+        "a list of local problems."
+      ],
+      "tr": "Gönüllüler yerel sorunların bir listesini hazırladı."
+    },
+    {
+      "source": "g6u8s4",
+      "id": "g6u8-ext26-g6u8-s4",
+      "blocks": [
+        "Elif",
+        "is going to draw",
+        "a bright comet."
+      ],
+      "tr": "Elif parlak bir kuyruklu yıldız çizecek."
+    },
+    {
+      "source": "g6u8s5",
+      "id": "g6u8-ext26-g6u8-s5",
+      "blocks": [
+        "The scientist",
+        "will observe",
+        "the full moon."
+      ],
+      "tr": "Bilim insanı dolunayı gözlemleyecek."
+    },
+    {
+      "source": "g6u8s6",
+      "id": "g6u8-ext26-g6u8-s6",
+      "blocks": [
+        "Can",
+        "has got",
+        "a small telescope."
+      ],
+      "tr": "Can'ın küçük bir teleskobu var."
+    },
+    {
+      "source": "g6u8s7",
+      "id": "g6u8-ext26-g6u8-s7",
+      "blocks": [
+        "That",
+        "is",
+        "an artificial satellite."
+      ],
+      "tr": "O bir yapay uydu."
+    },
+    {
+      "source": "g6u8s8",
+      "id": "g6u8-ext26-g6u8-s8",
+      "blocks": [
+        "Our teacher",
+        "is checking",
+        "the weather forecast."
+      ],
+      "tr": "Öğretmenimiz hava tahminini kontrol ediyor."
+    },
+    {
+      "source": "g6u8s9",
+      "id": "g6u8-ext26-g6u8-s9",
+      "blocks": [
+        "This planet",
+        "is",
+        "larger than Earth."
+      ],
+      "tr": "Bu gezegen Dünya'dan daha büyük."
+    },
+    {
+      "source": "g6u8s10",
+      "id": "g6u8-ext26-g6u8-s10",
+      "blocks": [
+        "The moon",
+        "is",
+        "smaller than our planet."
+      ],
+      "tr": "Ay gezegenimizden daha küçük."
+    },
+    {
+      "source": "g6u9s4",
+      "id": "g6u9-ext26-g6u9-s4",
+      "blocks": [
+        "I",
+        "would like",
+        "two fresh pears."
+      ],
+      "tr": "İki taze armut istiyorum."
+    },
+    {
+      "source": "g6u9s5",
+      "id": "g6u9-ext26-g6u9-s5",
+      "blocks": [
+        "The customer",
+        "needs",
+        "a bigger basket."
+      ],
+      "tr": "Müşterinin daha büyük bir sepete ihtiyacı var."
+    },
+    {
+      "source": "g6u9s6",
+      "id": "g6u9-ext26-g6u9-s6",
+      "blocks": [
+        "This",
+        "is",
+        "our shopping list."
+      ],
+      "tr": "Bu bizim alışveriş listemiz."
+    },
+    {
+      "source": "g6u9s7",
+      "id": "g6u9-ext26-g6u9-s7",
+      "blocks": [
+        "My mother",
+        "buys",
+        "some green peppers."
+      ],
+      "tr": "Annem biraz yeşil biber alıyor."
+    },
+    {
+      "source": "g6u9s8",
+      "id": "g6u9-ext26-g6u9-s8",
+      "blocks": [
+        "Can",
+        "is checking",
+        "the total price."
+      ],
+      "tr": "Can toplam fiyatı kontrol ediyor."
+    },
+    {
+      "source": "g6u9s9",
+      "id": "g6u9-ext26-g6u9-s9",
+      "blocks": [
+        "The shopkeeper",
+        "sells",
+        "a kilo of fresh apples."
+      ],
+      "tr": "Dükkân sahibi bir kilo taze elma satıyor."
+    },
+    {
+      "source": "g6u9s10",
+      "id": "g6u9-ext26-g6u9-s10",
+      "blocks": [
+        "These pears",
+        "are",
+        "cheaper than those grapes."
+      ],
+      "tr": "Bu armutlar şu üzümlerden daha ucuz."
+    },
+    {
+      "source": "g6u10s4",
+      "id": "g6u10-ext26-g6u10-s4",
+      "blocks": [
+        "Elif",
+        "has got",
+        "a blue toothbrush."
+      ],
+      "tr": "Elif'in mavi bir diş fırçası var."
+    },
+    {
+      "source": "g6u10s5",
+      "id": "g6u10-ext26-g6u10-s5",
+      "blocks": [
+        "Our bathroom",
+        "has got",
+        "two clean towels."
+      ],
+      "tr": "Banyomuzda iki temiz havlu var."
+    },
+    {
+      "source": "g6u10s6",
+      "id": "g6u10-ext26-g6u10-s6",
+      "blocks": [
+        "My friend",
+        "needs",
+        "a short break."
+      ],
+      "tr": "Arkadaşımın kısa bir molaya ihtiyacı var."
+    },
+    {
+      "source": "g6u10s7",
+      "id": "g6u10-ext26-g6u10-s7",
+      "blocks": [
+        "This",
+        "is",
+        "my favourite soap."
+      ],
+      "tr": "Bu benim en sevdiğim sabun."
+    },
+    {
+      "source": "g6u10s8",
+      "id": "g6u10-ext26-g6u10-s8",
+      "blocks": [
+        "The nurse",
+        "checks",
+        "my body temperature."
+      ],
+      "tr": "Hemşire vücut sıcaklığımı kontrol ediyor."
+    },
+    {
+      "source": "g6u10s9",
+      "id": "g6u10-ext26-g6u10-s9",
+      "blocks": [
+        "Zeynep",
+        "has got",
+        "a bottle of drinking water."
+      ],
+      "tr": "Zeynep'in bir şişe içme suyu var."
+    },
+    {
+      "source": "g6u10s10",
+      "id": "g6u10-ext26-g6u10-s10",
+      "blocks": [
+        "Our teacher",
+        "explains",
+        "why sleep matters."
+      ],
+      "tr": "Öğretmenimiz uykunun neden önemli olduğunu açıklar."
+    },
+    {
+      "source": "g7u1s4",
+      "id": "g7u1-ext26-g7u1-s4",
+      "blocks": [
+        "My brother",
+        "has got",
+        "short curly hair."
+      ],
+      "tr": "Erkek kardeşimin kısa kıvırcık saçları var."
+    },
+    {
+      "source": "g7u1s5",
+      "id": "g7u1-ext26-g7u1-s5",
+      "blocks": [
+        "This",
+        "is",
+        "my favourite portrait."
+      ],
+      "tr": "Bu benim en sevdiğim portre."
+    },
+    {
+      "source": "g7u1s6",
+      "id": "g7u1-ext26-g7u1-s6",
+      "blocks": [
+        "Our classmate",
+        "is",
+        "a reliable friend."
+      ],
+      "tr": "Sınıf arkadaşımız güvenilir bir arkadaş."
+    },
+    {
+      "source": "g7u1s7",
+      "id": "g7u1-ext26-g7u1-s7",
+      "blocks": [
+        "Zeynep",
+        "wears",
+        "round black glasses."
+      ],
+      "tr": "Zeynep yuvarlak siyah gözlük takıyor."
+    },
+    {
+      "source": "g7u1s8",
+      "id": "g7u1-ext26-g7u1-s8",
+      "blocks": [
+        "Can",
+        "has got",
+        "a cheerful smile."
+      ],
+      "tr": "Can'ın neşeli bir gülümsemesi var."
+    },
+    {
+      "source": "g7u1s9",
+      "id": "g7u1-ext26-g7u1-s9",
+      "blocks": [
+        "My cousin",
+        "is",
+        "taller than my brother."
+      ],
+      "tr": "Kuzenim erkek kardeşimden daha uzun."
+    },
+    {
+      "source": "g7u1s10",
+      "id": "g7u1-ext26-g7u1-s10",
+      "blocks": [
+        "This portrait",
+        "is",
+        "smaller than that photo."
+      ],
+      "tr": "Bu portre şu fotoğraftan daha küçük."
+    },
+    {
+      "source": "g7u2s4",
+      "id": "g7u2-ext26-g7u2-s4",
+      "blocks": [
+        "Elif",
+        "has got",
+        "new tennis trainers."
+      ],
+      "tr": "Elif'in yeni tenis ayakkabıları var."
+    },
+    {
+      "source": "g7u2s5",
+      "id": "g7u2-ext26-g7u2-s5",
+      "blocks": [
+        "This",
+        "is",
+        "our basketball team."
+      ],
+      "tr": "Bu bizim basketbol takımımız."
+    },
+    {
+      "source": "g7u2s6",
+      "id": "g7u2-ext26-g7u2-s6",
+      "blocks": [
+        "Can",
+        "wears",
+        "two protective knee pads."
+      ],
+      "tr": "Can iki koruyucu dizlik takar."
+    },
+    {
+      "source": "g7u2s7",
+      "id": "g7u2-ext26-g7u2-s7",
+      "blocks": [
+        "Our club",
+        "organises",
+        "a swimming competition."
+      ],
+      "tr": "Kulübümüz bir yüzme yarışması düzenler."
+    },
+    {
+      "source": "g7u2s8",
+      "id": "g7u2-ext26-g7u2-s8",
+      "blocks": [
+        "The goalkeeper",
+        "catches",
+        "the white ball."
+      ],
+      "tr": "Kaleci beyaz topu yakalar."
+    },
+    {
+      "source": "g7u2s9",
+      "id": "g7u2-ext26-g7u2-s9",
+      "blocks": [
+        "The coach",
+        "explains",
+        "the rules of basketball."
+      ],
+      "tr": "Antrenör basketbolun kurallarını açıklar."
+    },
+    {
+      "source": "g7u2s10",
+      "id": "g7u2-ext26-g7u2-s10",
+      "blocks": [
+        "My sister",
+        "has got",
+        "a pair of swimming goggles."
+      ],
+      "tr": "Kız kardeşimin bir yüzücü gözlüğü var."
+    },
+    {
+      "source": "g7u3s4",
+      "id": "g7u3-ext26-g7u3-s4",
+      "blocks": [
+        "Elif",
+        "made",
+        "a colourful timeline."
+      ],
+      "tr": "Elif renkli bir zaman çizelgesi hazırladı."
+    },
+    {
+      "source": "g7u3s5",
+      "id": "g7u3-ext26-g7u3-s5",
+      "blocks": [
+        "The artist",
+        "painted",
+        "her first portrait."
+      ],
+      "tr": "Sanatçı ilk portresini yaptı."
+    },
+    {
+      "source": "g7u3s6",
+      "id": "g7u3-ext26-g7u3-s6",
+      "blocks": [
+        "That",
+        "was",
+        "his greatest achievement."
+      ],
+      "tr": "O, onun en büyük başarısıydı."
+    },
+    {
+      "source": "g7u3s7",
+      "id": "g7u3-ext26-g7u3-s7",
+      "blocks": [
+        "The engineer",
+        "invented",
+        "a useful tool."
+      ],
+      "tr": "Mühendis yararlı bir alet icat etti."
+    },
+    {
+      "source": "g7u3s8",
+      "id": "g7u3-ext26-g7u3-s8",
+      "blocks": [
+        "Our class",
+        "studied",
+        "a famous inventor."
+      ],
+      "tr": "Sınıfımız ünlü bir mucidi inceledi."
+    },
+    {
+      "source": "g7u3s9",
+      "id": "g7u3-ext26-g7u3-s9",
+      "blocks": [
+        "The writer",
+        "described",
+        "the story of her childhood."
+      ],
+      "tr": "Yazar çocukluğunun hikâyesini anlattı."
+    },
+    {
+      "source": "g7u3s10",
+      "id": "g7u3-ext26-g7u3-s10",
+      "blocks": [
+        "Can",
+        "found",
+        "a photo of the scientist."
+      ],
+      "tr": "Can bilim insanının bir fotoğrafını buldu."
+    },
+    {
+      "source": "g7u4s4",
+      "id": "g7u4-ext26-g7u4-s4",
+      "blocks": [
+        "Our class",
+        "watched",
+        "a wildlife documentary."
+      ],
+      "tr": "Sınıfımız bir yaban hayatı belgeseli izledi."
+    },
+    {
+      "source": "g7u4s5",
+      "id": "g7u4-ext26-g7u4-s5",
+      "blocks": [
+        "The eagle",
+        "has got",
+        "a sharp beak."
+      ],
+      "tr": "Kartalın keskin bir gagası var."
+    },
+    {
+      "source": "g7u4s6",
+      "id": "g7u4-ext26-g7u4-s6",
+      "blocks": [
+        "This elephant",
+        "needs",
+        "a larger habitat."
+      ],
+      "tr": "Bu filin daha büyük bir yaşam alanına ihtiyacı var."
+    },
+    {
+      "source": "g7u4s7",
+      "id": "g7u4-ext26-g7u4-s7",
+      "blocks": [
+        "We",
+        "should protect",
+        "these rare species."
+      ],
+      "tr": "Bu nadir türleri korumalıyız."
+    },
+    {
+      "source": "g7u4s8",
+      "id": "g7u4-ext26-g7u4-s8",
+      "blocks": [
+        "The forest",
+        "provides",
+        "a safe shelter."
+      ],
+      "tr": "Orman güvenli bir barınak sağlar."
+    },
+    {
+      "source": "g7u4s9",
+      "id": "g7u4-ext26-g7u4-s9",
+      "blocks": [
+        "Our teacher",
+        "explained",
+        "animal protection."
+      ],
+      "tr": "Öğretmenimiz hayvanları korumayı açıkladı."
+    },
+    {
+      "source": "g7u4s10",
+      "id": "g7u4-ext26-g7u4-s10",
+      "blocks": [
+        "A giraffe",
+        "is",
+        "taller than an elephant."
+      ],
+      "tr": "Zürafa filden daha uzun boyludur."
+    },
+    {
+      "source": "g7u5s4",
+      "id": "g7u5-ext26-g7u5-s4",
+      "blocks": [
+        "Elif",
+        "likes",
+        "this funny cartoon."
+      ],
+      "tr": "Elif bu komik çizgi filmi seviyor."
+    },
+    {
+      "source": "g7u5s5",
+      "id": "g7u5-ext26-g7u5-s5",
+      "blocks": [
+        "Our teacher",
+        "recommends",
+        "a science programme."
+      ],
+      "tr": "Öğretmenimiz bir bilim programı öneriyor."
+    },
+    {
+      "source": "g7u5s6",
+      "id": "g7u5-ext26-g7u5-s6",
+      "blocks": [
+        "Can",
+        "is watching",
+        "his favourite series."
+      ],
+      "tr": "Can en sevdiği diziyi izliyor."
+    },
+    {
+      "source": "g7u5s7",
+      "id": "g7u5-ext26-g7u5-s7",
+      "blocks": [
+        "The presenter",
+        "asks",
+        "an interesting question."
+      ],
+      "tr": "Sunucu ilginç bir soru soruyor."
+    },
+    {
+      "source": "g7u5s8",
+      "id": "g7u5-ext26-g7u5-s8",
+      "blocks": [
+        "This",
+        "is",
+        "the final episode."
+      ],
+      "tr": "Bu son bölüm."
+    },
+    {
+      "source": "g7u5s9",
+      "id": "g7u5-ext26-g7u5-s9",
+      "blocks": [
+        "The documentary",
+        "shows",
+        "the life of a scientist."
+      ],
+      "tr": "Belgesel bir bilim insanının hayatını gösteriyor."
+    },
+    {
+      "source": "g7u5s10",
+      "id": "g7u5-ext26-g7u5-s10",
+      "blocks": [
+        "This comedy",
+        "is",
+        "funnier than that series."
+      ],
+      "tr": "Bu komedi o diziden daha komik."
+    },
+    {
+      "source": "g7u6s4",
+      "id": "g7u6-ext26-g7u6-s4",
+      "blocks": [
+        "How about",
+        "making",
+        "a fruit salad?"
+      ],
+      "tr": "Meyve salatası yapmaya ne dersiniz?"
+    },
+    {
+      "source": "g7u6s5",
+      "id": "g7u6-ext26-g7u6-s5",
+      "blocks": [
+        "Our class",
+        "is planning",
+        "a small celebration."
+      ],
+      "tr": "Sınıfımız küçük bir kutlama planlıyor."
+    },
+    {
+      "source": "g7u6s6",
+      "id": "g7u6-ext26-g7u6-s6",
+      "blocks": [
+        "Elif",
+        "brings",
+        "some colourful balloons."
+      ],
+      "tr": "Elif birkaç renkli balon getiriyor."
+    },
+    {
+      "source": "g7u6s7",
+      "id": "g7u6-ext26-g7u6-s7",
+      "blocks": [
+        "Can",
+        "has got",
+        "enough paper cups."
+      ],
+      "tr": "Can'ın yeterince kâğıt bardağı var."
+    },
+    {
+      "source": "g7u6s8",
+      "id": "g7u6-ext26-g7u6-s8",
+      "blocks": [
+        "We",
+        "should buy",
+        "a big cake."
+      ],
+      "tr": "Büyük bir pasta almalıyız."
+    },
+    {
+      "source": "g7u6s9",
+      "id": "g7u6-ext26-g7u6-s9",
+      "blocks": [
+        "My cousin",
+        "has got",
+        "a list of party games."
+      ],
+      "tr": "Kuzenimin parti oyunlarının bir listesi var."
+    },
+    {
+      "source": "g7u6s10",
+      "id": "g7u6-ext26-g7u6-s10",
+      "blocks": [
+        "Zeynep",
+        "is cutting",
+        "a slice of birthday cake."
+      ],
+      "tr": "Zeynep bir dilim doğum günü pastası kesiyor."
+    },
+    {
+      "source": "g7u7s4",
+      "id": "g7u7-ext26-g7u7-s4",
+      "blocks": [
+        "Elif",
+        "will design",
+        "a small robot."
+      ],
+      "tr": "Elif küçük bir robot tasarlayacak."
+    },
+    {
+      "source": "g7u7s5",
+      "id": "g7u7-ext26-g7u7-s5",
+      "blocks": [
+        "This",
+        "is",
+        "my future goal."
+      ],
+      "tr": "Bu benim gelecekteki hedefim."
+    },
+    {
+      "source": "g7u7s6",
+      "id": "g7u7-ext26-g7u7-s6",
+      "blocks": [
+        "Can",
+        "is going to build",
+        "a model rocket."
+      ],
+      "tr": "Can maket bir roket yapacak."
+    },
+    {
+      "source": "g7u7s7",
+      "id": "g7u7-ext26-g7u7-s7",
+      "blocks": [
+        "Our community",
+        "will need",
+        "more clean energy."
+      ],
+      "tr": "Topluluğumuz daha fazla temiz enerjiye ihtiyaç duyacak."
+    },
+    {
+      "source": "g7u7s8",
+      "id": "g7u7-ext26-g7u7-s8",
+      "blocks": [
+        "My brother",
+        "will become",
+        "a creative designer."
+      ],
+      "tr": "Erkek kardeşim yaratıcı bir tasarımcı olacak."
+    },
+    {
+      "source": "g7u7s9",
+      "id": "g7u7-ext26-g7u7-s9",
+      "blocks": [
+        "This inventor",
+        "will change",
+        "the design of our robot."
+      ],
+      "tr": "Bu mucit robotumuzun tasarımını değiştirecek."
+    },
+    {
+      "source": "g7u7s10",
+      "id": "g7u7-ext26-g7u7-s10",
+      "blocks": [
+        "My friend",
+        "will build",
+        "a model of a future city."
+      ],
+      "tr": "Arkadaşım geleceğin bir şehrinin maketini yapacak."
+    },
+    {
+      "source": "g7u8s4",
+      "id": "g7u8-ext26-g7u8-s4",
+      "blocks": [
+        "Elif",
+        "visits the bakery",
+        "to buy bread."
+      ],
+      "tr": "Elif ekmek almak için fırına gider."
+    },
+    {
+      "source": "g7u8s5",
+      "id": "g7u8-ext26-g7u8-s5",
+      "blocks": [
+        "Can",
+        "uses the library",
+        "to borrow books."
+      ],
+      "tr": "Can kitap ödünç almak için kütüphaneyi kullanır."
+    },
+    {
+      "source": "g7u8s6",
+      "id": "g7u8-ext26-g7u8-s6",
+      "blocks": [
+        "My sister",
+        "visits the bank",
+        "to open an account."
+      ],
+      "tr": "Kız kardeşim hesap açmak için bankaya gider."
+    },
+    {
+      "source": "g7u8s7",
+      "id": "g7u8-ext26-g7u8-s7",
+      "blocks": [
+        "This",
+        "is",
+        "the hospital entrance."
+      ],
+      "tr": "Bu hastanenin girişi."
+    },
+    {
+      "source": "g7u8s8",
+      "id": "g7u8-ext26-g7u8-s8",
+      "blocks": [
+        "Our teacher",
+        "needs",
+        "a museum ticket."
+      ],
+      "tr": "Öğretmenimizin bir müze biletine ihtiyacı var."
+    },
+    {
+      "source": "g7u8s9",
+      "id": "g7u8-ext26-g7u8-s9",
+      "blocks": [
+        "The visitors",
+        "want to see",
+        "a map of the town."
+      ],
+      "tr": "Ziyaretçiler kasabanın bir haritasını görmek istiyor."
+    },
+    {
+      "source": "g7u8s10",
+      "id": "g7u8-ext26-g7u8-s10",
+      "blocks": [
+        "The librarian",
+        "explains",
+        "the purpose of this service."
+      ],
+      "tr": "Kütüphaneci bu hizmetin amacını açıklıyor."
+    },
+    {
+      "source": "g7u9s4",
+      "id": "g7u9-ext26-g7u9-s4",
+      "blocks": [
+        "Elif",
+        "uses",
+        "a reusable bottle."
+      ],
+      "tr": "Elif tekrar kullanılabilir bir şişe kullanıyor."
+    },
+    {
+      "source": "g7u9s5",
+      "id": "g7u9-ext26-g7u9-s5",
+      "blocks": [
+        "Our school",
+        "needs",
+        "more recycling bins."
+      ],
+      "tr": "Okulumuzun daha fazla geri dönüşüm kutusuna ihtiyacı var."
+    },
+    {
+      "source": "g7u9s6",
+      "id": "g7u9-ext26-g7u9-s6",
+      "blocks": [
+        "Can",
+        "is repairing",
+        "a broken chair."
+      ],
+      "tr": "Can kırık bir sandalyeyi onarıyor."
+    },
+    {
+      "source": "g7u9s7",
+      "id": "g7u9-ext26-g7u9-s7",
+      "blocks": [
+        "We",
+        "must protect",
+        "our natural resources."
+      ],
+      "tr": "Doğal kaynaklarımızı korumalıyız."
+    },
+    {
+      "source": "g7u9s8",
+      "id": "g7u9-ext26-g7u9-s8",
+      "blocks": [
+        "This",
+        "is",
+        "a local campaign."
+      ],
+      "tr": "Bu yerel bir kampanya."
+    },
+    {
+      "source": "g7u9s9",
+      "id": "g7u9-ext26-g7u9-s9",
+      "blocks": [
+        "Our teacher",
+        "describes",
+        "the effects of air pollution."
+      ],
+      "tr": "Öğretmenimiz hava kirliliğinin etkilerini anlatıyor."
+    },
+    {
+      "source": "g7u9s10",
+      "id": "g7u9-ext26-g7u9-s10",
+      "blocks": [
+        "The volunteers",
+        "explain",
+        "the benefits of reusable bags."
+      ],
+      "tr": "Gönüllüler tekrar kullanılabilir çantaların faydalarını açıklıyor."
+    },
+    {
+      "source": "g7u10s4",
+      "id": "g7u10-ext26-g7u10-s4",
+      "blocks": [
+        "This",
+        "is",
+        "Earth's natural satellite."
+      ],
+      "tr": "Bu Dünya'nın doğal uydusu."
+    },
+    {
+      "source": "g7u10s5",
+      "id": "g7u10-ext26-g7u10-s5",
+      "blocks": [
+        "The astronaut",
+        "observes",
+        "our blue planet."
+      ],
+      "tr": "Astronot mavi gezegenimizi gözlemler."
+    },
+    {
+      "source": "g7u10s6",
+      "id": "g7u10-ext26-g7u10-s6",
+      "blocks": [
+        "Our teacher",
+        "uses",
+        "a powerful telescope."
+      ],
+      "tr": "Öğretmenimiz güçlü bir teleskop kullanır."
+    },
+    {
+      "source": "g7u10s7",
+      "id": "g7u10-ext26-g7u10-s7",
+      "blocks": [
+        "These",
+        "are",
+        "Saturn's bright rings."
+      ],
+      "tr": "Bunlar Satürn'ün parlak halkaları."
+    },
+    {
+      "source": "g7u10s8",
+      "id": "g7u10-ext26-g7u10-s8",
+      "blocks": [
+        "Can",
+        "made",
+        "a planet model."
+      ],
+      "tr": "Can bir gezegen maketi yaptı."
+    },
+    {
+      "source": "g7u10s9",
+      "id": "g7u10-ext26-g7u10-s9",
+      "blocks": [
+        "Earth",
+        "is",
+        "larger than Mars."
+      ],
+      "tr": "Dünya Mars'tan daha büyüktür."
+    },
+    {
+      "source": "g7u10s10",
+      "id": "g7u10-ext26-g7u10-s10",
+      "blocks": [
+        "Saturn",
+        "is",
+        "larger than Earth."
+      ],
+      "tr": "Satürn Dünya'dan daha büyüktür."
+    },
+    {
+      "source": "g7u11s4",
+      "id": "g7u5-ext26-g7u11-s4",
+      "blocks": [
+        "Elif",
+        "uses",
+        "a small laptop."
+      ],
+      "tr": "Elif küçük bir dizüstü bilgisayar kullanıyor."
+    },
+    {
+      "source": "g7u11s5",
+      "id": "g7u5-ext26-g7u11-s5",
+      "blocks": [
+        "This",
+        "is",
+        "my new keyboard."
+      ],
+      "tr": "Bu benim yeni klavyem."
+    },
+    {
+      "source": "g7u11s6",
+      "id": "g7u5-ext26-g7u11-s6",
+      "blocks": [
+        "Can",
+        "saves",
+        "the finished document."
+      ],
+      "tr": "Can tamamlanan belgeyi kaydediyor."
+    },
+    {
+      "source": "g7u11s7",
+      "id": "g7u5-ext26-g7u11-s7",
+      "blocks": [
+        "We",
+        "should take",
+        "regular screen breaks."
+      ],
+      "tr": "Ekran kullanımına düzenli aralar vermeliyiz."
+    },
+    {
+      "source": "g7u11s8",
+      "id": "g7u5-ext26-g7u11-s8",
+      "blocks": [
+        "The teacher",
+        "checks",
+        "our digital work."
+      ],
+      "tr": "Öğretmen dijital çalışmalarımızı kontrol ediyor."
+    },
+    {
+      "source": "g7u11s9",
+      "id": "g7u5-ext26-g7u11-s9",
+      "blocks": [
+        "My tablet",
+        "has got",
+        "a photo of our classroom."
+      ],
+      "tr": "Tabletimde sınıfımızın bir fotoğrafı var."
+    },
+    {
+      "source": "g7u11s10",
+      "id": "g7u5-ext26-g7u11-s10",
+      "blocks": [
+        "This laptop",
+        "is",
+        "lighter than that computer."
+      ],
+      "tr": "Bu dizüstü bilgisayar şu bilgisayardan daha hafif."
+    },
+    {
+      "source": "g7u12s4",
+      "id": "g7u8-ext26-g7u12-s4",
+      "blocks": [
+        "The cashier",
+        "checks",
+        "the total amount."
+      ],
+      "tr": "Kasiyer toplam tutarı kontrol eder."
+    },
+    {
+      "source": "g7u12s5",
+      "id": "g7u8-ext26-g7u12-s5",
+      "blocks": [
+        "My mother",
+        "needs",
+        "a bigger trolley."
+      ],
+      "tr": "Annemin daha büyük bir alışveriş arabasına ihtiyacı var."
+    },
+    {
+      "source": "g7u12s6",
+      "id": "g7u8-ext26-g7u12-s6",
+      "blocks": [
+        "This",
+        "is",
+        "my shopping receipt."
+      ],
+      "tr": "Bu benim alışveriş fişim."
+    },
+    {
+      "source": "g7u12s7",
+      "id": "g7u8-ext26-g7u12-s7",
+      "blocks": [
+        "Can",
+        "chooses",
+        "a cheaper notebook."
+      ],
+      "tr": "Can daha ucuz bir defter seçer."
+    },
+    {
+      "source": "g7u12s8",
+      "id": "g7u8-ext26-g7u12-s8",
+      "blocks": [
+        "Elif",
+        "wants",
+        "a smaller size."
+      ],
+      "tr": "Elif daha küçük bir beden istiyor."
+    },
+    {
+      "source": "g7u12s9",
+      "id": "g7u8-ext26-g7u12-s9",
+      "blocks": [
+        "This bag",
+        "is",
+        "cheaper than that basket."
+      ],
+      "tr": "Bu çanta şu sepetten daha ucuz."
+    },
+    {
+      "source": "g7u12s10",
+      "id": "g7u8-ext26-g7u12-s10",
+      "blocks": [
+        "The assistant",
+        "explains",
+        "the price of this jacket."
+      ],
+      "tr": "Tezgâhtar bu ceketin fiyatını açıklıyor."
+    },
+    {
+      "source": "g8u1s4",
+      "id": "g8u1-ext26-g8u1-s4",
+      "blocks": [
+        "Shall we",
+        "invite",
+        "our new classmates?"
+      ],
+      "tr": "Sınıf arkadaşlarımızı davet edelim mi?"
+    },
+    {
+      "source": "g8u1s5",
+      "id": "g8u1-ext26-g8u1-s5",
+      "blocks": [
+        "How about",
+        "making",
+        "a colourful poster?"
+      ],
+      "tr": "Renkli bir poster yapmaya ne dersiniz?"
+    },
+    {
+      "source": "g8u1s6",
+      "id": "g8u1-ext26-g8u1-s6",
+      "blocks": [
+        "Elif",
+        "has got",
+        "another family plan."
+      ],
+      "tr": "Elif'in ailesiyle ilgili başka bir planı var."
+    },
+    {
+      "source": "g8u1s7",
+      "id": "g8u1-ext26-g8u1-s7",
+      "blocks": [
+        "This",
+        "is",
+        "a kind invitation."
+      ],
+      "tr": "Bu nazik bir davet."
+    },
+    {
+      "source": "g8u1s8",
+      "id": "g8u1-ext26-g8u1-s8",
+      "blocks": [
+        "Can",
+        "is",
+        "a reliable buddy."
+      ],
+      "tr": "Can güvenilir bir arkadaş."
+    },
+    {
+      "source": "g8u1s9",
+      "id": "g8u1-ext26-g8u1-s9",
+      "blocks": [
+        "My friend",
+        "is checking",
+        "the date of our picnic."
+      ],
+      "tr": "Arkadaşım pikniğimizin tarihini kontrol ediyor."
+    },
+    {
+      "source": "g8u1s10",
+      "id": "g8u1-ext26-g8u1-s10",
+      "blocks": [
+        "Our class",
+        "made",
+        "a list of invited friends."
+      ],
+      "tr": "Sınıfımız davet edilen arkadaşların bir listesini hazırladı."
+    },
+    {
+      "source": "g8u2s4",
+      "id": "g8u2-ext26-g8u2-s4",
+      "blocks": [
+        "Can",
+        "enjoys",
+        "relaxing piano music."
+      ],
+      "tr": "Can rahatlatıcı piyano müziğinden hoşlanır."
+    },
+    {
+      "source": "g8u2s5",
+      "id": "g8u2-ext26-g8u2-s5",
+      "blocks": [
+        "My sister",
+        "reads",
+        "a weekly magazine."
+      ],
+      "tr": "Kız kardeşim haftalık bir dergi okur."
+    },
+    {
+      "source": "g8u2s6",
+      "id": "g8u2-ext26-g8u2-s6",
+      "blocks": [
+        "This",
+        "is",
+        "my favourite playlist."
+      ],
+      "tr": "Bu benim en sevdiğim çalma listesi."
+    },
+    {
+      "source": "g8u2s7",
+      "id": "g8u2-ext26-g8u2-s7",
+      "blocks": [
+        "Zeynep",
+        "likes",
+        "this adventure novel."
+      ],
+      "tr": "Zeynep bu macera romanını seviyor."
+    },
+    {
+      "source": "g8u2s8",
+      "id": "g8u2-ext26-g8u2-s8",
+      "blocks": [
+        "Our classmate",
+        "plays",
+        "a musical instrument."
+      ],
+      "tr": "Sınıf arkadaşımız bir müzik aleti çalar."
+    },
+    {
+      "source": "g8u2s9",
+      "id": "g8u2-ext26-g8u2-s9",
+      "blocks": [
+        "I",
+        "enjoy",
+        "the sound of piano music."
+      ],
+      "tr": "Piyano müziğinin sesinden hoşlanırım."
+    },
+    {
+      "source": "g8u2s10",
+      "id": "g8u2-ext26-g8u2-s10",
+      "blocks": [
+        "My friend",
+        "prefers",
+        "the rhythm of this song."
+      ],
+      "tr": "Arkadaşım bu şarkının ritmini tercih eder."
+    },
+    {
+      "source": "g8u3s1",
+      "id": "g8u3-ext26-g8u3-s1",
+      "blocks": [
+        "We",
+        "peel",
+        "the potatoes."
+      ],
+      "tr": "Patatesleri soyarız."
+    },
+    {
+      "source": "g8u3s4",
+      "id": "g8u3-ext26-g8u3-s4",
+      "blocks": [
+        "Add",
+        "some onions",
+        "to the pan."
+      ],
+      "tr": "Tavaya biraz soğan ekleyin."
+    },
+    {
+      "source": "g8u3s5",
+      "id": "g8u3-ext26-g8u3-s5",
+      "blocks": [
+        "Elif",
+        "mixes",
+        "the dry ingredients."
+      ],
+      "tr": "Elif kuru malzemeleri karıştırır."
+    },
+    {
+      "source": "g8u3s6",
+      "id": "g8u3-ext26-g8u3-s6",
+      "blocks": [
+        "Can",
+        "uses",
+        "a sharp knife."
+      ],
+      "tr": "Can keskin bir bıçak kullanır."
+    },
+    {
+      "source": "g8u3s7",
+      "id": "g8u3-ext26-g8u3-s7",
+      "blocks": [
+        "We",
+        "serve",
+        "vegetable soup."
+      ],
+      "tr": "Sebze çorbası servis ederiz."
+    },
+    {
+      "source": "g8u3s8",
+      "id": "g8u3-ext26-g8u3-s8",
+      "blocks": [
+        "This",
+        "is",
+        "a wooden spoon."
+      ],
+      "tr": "Bu tahta bir kaşık."
+    },
+    {
+      "source": "g8u3s9",
+      "id": "g8u3-ext26-g8u3-s9",
+      "blocks": [
+        "The recipe",
+        "needs",
+        "a spoonful of olive oil."
+      ],
+      "tr": "Tarif bir kaşık zeytinyağı gerektiriyor."
+    },
+    {
+      "source": "g8u3s10",
+      "id": "g8u3-ext26-g8u3-s10",
+      "blocks": [
+        "My mother",
+        "adds",
+        "a pinch of black pepper."
+      ],
+      "tr": "Annem bir tutam karabiber ekliyor."
+    },
+    {
+      "source": "g8u4s3",
+      "id": "g8u4-ext26-g8u4-s3",
+      "blocks": [
+        "Please",
+        "confirm",
+        "this number."
+      ],
+      "tr": "Lütfen bu numarayı doğrulayın."
+    },
+    {
+      "source": "g8u4s4",
+      "id": "g8u4-ext26-g8u4-s4",
+      "blocks": [
+        "Could you",
+        "repeat",
+        "the appointment time?"
+      ],
+      "tr": "Randevu saatini tekrar eder misiniz?"
+    },
+    {
+      "source": "g8u4s5",
+      "id": "g8u4-ext26-g8u4-s5",
+      "blocks": [
+        "May I",
+        "speak to",
+        "the office manager?"
+      ],
+      "tr": "Ofis müdürüyle konuşabilir miyim?"
+    },
+    {
+      "source": "g8u4s6",
+      "id": "g8u4-ext26-g8u4-s6",
+      "blocks": [
+        "Can",
+        "writes",
+        "a short note."
+      ],
+      "tr": "Can kısa bir not yazar."
+    },
+    {
+      "source": "g8u4s7",
+      "id": "g8u4-ext26-g8u4-s7",
+      "blocks": [
+        "This",
+        "is",
+        "the wrong number."
+      ],
+      "tr": "Bu yanlış numara."
+    },
+    {
+      "source": "g8u4s8",
+      "id": "g8u4-ext26-g8u4-s8",
+      "blocks": [
+        "Elif",
+        "needs",
+        "another contact number."
+      ],
+      "tr": "Elif'in başka bir iletişim numarasına ihtiyacı var."
+    },
+    {
+      "source": "g8u4s9",
+      "id": "g8u4-ext26-g8u4-s9",
+      "blocks": [
+        "The receptionist",
+        "checks",
+        "the spelling of your name."
+      ],
+      "tr": "Resepsiyon görevlisi adınızın yazılışını kontrol eder."
+    },
+    {
+      "source": "g8u4s10",
+      "id": "g8u4-ext26-g8u4-s10",
+      "blocks": [
+        "Our teacher",
+        "confirms",
+        "the time of the phone call."
+      ],
+      "tr": "Öğretmenimiz telefon görüşmesinin saatini doğrular."
+    },
+    {
+      "source": "g8u5s4",
+      "id": "g8u5-ext26-g8u5-s4",
+      "blocks": [
+        "Elif",
+        "checks",
+        "a reliable source."
+      ],
+      "tr": "Elif güvenilir bir kaynağı kontrol eder."
+    },
+    {
+      "source": "g8u5s5",
+      "id": "g8u5-ext26-g8u5-s5",
+      "blocks": [
+        "Our teacher",
+        "shares",
+        "a useful link."
+      ],
+      "tr": "Öğretmenimiz yararlı bir bağlantı paylaşır."
+    },
+    {
+      "source": "g8u5s6",
+      "id": "g8u5-ext26-g8u5-s6",
+      "blocks": [
+        "Can",
+        "creates",
+        "a secure password."
+      ],
+      "tr": "Can güvenli bir parola oluşturur."
+    },
+    {
+      "source": "g8u5s7",
+      "id": "g8u5-ext26-g8u5-s7",
+      "blocks": [
+        "This",
+        "is",
+        "my private account."
+      ],
+      "tr": "Bu benim özel hesabım."
+    },
+    {
+      "source": "g8u5s8",
+      "id": "g8u5-ext26-g8u5-s8",
+      "blocks": [
+        "We",
+        "should respect",
+        "other people's privacy."
+      ],
+      "tr": "Başkalarının gizliliğine saygı duymalıyız."
+    },
+    {
+      "source": "g8u5s9",
+      "id": "g8u5-ext26-g8u5-s9",
+      "blocks": [
+        "Our class",
+        "downloads",
+        "a picture of the solar system."
+      ],
+      "tr": "Sınıfımız Güneş sisteminin bir resmini indirir."
+    },
+    {
+      "source": "g8u5s10",
+      "id": "g8u5-ext26-g8u5-s10",
+      "blocks": [
+        "The teacher",
+        "explains",
+        "the purpose of this website."
+      ],
+      "tr": "Öğretmen bu internet sitesinin amacını açıklar."
+    },
+    {
+      "source": "g8u6s4",
+      "id": "g8u6-ext26-g8u6-s4",
+      "blocks": [
+        "Elif",
+        "wears",
+        "an orange helmet."
+      ],
+      "tr": "Elif turuncu bir kask takar."
+    },
+    {
+      "source": "g8u6s5",
+      "id": "g8u6-ext26-g8u6-s5",
+      "blocks": [
+        "This",
+        "is",
+        "a challenging route."
+      ],
+      "tr": "Bu zorlayıcı bir rota."
+    },
+    {
+      "source": "g8u6s6",
+      "id": "g8u6-ext26-g8u6-s6",
+      "blocks": [
+        "Can",
+        "needs",
+        "a strong rope."
+      ],
+      "tr": "Can'ın sağlam bir ipe ihtiyacı var."
+    },
+    {
+      "source": "g8u6s7",
+      "id": "g8u6-ext26-g8u6-s7",
+      "blocks": [
+        "The guide",
+        "carries",
+        "a waterproof map."
+      ],
+      "tr": "Rehber su geçirmez bir harita taşır."
+    },
+    {
+      "source": "g8u6s8",
+      "id": "g8u6-ext26-g8u6-s8",
+      "blocks": [
+        "Our class",
+        "prefers",
+        "safe outdoor activities."
+      ],
+      "tr": "Sınıfımız güvenli açık hava etkinliklerini tercih eder."
+    },
+    {
+      "source": "g8u6s9",
+      "id": "g8u6-ext26-g8u6-s9",
+      "blocks": [
+        "My sister",
+        "likes",
+        "the challenge of trekking."
+      ],
+      "tr": "Kız kardeşim doğa yürüyüşünün zorluğunu sever."
+    },
+    {
+      "source": "g8u6s10",
+      "id": "g8u6-ext26-g8u6-s10",
+      "blocks": [
+        "This route",
+        "is",
+        "shorter than that trail."
+      ],
+      "tr": "Bu rota şu patikadan daha kısa."
+    },
+    {
+      "source": "g8u7s4",
+      "id": "g8u7-ext26-g8u7-s4",
+      "blocks": [
+        "Elif",
+        "bought",
+        "a small souvenir."
+      ],
+      "tr": "Elif küçük bir hatıra eşyası aldı."
+    },
+    {
+      "source": "g8u7s5",
+      "id": "g8u7-ext26-g8u7-s5",
+      "blocks": [
+        "Our family",
+        "explored",
+        "the historic square."
+      ],
+      "tr": "Ailemiz tarihî meydanı gezdi."
+    },
+    {
+      "source": "g8u7s6",
+      "id": "g8u7-ext26-g8u7-s6",
+      "blocks": [
+        "Can",
+        "booked",
+        "a quiet guesthouse."
+      ],
+      "tr": "Can sakin bir pansiyonda yer ayırttı."
+    },
+    {
+      "source": "g8u7s7",
+      "id": "g8u7-ext26-g8u7-s7",
+      "blocks": [
+        "This",
+        "is",
+        "our hotel reservation."
+      ],
+      "tr": "Bu bizim otel rezervasyonumuz."
+    },
+    {
+      "source": "g8u7s8",
+      "id": "g8u7-ext26-g8u7-s8",
+      "blocks": [
+        "The tourists",
+        "visited",
+        "an ancient castle."
+      ],
+      "tr": "Turistler eski bir kaleyi ziyaret etti."
+    },
+    {
+      "source": "g8u7s9",
+      "id": "g8u7-ext26-g8u7-s9",
+      "blocks": [
+        "This beach",
+        "is",
+        "quieter than that coast."
+      ],
+      "tr": "Bu plaj şu kıyıdan daha sakin."
+    },
+    {
+      "source": "g8u7s10",
+      "id": "g8u7-ext26-g8u7-s10",
+      "blocks": [
+        "My sister",
+        "bought",
+        "a postcard of Şanlıurfa."
+      ],
+      "tr": "Kız kardeşim bir Şanlıurfa kartpostalı aldı."
+    },
+    {
+      "source": "g8u8s4",
+      "id": "g8u8-ext26-g8u8-s4",
+      "blocks": [
+        "Elif",
+        "is responsible for",
+        "the kitchen floor."
+      ],
+      "tr": "Elif mutfağın zemininden sorumlu."
+    },
+    {
+      "source": "g8u8s5",
+      "id": "g8u8-ext26-g8u8-s5",
+      "blocks": [
+        "Can",
+        "has to tidy",
+        "his own room."
+      ],
+      "tr": "Can kendi odasını toplamak zorunda."
+    },
+    {
+      "source": "g8u8s6",
+      "id": "g8u8-ext26-g8u8-s6",
+      "blocks": [
+        "My father",
+        "uses",
+        "a wet cloth."
+      ],
+      "tr": "Babam ıslak bir bez kullanır."
+    },
+    {
+      "source": "g8u8s7",
+      "id": "g8u8-ext26-g8u8-s7",
+      "blocks": [
+        "This",
+        "is",
+        "our weekly schedule."
+      ],
+      "tr": "Bu bizim haftalık programımız."
+    },
+    {
+      "source": "g8u8s8",
+      "id": "g8u8-ext26-g8u8-s8",
+      "blocks": [
+        "My brother",
+        "empties",
+        "the kitchen bin."
+      ],
+      "tr": "Erkek kardeşim mutfaktaki çöp kutusunu boşaltır."
+    },
+    {
+      "source": "g8u8s9",
+      "id": "g8u8-ext26-g8u8-s9",
+      "blocks": [
+        "Our family",
+        "made",
+        "a list of household chores."
+      ],
+      "tr": "Ailemiz ev işlerinin bir listesini hazırladı."
+    },
+    {
+      "source": "g8u8s10",
+      "id": "g8u8-ext26-g8u8-s10",
+      "blocks": [
+        "My mother",
+        "checks",
+        "our dishwasher."
+      ],
+      "tr": "Annem bulaşık makinemizi kontrol eder."
+    },
+    {
+      "source": "g8u9s4",
+      "id": "g8u9-ext26-g8u9-s4",
+      "blocks": [
+        "Aziz Sancar",
+        "is",
+        "a Turkish scientist."
+      ],
+      "tr": "Aziz Sancar Türk bir bilim insanıdır."
+    },
+    {
+      "source": "g8u9s5",
+      "id": "g8u9-ext26-g8u9-s5",
+      "blocks": [
+        "Our teacher",
+        "is checking",
+        "the safety goggles."
+      ],
+      "tr": "Öğretmenimiz koruyucu gözlükleri kontrol ediyor."
+    },
+    {
+      "source": "g8u9s6",
+      "id": "g8u9-ext26-g8u9-s6",
+      "blocks": [
+        "Elif",
+        "is using",
+        "a powerful microscope."
+      ],
+      "tr": "Elif güçlü bir mikroskop kullanıyor."
+    },
+    {
+      "source": "g8u9s7",
+      "id": "g8u9-ext26-g8u9-s7",
+      "blocks": [
+        "Can",
+        "is measuring",
+        "the water temperature."
+      ],
+      "tr": "Can suyun sıcaklığını ölçüyor."
+    },
+    {
+      "source": "g8u9s8",
+      "id": "g8u9-ext26-g8u9-s8",
+      "blocks": [
+        "The class",
+        "observes",
+        "a simple experiment."
+      ],
+      "tr": "Sınıf basit bir deneyi gözlemliyor."
+    },
+    {
+      "source": "g8u9s9",
+      "id": "g8u9-ext26-g8u9-s9",
+      "blocks": [
+        "The scientist",
+        "explains",
+        "this experiment."
+      ],
+      "tr": "Bilim insanı bu deneyi açıklar."
+    },
+    {
+      "source": "g8u9s10",
+      "id": "g8u9-ext26-g8u9-s10",
+      "blocks": [
+        "Our teacher",
+        "describes",
+        "the work of Canan Dağdeviren."
+      ],
+      "tr": "Öğretmenimiz Canan Dağdeviren'in çalışmalarını anlatıyor."
+    },
+    {
+      "source": "g8u10s4",
+      "id": "g8u10-ext26-g8u10-s4",
+      "blocks": [
+        "Elif",
+        "checks",
+        "the emergency supplies."
+      ],
+      "tr": "Elif acil durum malzemelerini kontrol ediyor."
+    },
+    {
+      "source": "g8u10s5",
+      "id": "g8u10-ext26-g8u10-s5",
+      "blocks": [
+        "Our family",
+        "has got",
+        "a safety plan."
+      ],
+      "tr": "Ailemizin bir güvenlik planı var."
+    },
+    {
+      "source": "g8u10s6",
+      "id": "g8u10-ext26-g8u10-s6",
+      "blocks": [
+        "Can",
+        "carries",
+        "a warm blanket."
+      ],
+      "tr": "Can sıcak tutan bir battaniye taşıyor."
+    },
+    {
+      "source": "g8u10s7",
+      "id": "g8u10-ext26-g8u10-s7",
+      "blocks": [
+        "If water rises,",
+        "we will follow",
+        "the safety plan."
+      ],
+      "tr": "Su yükselirse güvenlik planını uygulayacağız."
+    },
+    {
+      "source": "g8u10s8",
+      "id": "g8u10-ext26-g8u10-s8",
+      "blocks": [
+        "My sister",
+        "prepares",
+        "a useful checklist."
+      ],
+      "tr": "Kız kardeşim yararlı bir kontrol listesi hazırlıyor."
+    },
+    {
+      "source": "g8u10s9",
+      "id": "g8u10-ext26-g8u10-s9",
+      "blocks": [
+        "Our teacher",
+        "explains",
+        "the meaning of this warning."
+      ],
+      "tr": "Öğretmenimiz bu uyarının anlamını açıklıyor."
+    },
+    {
+      "source": "g8u10s10",
+      "id": "g8u10-ext26-g8u10-s10",
+      "blocks": [
+        "This bag",
+        "contains",
+        "a pair of warm gloves."
+      ],
+      "tr": "Bu çantada bir çift sıcak tutan eldiven var."
+    },
+    {
+      "source": "g8u11s4",
+      "id": "g8u2-ext26-g8u11-s4",
+      "blocks": [
+        "Elif",
+        "completes",
+        "the first worksheet."
+      ],
+      "tr": "Elif ilk çalışma kâğıdını tamamlar."
+    },
+    {
+      "source": "g8u11s5",
+      "id": "g8u2-ext26-g8u11-s5",
+      "blocks": [
+        "Can",
+        "needs",
+        "a scientific calculator."
+      ],
+      "tr": "Can'ın bilimsel bir hesap makinesine ihtiyacı var."
+    },
+    {
+      "source": "g8u11s6",
+      "id": "g8u2-ext26-g8u11-s6",
+      "blocks": [
+        "Our class",
+        "has got",
+        "a useful timetable."
+      ],
+      "tr": "Sınıfımızın yararlı bir ders programı var."
+    },
+    {
+      "source": "g8u11s7",
+      "id": "g8u2-ext26-g8u11-s7",
+      "blocks": [
+        "This",
+        "is",
+        "my history textbook."
+      ],
+      "tr": "Bu benim tarih ders kitabım."
+    },
+    {
+      "source": "g8u11s8",
+      "id": "g8u2-ext26-g8u11-s8",
+      "blocks": [
+        "The teacher",
+        "explains",
+        "a difficult question."
+      ],
+      "tr": "Öğretmen zor bir soruyu açıklar."
+    },
+    {
+      "source": "g8u11s9",
+      "id": "g8u2-ext26-g8u11-s9",
+      "blocks": [
+        "Zeynep",
+        "understands",
+        "the meaning of this phrase."
+      ],
+      "tr": "Zeynep bu ifadenin anlamını anlıyor."
+    },
+    {
+      "source": "g8u11s10",
+      "id": "g8u2-ext26-g8u11-s10",
+      "blocks": [
+        "Our group",
+        "prepares",
+        "a model of a volcano."
+      ],
+      "tr": "Grubumuz bir yanardağ maketi hazırlıyor."
+    },
+    {
+      "source": "g8u12s4",
+      "id": "g8u2-ext26-g8u12-s4",
+      "blocks": [
+        "The nurse",
+        "uses",
+        "a clean thermometer."
+      ],
+      "tr": "Hemşire temiz bir termometre kullanır."
+    },
+    {
+      "source": "g8u12s5",
+      "id": "g8u2-ext26-g8u12-s5",
+      "blocks": [
+        "Elif",
+        "carries",
+        "a reusable bottle."
+      ],
+      "tr": "Elif tekrar kullanılabilir bir şişe taşır."
+    },
+    {
+      "source": "g8u12s6",
+      "id": "g8u2-ext26-g8u12-s6",
+      "blocks": [
+        "Can",
+        "needs",
+        "a short rest."
+      ],
+      "tr": "Can'ın kısa bir dinlenmeye ihtiyacı var."
+    },
+    {
+      "source": "g8u12s7",
+      "id": "g8u2-ext26-g8u12-s7",
+      "blocks": [
+        "Our classmate",
+        "needs",
+        "a longer rest."
+      ],
+      "tr": "Sınıf arkadaşımızın daha uzun dinlenmeye ihtiyacı var."
+    },
+    {
+      "source": "g8u12s8",
+      "id": "g8u2-ext26-g8u12-s8",
+      "blocks": [
+        "This",
+        "is",
+        "a healthy routine."
+      ],
+      "tr": "Bu sağlıklı bir rutin."
+    },
+    {
+      "source": "g8u12s9",
+      "id": "g8u2-ext26-g8u12-s9",
+      "blocks": [
+        "Our teacher",
+        "explains",
+        "why breaks help."
+      ],
+      "tr": "Öğretmenimiz molaların neden yararlı olduğunu açıklar."
+    },
+    {
+      "source": "g8u12s10",
+      "id": "g8u2-ext26-g8u12-s10",
+      "blocks": [
+        "The dentist",
+        "checks",
+        "the condition of my teeth."
+      ],
+      "tr": "Diş hekimi dişlerimin durumunu kontrol eder."
+    }
+  ],
+  "sources": [
+    {
+      "file": "grade5.json",
+      "sha256": "ab2e64d700abb66e5e4674ad5f289bb9e0d46858c5779e6de73bbf3d02c68ca5",
+      "grade": 5,
+      "cefr": "A1"
+    },
+    {
+      "file": "grade6.json",
+      "sha256": "15dbf9fbd1d8a6c6960ec7d8833f5d656e32b9da35bd24eb67350aa982d411ee",
+      "grade": 6,
+      "cefr": "A1+"
+    },
+    {
+      "file": "grade7.json",
+      "sha256": "d4e005c6f744b0d1f2336e6b80a39465f3027e8078938ce84a4f343caf120ace",
+      "grade": 7,
+      "cefr": "A2"
+    },
+    {
+      "file": "grade8.json",
+      "sha256": "8eb581dac9f4557b5f181a1ad256a4a9ae016ab4b28cb7727fba7858cacef3b5",
+      "grade": 8,
+      "cefr": "A2+"
+    }
+  ],
+  "addedSourceItems": {
+    "questions": 394,
+    "translations": 341,
+    "sentences": 438,
+    "descriptions": 264,
+    "categories": 88,
+    "pictures": 261,
+    "completions": 396
+  },
+  "notes": [
+    "Six extra source topics are connected as sub-themes; all 44 existing unit IDs and titles are preserved.",
+    "All supplied content is retained verbatim in reference/language-expansion-2026/grade*.json.",
+    "Three reviewed question signs per supplied unit are playable; other source Q&As remain available for future curation.",
+    "Unreviewed source sentence completions are retained as source material, never used as answer options.",
+    "Every playable road repair has exactly three blocks. Longer source blocks are regrouped; selected items are shortened.",
+    "Imported category pairs use disjoint words and rotate with the existing pair during a race."
+  ]
+}

@@ -1,0 +1,331 @@
+WORDRIFT — by Mr. Saymaz
+v0.23.1 · Impact & DNF Fix
+
+NETLIFY DEPLOYMENT
+For a build-based deployment, use the whole extracted project. The included
+netlify.toml specifies Build command: npm run build; Publish directory: dist.
+Leave the base directory blank (the project root). The build recreates dist
+with all game files, even if dist has been deleted.
+For manual drag-and-drop, upload the dist folder inside this ZIP. It already
+contains index.html, game.bundle.js, styles and the language banks.
+See README.md at the project root for setup and rebuilding instructions.
+
+WHAT CHANGED IN v0.23.1
+- Holding acceleration or Nitro commits to open-road driving without
+  proximity braking. Release acceleration/Nitro to coast and brake safely.
+  A real bumper contact causes damage; cars keep their physical separation.
+- Impact recovery lasts 3 seconds. Rivals keep driving through clear lanes
+  and can close the gap or pass. Their positions never jump.
+- Nitro stays saved while the car is pinned after an impact. Crossings and
+  English-task autopilot retain their safe stopping and shared pace rules.
+- All failures now clearly show DNF / DID NOT FINISH. An earlier lead is
+  never presented as first place. Failure screens have no race podium.
+- Broken cars, failed races and stale finish data cannot earn Ulti points,
+  race stars or arena unlocks. Every retry starts fully repaired.
+
+WHAT CHANGED IN v0.23.0
+- Three condition marks below the clock show how many hits remain.
+- First hit: cracked glass, dented paint, sparks and brief speed loss.
+  Second hit: loose bonnet and panel, light smoke, one hit left.
+  Third hit: engine sputters to a stop and the race ends in a breakdown.
+- A continuing scrape counts once. Relaxed gives 3 seconds of protection;
+  Challenge gives 2 seconds. Rivals catch up through normal driving while
+  you recover, with no position jumps.
+- Wrong English answers never damage your car. Guided English tasks and
+  their protected exits remain safe. Each new race starts fully repaired.
+- Reduced motion retains the damage cues without particles or impact shake.
+
+WHAT CHANGED IN v0.22.0
+- Phone/tablet bottom buttons are replaced with a continuous thumb gesture.
+  Hold the road to accelerate, swipe left/right to steer, slide up for Nitro,
+  and slide down to keep regular acceleration while saving the Nitro charge.
+- Slide farther up to add a second or third charge. Holding still never buys
+  additional charges. Lift your finger to release driving and Nitro.
+- A small non-interactive Nitro/fuel meter sits beside race position. During
+  English tasks it becomes subdued. The lower road stays clear for fingers.
+- Autopilot, finger connections, category choices and desktop controls remain.
+  The phone preview uses the new touch layout even with a desktop mouse.
+
+WHAT CHANGED IN v0.21.0
+- The four grade files expand the existing units through matching sub-themes.
+  Lessons shows the included sub-themes under each unit description.
+- Added 341 vocabulary translations, 264 definition clues, 132 short Q&A
+  signs, 132 grammar choices and 438 three-block road repairs.
+- Pedestrian crossings rotate category pairs for greater vocabulary variety.
+- All 44 existing lesson titles, unit IDs and progress keys are preserved.
+- The ZIP includes the original source files, reviewed choices, mapping report
+  and repeatable importer. Ambiguous source endings stay out of driving tasks.
+
+WHAT CHANGED IN v0.20.4
+- Holding the car no longer starts native text selection, image dragging or
+  the browser's touch callout menu on game content. Old selection is cleared
+  when starting a race or touching the road.
+- Driving holds, Nitro, lane swipes and road-repair connections keep working.
+  Lesson/settings scrolling and native form controls remain available.
+- The Netlify project still builds and publishes the complete dist folder.
+
+WHAT CHANGED IN v0.20.3
+- Source assets live in public; npm run build copies them into dist and
+  bundles the application there. Missing local HTML assets fail the build.
+- The release ZIP keeps the source checkout layout and includes netlify.toml
+  plus a prebuilt dist. Build-based and manual deployments use the same game.
+- A clean extracted-ZIP build and empty-dist regression verify deployment
+  output. Gameplay and Lessons behavior are unchanged.
+
+WHAT CHANGED IN v0.20.2
+- The lesson button opens Lessons / Choose your lesson, with Grade 5 A1,
+  Grade 6 A1+, Grade 7 A2 and Grade 8 A2+ options.
+- Every unit card has its number, a bold full title and a short description
+  of the language it covers. All 44 unit descriptions follow the material.
+- Grade choices and Apply/Cancel remain visible while scrolling the list.
+  Very short landscape screens scroll the full pop-up. Close/Escape cancels.
+
+WHAT CHANGED IN v0.20.1
+- Theme / Unit uses a numbered vertical list rather than a dropdown. Each
+  unit has its own row with its complete title. Long titles wrap naturally.
+- Choose a grade to show its units in curriculum order. Tap a row to select;
+  Apply saves your choice. Cancel/Escape preserves your current lesson.
+
+WHAT CHANGED IN v0.20.0
+- Finish first to unlock the next arena, separately for every unit and mode.
+  Second/third place still keep English stars, fuel and mastery. Review laps
+  and unfinished races do not unlock arenas. Existing recorded Ulti wins
+  count even after the points expire; stars alone do not prove a victory.
+- After choosing, hold your car, the speed button or Up to shorten the slow-
+  motion return to about 0.25 seconds. A control already held works too.
+  Release to keep the remaining gentle fade. Normal acceleration resumes
+  from the same live hold, without lifting and pressing again.
+- Road repairs must be correct and visitors must clear the crossing before
+  the quick return can start. Lane choices wait for physical alignment and
+  remain graded at the road line. Unanswered tasks keep their thinking time.
+- Nitro is conserved during focus and rivals cannot gain ground during it.
+
+WHAT CHANGED IN v0.19.0
+- The opening screen follows the reference layout: three illustrated arena
+  tiles, four team crest cards with their current Ulti points, a lesson card
+  beside a vertical Relaxed / Challenge choice, and a wide start button.
+- Tap the lesson card to choose Grade 5–8 and the matching Unit. The complete
+  unit title is shown. Apply commits it; Cancel keeps your previous lesson.
+  Wordrift colours, branding, car paints, stars and saved progress remain.
+- More driving obstacles fill the open stretches. The safe gap holds for a
+  short two-row beat, then moves to an adjacent lane. Opening rows and lane
+  changes have an unambiguous gap. Full left-to-right jumps are avoided.
+- Coastal Overpass adds tire stacks and loose road panels; Stormcrest adds
+  rockfall debris. Later arenas have more obstacles and shorter row spacing.
+  Full task approaches, construction, crossings and route merges stay clear.
+- Civilian cars follow the changing road gaps with signalled, continuous
+  movement, preventing a queue from blocking the available path. Guided
+  shortcuts make a little room for a close rival without changing the route.
+- Grade/unit controls, geometry, obstacle escalation, traffic clearance,
+  racing, focus cruise and browser viewport checks pass. Actual phone
+  appearance, touch feel and performance still need device playtesting.
+
+WHAT CHANGED IN v0.18.0
+- Complete words fit their road signs. Font sizing measures the actual font
+  and available card width, including padding and borders. Only spaces wrap;
+  hyphenated words stay together. Category titles use readable title case.
+- Traffic lights and route choices enter green-gold focus cruise 52 metres
+  before the road line. The distant approach stays at normal driving pace.
+- The dashboard holds the entry speed while the world slows. Steering, sign
+  taps and keyboard lane choices remain active. A deliberate choice that
+  settles in its lane begins a smooth return, without a long lock-in wait.
+- Answers are still judged at the physical road line; forks begin there.
+  You can correct a choice before arrival. Each task enters focus once.
+- Open-road legs are 600m longer overall per arena to keep reading-paced
+  races around five minutes with the quicker task exits.
+- Nitro is saved during focus. Live held acceleration resumes after the
+  return. Rival pacing stays protected, including through the return.
+- Controlled traffic clears the answer lanes promptly during focus.
+  Relaxed rivals use stronger fuel-funded boosts for a competitive finish.
+- Font-fit, lane placement, focus/input, movement and full-race checks pass.
+  Browser appearance and real-phone touch/performance need playtesting.
+
+WHAT CHANGED IN v0.17.0
+- Pedestrian tasks now use the same green-gold slow motion and temporary
+  autopilot as road repairs. They begin earlier, 150 metres before the
+  crossing, while the speedometer holds the car's entry speed.
+- Sort all four visitors while approaching. Normal time returns smoothly
+  once the last person reaches the pavement, so timely sorting avoids a
+  full stop. If people remain on the stripes, the car safely waits.
+- Up, a car touch or the speed-button touch can stay held through autopilot,
+  or be pressed during its return. Acceleration resumes automatically.
+  Release to cancel. The speed button stays responsive and marks a hold.
+- Pause, cancelled pointers and window blur clear held inputs. Pause still
+  needs a new input when resumed; autopilot completion does not.
+- Left/right controls sort pedestrians while autopilot holds the lane.
+  Nitro is conserved through focus, crossing waits and the guided exit.
+  Rival pacing remains fair, and the denser obstacle sequences remain.
+- Automated movement, input, crossing-safety and race checks pass. Actual
+  browser appearance and real-phone touch/performance need playtesting.
+
+WHAT CHANGED IN v0.15.0
+- Wordrift is the new name, with the same existing saved progress and points.
+- The racing header has a steady timer, position and Pause button, with a
+  thin progress line. Fuel and streaks sit beside Nitro at the bottom.
+- Pause shows arena, grade, unit, team, difficulty, accuracy, distance,
+  checkpoints, position, best streak and bumps. Sound, settings and help
+  are available there, keeping the road clear during play.
+- Questions and their feedback retain priority until driving resumes.
+  Advance task cues, active routes, nearby traffic/obstacles and occupied
+  crossings quiet optional messages. One driving announcement shows at a
+  time; stale queued messages expire. Answer feedback stays by the question.
+- The low-time indicator uses steady colour, without flashing. The timer,
+  position and Pause retain their positions when an English task appears.
+- Browser-bar previews remain available in phone-preview.html. Automated
+  HUD, message-priority, Pause, input and layout checks pass. Browser/device
+  visual appearance and touch testing are still unverified.
+
+WHAT CHANGED IN v0.14.2
+- The playable area follows the browser's current visible height as address
+  bars and toolbars expand or collapse. Pinch zoom keeps its existing layout.
+- The 3D camera, road signs and car touch targets use the actual canvas area.
+- Short phone screens use a compact race HUD. Setup and dialogs scroll;
+  controls have extra room above device gesture edges and safe areas.
+- Phone preview now defaults to a bottom address bar. Choose a top address
+  bar, collapsed bars or no bars; rotate or change screen size during a race.
+  The readout shows both the full screen and remaining playable dimensions.
+- Browser bars are illustrative and do not reproduce a specific phone or
+  browser version. Native browser behavior and real-device play remain
+  unverified; this update does not require fullscreen or installation.
+
+WHAT CHANGED IN v0.14.1
+- The logo now carries "by Mr. Saymaz" beneath the game name.
+- The slogan sits beside the car on desktop and below setup on phones.
+- Setup starts directly beneath the header. Grade and Unit share a row on
+  desktop; phone fields stack with 44px minimum touch controls.
+- Open phone-preview.html for a live 390 x 844 phone-sized view. Small and
+  large phones, tablet, rotation and fit-to-window controls are included.
+  It uses the real game, not a screenshot. It does not simulate device
+  browser bars, safe-area notches, touch input or GPU performance.
+- Setup interaction checks pass using a DOM double. A browser/device visual
+  check was unavailable for this release; real-device playtesting remains.
+
+WHAT CHANGED IN v0.14.0
+- Nitro is now held, released and saved. Hold NITRO or Space to use it;
+  release to conserve the remaining charge. Holding the car / accelerator
+  or Up arrow also resumes a charge already loaded for this race.
+- A new charge costs 30 fuel. Hold again to resume a saved charge for free,
+  even at zero fuel. Tap the small +30 button or press N to add another
+  charge level, up to three. Resuming never buys another charge.
+- An upward road swipe boosts while your finger stays down. Lift to save.
+  English tasks, occupied crossings, guided exits and blocked traffic
+  conserve the reservoir. Pause and cancelled touches release all holds.
+- The Nitro control shows saved seconds and stays usable at maximum charge
+  or with no fuel left. Charge purchase and use now have distinct controls.
+  Exhaust and launch rings respond when boosting actually starts/resumes.
+- Spectators watch and cheer from tiered viewing platforms behind barriers.
+  Flags flutter as racers pass; optional ambience and applause fade near
+  stands. Crowd audio is quiet during reading. Battery saver reduces crowd
+  density; reduced motion stills cheering and flags. Pause freezes them.
+- Crowd stands are pooled and reassigned only after passing out of view.
+  Viewing areas avoid the English task buffers and branching roads.
+- Cars have clearer team roof markings, the HUD shows the selected team,
+  and the coast has offshore sailboats. Controls have steadier numeric
+  readouts, clearer saved/active states and a separate charge button.
+
+RETAINED FROM v0.13.0
+- Relaxed and Challenge; four team colours; road-contained racing traffic.
+- First place earns 10 Ulti points, each reward expiring after 72 hours.
+- Points export is ready for the separate Netlify deployment to be supplied.
+- Existing stars, mastery, review queues and fuel remain saved.
+
+OPEN THE GAME
+Extract the ZIP and open index.html in a current browser with WebGL enabled.
+The playable build includes its assets and does not require a CDN.
+The hosted preview remains private to its owner. To share with students,
+place the playable files on your static host with index.html at its top level.
+Portrait is the main mobile layout; landscape also adapts.
+
+CHOOSE YOUR LESSON
+Choose a team, Grade 5, 6, 7 or 8, a theme/unit, and Relaxed or Challenge.
+All 44 units from Tower Swarm v0.14.11 remain available:
+Grade 5: 10. Grade 6: 10. Grade 7: 12. Grade 8: 12.
+Complete arenas in order: Sunlit Boulevard, Coastal Overpass, Stormcrest.
+Each lasts about five minutes at a reading pace, with 12, 14 or 16 tasks
+and roughly 570–610m between them. Acceleration and Nitro shorten a run.
+
+CONTROLS
+- Phone/tablet: hold anywhere on the road to accelerate. Keep your thumb down
+  and swipe left/right to change lanes. Repeat swipes without lifting.
+- Slide the same thumb forward and hold for Nitro. Slide it down to save the
+  unused charge while staying accelerated. Slide farther forward for a second
+  or third charge. Lifting the thumb releases both acceleration and Nitro.
+  Fuel and saved Nitro appear beside race position; no bottom buttons remain.
+- Desktop: use Left/Right or A/D, or the on-screen arrow buttons. Hold Up,
+  the car or the speed button to accelerate. Hold Space or NITRO to boost;
+  release to save charge. Press N or tap +30 to add a charge, up to three.
+  Holding desktop acceleration also uses an already-loaded charge.
+- Each new charge costs 30 fuel; resuming one is free. A fixed touch hold
+  never purchases more charges. The desktop speed display uses up to 90 km/h
+  for regular acceleration and 200 km/h for maximum Nitro.
+- Tap the full-text answer sign, steer into its lane, or press 1 / 2 / 3.
+  Each lane holds one answer. English tasks stay on the road.
+- For road repairs, drag through the three blocks in sentence order.
+  Tapping blocks or using 1 / 2 / 3 also works. Correct repairs are immediate.
+- At crossings, swipe a visitor's word left/right, tap a category, or use
+  the arrows. All cars wait until the pedestrians have reached the sidewalk.
+- Escape / P pauses. Losing focus also pauses and releases held controls.
+
+RACING AND ENGLISH
+Correct first-try English earns 10 fuel; every third answer in a streak
+adds 5 more. Fuel is saved between runs. Driving never requires spending it.
+Wrong answers cost 1.5 seconds. Bumps cost 3 seconds in Relaxed and 5 in
+Challenge. Correct shortcuts add 3 seconds; wrong routes are recoverable
+longer detours. Three Nitro stages have stronger acceleration and effects.
+Tasks, occupied crossings and correct-exit recovery protect racing ground:
+rivals cannot advance farther than the player during those phases. Nitro
+charges pause while waiting. Rivals use the same regular top-speed ceiling
+and cannot start with more fuel than the player. Their boosts cost fuel.
+Stars reward English accuracy and clean driving, separately from race place.
+Missed items return with a different clue; a short review lap is also offered.
+
+TEAM POINTS
+Your team is locked for the current run. Changing teams in the garage does
+not move rewards already earned. Second/third place and unfinished races
+award no Ulti points. New wins have their own expiry and do not renew old
+points. The wallet updates as points expire, including after reopening.
+Points are local to this browser for now. Exports contain stable reward IDs,
+team IDs, original award times and expiry times. See ULTI_INTEGRATION.md for
+the JSON contract and what the future Netlify receiver needs to implement.
+
+MASTERY AND SETTINGS
+At 90% first-try accuracy, Explorer requires 6 distinct items and one arena;
+Scholar requires 12 and two arenas; Master requires 18 and all three arenas.
+Equip badges and the Master Aurora trail in Customise car. Team choice
+controls the body colour. Settings include sound, vibration, motion comfort
+and Auto/High/Battery saver rendering. Reduced motion steadies the camera
+and reduces celebration/boost effects. Auto adapts rendering resolution.
+Stars, fuel, mastery, team choice and points are saved in this browser.
+
+VALIDATION
+Automated checks cover team colours, mandatory team choice, star migration,
+first-place-only awards, unique run IDs, duplicate prevention after reload
+and expiry, independent 72-hour expiries, and unchanged timestamps on export.
+Road checks compare containment with rendered fork triangles and simulate
+both shoulder exits, civilian fork routing, obstacle planning, physical
+spacing, continuous movement and safe pedestrian queues. English reading
+protection is checked at 30/60/120 Hz. Competition and pacing simulations
+cover both difficulties and all arenas. Language checks cover all 44 units.
+Held-input checks cover release/resume, no repeat purchase, blocked traffic
+and saved charge at 30/60/120 Hz. Crowd checks cover off-road fan transforms,
+hidden-only stand recycling, proximity reactions and paused/reduced motion.
+UI interaction uses a DOM double; 3D checks use a mocked renderer. These
+verify logic and geometry. Real-device appearance, performance and touch
+playtesting remain unverified.
+
+SOURCE AND REBUILD
+app.js: interface and interactions.
+scene.js: 3D scene; road-layout.js: lane signs and strokes.
+teams-ulti.js: teams, reward ledger, expiry and export contract.
+spectators.js: pooled viewing stands, instanced fans and cloth.
+progression.js: saved mastery, badges and compatibility migration.
+driving-feel.js: steering and car movement.
+vehicle-geometry.js and boost-effects.js: cars and Nitro.
+route-road.js: non-overlapping asphalt for forked routes.
+public/game-core.js and the three language banks in public are readable runtime files.
+Install the dependencies from package.json with npm, then run npm run build.
+npm test checks full gameplay. Additional checks include test:ulti,
+test:road-bounds, test:fairness, test:clear-roads, test:rivals, test:pacing,
+test:crosswalk, test:acceleration, test:yielding, test:racing, test:reading,
+test:routes, test:scene, test:presentation, test:overdrive, test:nitro-hold,
+test:spectators and test:ui.

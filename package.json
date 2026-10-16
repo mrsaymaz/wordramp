@@ -1,0 +1,47 @@
+{
+  "name": "wordrift",
+  "version": "0.23.1",
+  "private": true,
+  "dependencies": {
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.11"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node tests/gameplay.cjs",
+    "test:crosswalk": "node tests/crosswalk-traffic.cjs",
+    "test:acceleration": "node tests/acceleration.cjs",
+    "test:yielding": "node tests/yielding.cjs",
+    "test:fairness": "esbuild driving-feel.js --bundle --platform=node --format=cjs --outfile=tests/driving-feel-compiled.cjs && node tests/fair-traffic.cjs",
+    "test:scene": "esbuild scene.js --bundle --platform=node --format=cjs --outfile=tests/scene-compiled.cjs && node tests/scene.cjs",
+    "test:racing": "esbuild progression.js --bundle --platform=node --format=cjs --outfile=tests/progression-compiled.cjs && esbuild driving-feel.js --bundle --platform=node --format=cjs --outfile=tests/driving-feel-compiled.cjs && node tests/racing.cjs",
+    "test:rivals": "esbuild driving-feel.js --bundle --platform=node --format=cjs --outfile=tests/driving-feel-compiled.cjs && node tests/rival-ai.cjs",
+    "test:presentation": "esbuild presentation.js --bundle --platform=node --format=cjs --outfile=tests/presentation-compiled.cjs && esbuild road-layout.js --bundle --platform=node --format=cjs --outfile=tests/layout-compiled.cjs && node tests/presentation.cjs",
+    "test:ui": "esbuild presentation.js --bundle --platform=node --format=cjs --outfile=tests/presentation-compiled.cjs && esbuild progression.js --bundle --platform=node --format=cjs --outfile=tests/progression-compiled.cjs && esbuild road-layout.js --bundle --platform=node --format=cjs --outfile=tests/layout-compiled.cjs && esbuild teams-ulti.js --bundle --platform=node --format=cjs --outfile=tests/ulti-compiled.cjs && node tests/ui.cjs",
+    "test:reading": "node tests/reading-fairness.cjs",
+    "test:clear-roads": "esbuild driving-feel.js --bundle --platform=node --format=cjs --outfile=tests/driving-feel-compiled.cjs && node tests/clear-roads.cjs",
+    "test:routes": "esbuild route-road.js --bundle --platform=node --format=cjs --outfile=tests/route-road-compiled.cjs && node tests/route-road.cjs",
+    "test:overdrive": "esbuild presentation.js --bundle --platform=node --format=cjs --outfile=tests/presentation-compiled.cjs && node tests/overdrive.cjs",
+    "test:pacing": "esbuild driving-feel.js --bundle --platform=node --format=cjs --outfile=tests/driving-feel-compiled.cjs && node tests/race-pacing.cjs",
+    "test:ulti": "esbuild teams-ulti.js --bundle --platform=node --format=cjs --outfile=tests/ulti-compiled.cjs && esbuild progression.js --bundle --platform=node --format=cjs --outfile=tests/progression-compiled.cjs && node tests/teams-ulti.cjs",
+    "test:road-bounds": "node tests/road-containment.cjs",
+    "test:nitro-hold": "node tests/nitro-hold.cjs",
+    "test:spectators": "esbuild spectators.js --bundle --platform=node --format=cjs --outfile=tests/spectators-compiled.cjs && node tests/spectators.cjs",
+    "test:viewport": "node tests/browser-viewport.cjs",
+    "test:repair-cruise": "node tests/repair-cruise.cjs",
+    "test:obstacles": "node tests/obstacle-sequences.cjs",
+    "test:pedestrian-cruise": "node tests/pedestrian-cruise.cjs",
+    "test:signs": "esbuild road-layout.js --bundle --platform=node --format=cjs --outfile=tests/layout-compiled.cjs && node tests/sign-typography.cjs && node tests/road-layout.cjs",
+    "test:choice-focus": "esbuild driving-feel.js --bundle --platform=node --format=cjs --outfile=tests/driving-feel-compiled.cjs && node tests/choice-focus.cjs",
+    "test:gap-traffic": "esbuild driving-feel.js --bundle --platform=node --format=cjs --outfile=tests/driving-feel-compiled.cjs && node tests/gap-traffic.cjs",
+    "test:focus-control": "node tests/focus-control.cjs",
+    "test:arena-wins": "esbuild progression.js --bundle --platform=node --format=cjs --outfile=tests/progression-compiled.cjs && esbuild teams-ulti.js --bundle --platform=node --format=cjs --outfile=tests/ulti-compiled.cjs && node tests/arena-progression.cjs",
+    "test:deploy": "node tests/deploy-build.cjs",
+    "test:language": "node tests/language-expansion.cjs",
+    "test:touch": "esbuild presentation.js --bundle --platform=node --format=cjs --outfile=tests/presentation-compiled.cjs && esbuild road-layout.js --bundle --platform=node --format=cjs --outfile=tests/layout-compiled.cjs && node tests/touch-driving.cjs",
+    "test:damage": "node tests/car-condition.cjs",
+    "test:impacts": "esbuild driving-feel.js --bundle --platform=node --format=cjs --outfile=tests/driving-feel-compiled.cjs && node tests/impact-recovery.cjs"
+  }
+}

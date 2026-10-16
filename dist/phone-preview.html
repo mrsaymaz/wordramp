@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b1828">
+  <title>Wordrift · Phone preview</title>
+  <link rel="icon" href="icon.svg">
+  <style>
+    :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#e7eff4;background:#0b1828;color-scheme:dark}
+    *{box-sizing:border-box}body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;background:radial-gradient(ellipse at 50% 45%,#203d4e,#0b1828 70%)}
+    header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 32px;border-bottom:1px solid #d0e7ef1a;background:#0b1828d9}
+    .title p{margin:0 0 5px;font-size:10px;font-weight:800;letter-spacing:2px;color:#f6d28a}.title h1{margin:0;font-size:21px;letter-spacing:-.4px}.title small{display:block;margin-top:6px;font-size:12px;color:#acc3d0}
+    .tools{display:flex;align-items:center;flex-wrap:wrap;gap:9px}label{font-size:11px;color:#bdd0dc}.device-label{display:grid;gap:5px}
+    button,select,a{font:inherit}button,select,.open-game{min-height:44px;border:1px solid #88b0c542;border-radius:10px;background:#1b3348;color:#e7eff4;padding:10px 13px;font-size:12px}
+    button{cursor:pointer}button:hover,.open-game:hover{background:#2c5066}select{max-width:240px}.fit{display:flex;align-items:center;gap:7px;padding:0 8px;min-height:44px}input{accent-color:#f6d28a;width:17px;height:17px}.open-game{text-decoration:none;display:flex;align-items:center;gap:8px;color:#ffe2a0}
+    :focus-visible{outline:3px solid #f6d28a;outline-offset:3px}.preview-area{flex:1;min-height:240px;display:flex;align-items:flex-start;justify-content:flex-start;padding:20px;overflow:auto}
+    .device-stage{position:relative;flex:none;margin:auto}.device{position:absolute;top:0;left:0;padding:9px;border:1px solid #8ca6b273;border-radius:37px;background:#03090f;box-shadow:0 22px 70px #0007,0 0 0 4px #ffffff05;transform-origin:top left}
+    .screen{width:var(--screen-w);height:var(--screen-h);border-radius:27px;overflow:hidden;display:flex;flex-direction:column;background:#152536}
+    iframe{display:block;width:var(--screen-w);height:var(--game-h);flex:none;min-height:0;border:0;background:#102337}
+    .browser-top,.browser-bottom{flex:none;overflow:hidden;background:#e5e9ed;color:#253342;font-size:12px;line-height:1;user-select:none;pointer-events:none}
+    .status-row{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 23px;font-weight:750;font-size:13px}.status-icons{font-size:11px;letter-spacing:2px}
+    .address-row{height:56px;padding:7px 12px;display:flex;align-items:center;gap:10px}.address{height:40px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 13px;border-radius:13px;background:#f7f9fa;box-shadow:0 1px 5px #273b4b13;flex:1;min-width:0;font-size:12px}.address span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.address small{font-size:10px;color:#607282}
+    .browser-nav{height:46px;display:flex;align-items:center;justify-content:space-around;font-size:23px;color:#334c67}.browser-nav svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+    .home-indicator{height:26px;display:flex;align-items:center;justify-content:center}.home-indicator:after{content:'';height:4px;width:110px;border-radius:4px;background:#273442}
+    .compact-address{height:28px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#536576}
+    .screen[data-bars="top"] .browser-bottom .home-indicator{height:2px}.screen[data-bars="collapsed"] .status-row{height:28px;font-size:11px}
+    .screen.landscape .status-row{height:16px;font-size:10px;padding-inline:30px}.screen.landscape .address-row{height:44px;padding-block:4px}.screen.landscape .address{height:36px}.screen.landscape .browser-nav{display:none}.screen.landscape .home-indicator{height:18px}.screen.landscape[data-bars="top"] .home-indicator{height:20px}.screen.landscape[data-bars="collapsed"] .status-row{display:none}.screen.landscape .compact-address{height:24px}
+    footer{padding:0 24px 18px;text-align:center;font-size:11px;line-height:1.6;color:#99b2c2}output{display:block;color:#d1e0e8;font-size:12px;margin-bottom:4px;font-variant-numeric:tabular-nums}
+    @media(max-width:760px){header{padding:16px 18px;align-items:flex-start;flex-direction:column;gap:14px}.title h1{font-size:19px}.tools{gap:7px;width:100%}.device-label{flex:1}.device-label select{width:100%;max-width:none}.fit{padding:0 3px}.open-game{padding:10px}.preview-area{padding:16px}.title small{font-size:11px}footer{padding:0 16px 12px;font-size:10px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title"><p>WORDRIFT</p><h1>Live phone preview</h1><small>The actual game, with space reserved for browser controls.</small></div>
+    <div class="tools">
+      <label class="device-label" for="device-size">SCREEN SIZE<select id="device-size"><option value="390x844">Phone · 390 × 844</option><option value="320x568">Small phone · 320 × 568</option><option value="430x932">Large phone · 430 × 932</option><option value="768x1024">Tablet · 768 × 1024</option></select></label>
+      <label class="device-label" for="browser-bars">BROWSER CONTROLS<select id="browser-bars"><option value="bottom">Bottom address bar</option><option value="top">Top address bar</option><option value="collapsed">Collapsed bars</option><option value="none">No browser bars</option></select></label>
+      <button id="rotate" type="button" aria-label="Rotate the preview screen">Rotate ↻</button>
+      <label class="fit"><input id="fit" type="checkbox" checked>Fit screen</label>
+      <a class="open-game" href="index.html">Open game ↗</a>
+    </div>
+  </header>
+  <main class="preview-area" id="preview-area" aria-label="Interactive game preview">
+    <div class="device-stage" id="device-stage"><div class="device" id="device"><div class="screen" id="screen" data-bars="bottom"><div id="browser-top" class="browser-top" aria-hidden="true"></div><iframe id="game-preview" title="Wordrift phone browser viewport" src="index.html?touch=1" width="390" height="672" allow="autoplay; fullscreen"></iframe><div id="browser-bottom" class="browser-bottom" aria-hidden="true"></div></div></div></div>
+  </main>
+  <footer><output id="viewport-size" aria-live="polite">390 × 844 screen · 390 × 672 game area</output>Browser bars are illustrative; sizes vary by browser and device. Try changing the bars during a race. Touch input, notches and phone performance still need real-device testing.</footer>
+  <script>
+    const size=document.getElementById('device-size'),bars=document.getElementById('browser-bars'),fit=document.getElementById('fit'),area=document.getElementById('preview-area'),stage=document.getElementById('device-stage'),device=document.getElementById('device'),frame=document.getElementById('game-preview'),readout=document.getElementById('viewport-size'),screen=document.getElementById('screen'),browserTop=document.getElementById('browser-top'),browserBottom=document.getElementById('browser-bottom');
+    let rotated=false;
+    const status='<div class="status-row"><span>9:41</span><span class="status-icons">▂▄▆ · ▰</span></div>';
+    const address='<div class="address-row"><div class="address"><small>AA</small><span>wordshift-rally…</span><small>↻</small></div></div>';
+    const nav='<div class="browser-nav"><span>‹</span><span>›</span><svg viewBox="0 0 24 24"><path d="M12 15V3m-4 4 4-4 4 4M5 12v9h14v-9"/></svg><svg viewBox="0 0 24 24"><path d="M4 4h6l2 2 2-2h6v16h-6l-2 2-2-2H4zM12 6v16"/></svg><svg viewBox="0 0 24 24"><rect x="4" y="7" width="13" height="13" rx="2"/><path d="M8 7V3h12v13h-3"/></svg></div>';
+    const indicator='<div class="home-indicator"></div>',compact='<div class="compact-address">wordshift-rally…</div>';
+    function browserSpace(mode,landscape){
+      if(mode==='none')return{top:0,bottom:0};
+      if(mode==='collapsed')return{top:landscape?0:28,bottom:landscape?24:28};
+      if(mode==='top')return{top:landscape?60:100,bottom:landscape?20:48};
+      return{top:landscape?16:44,bottom:landscape?62:128};
+    }
+    function drawBrowser(){
+      const mode=bars.value;
+      browserTop.innerHTML=mode==='none'?'':mode==='top'?status+address:status;
+      browserBottom.innerHTML=mode==='none'?'':mode==='collapsed'?compact:mode==='bottom'?address+nav+indicator:nav+indicator;
+    }
+    function updatePreview(){
+      let [width,height]=size.value.split('x').map(Number);
+      if(rotated)[width,height]=[height,width];
+      const landscape=width>height,{top,bottom}=browserSpace(bars.value,landscape),gameHeight=height-top-bottom;
+      const outerWidth=width+20,outerHeight=height+20;
+      const scale=fit.checked?Math.min(1,Math.max(.1,(area.clientWidth-40)/outerWidth),Math.max(.1,(area.clientHeight-40)/outerHeight)):1;
+      device.style.width=outerWidth+'px';device.style.height=outerHeight+'px';
+      device.style.setProperty('--screen-w',width+'px');device.style.setProperty('--screen-h',height+'px');
+      device.style.setProperty('--game-h',gameHeight+'px');screen.dataset.bars=bars.value;screen.classList.toggle('landscape',landscape);
+      browserTop.style.height=top+'px';browserBottom.style.height=bottom+'px';
+      frame.width=width;frame.height=gameHeight;
+      device.style.transform=`scale(${scale})`;
+      stage.style.width=outerWidth*scale+'px';stage.style.height=outerHeight*scale+'px';
+      readout.textContent=`${width} × ${height} screen · ${width} × ${gameHeight} game area · ${Math.round(scale*100)}% display scale`;
+    }
+    size.addEventListener('change',()=>{rotated=false;updatePreview();});
+    bars.addEventListener('change',()=>{drawBrowser();updatePreview();});
+    fit.addEventListener('change',updatePreview);
+    document.getElementById('rotate').addEventListener('click',()=>{rotated=!rotated;updatePreview();});
+    new ResizeObserver(updatePreview).observe(area);
+    drawBrowser();updatePreview();
+  </script>
+</body>
+</html>
