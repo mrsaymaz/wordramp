@@ -596,3 +596,19 @@ body.reduced-motion .road-answer.selected{transform:translate(-50%,-50%)}
 /* Showcase label sits under the hero car rather than across it. */
 #home .showcase-label{top:auto;bottom:calc(7vh + 44px);right:6vw}
 #home .showcase-label strong{margin:4px 0}
+
+/* Mr. Saymaz, the host: brand avatar, home presenter and modal guide. */
+#topbar .brand .brand-byline{display:flex;align-items:center;gap:6px}
+.brand-avatar{width:24px;height:24px;border-radius:50%;object-fit:cover;background:#f1d79a;border:1.5px solid #ffd77a;box-shadow:0 2px 6px #0716264d;flex-shrink:0}
+.home-host{display:none;position:fixed;pointer-events:none;user-select:none;-webkit-user-drag:none;filter:drop-shadow(0 0 1px #e9f2f6aa) drop-shadow(0 14px 22px #06152566)}
+@media(min-width:1000px) and (min-height:620px){
+  #home .home-host{display:block;height:min(52vh,470px);width:auto;bottom:6vh;left:max(600px,47vw);animation:host-in .7s cubic-bezier(.2,.8,.2,1) both}
+}
+@keyframes host-in{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.modal-host{float:right;width:112px;height:142px;margin:-8px -6px 6px 12px;overflow:hidden;pointer-events:none;shape-outside:inset(0 0 0 12px)}
+.modal-host img{display:block;width:100%;height:auto;filter:drop-shadow(0 0 1px #e9f2f6b0) drop-shadow(0 8px 14px #04101e80);animation:host-in .5s cubic-bezier(.2,.8,.2,1) both}
+#modal.finish-modal .modal-host{float:none;display:block;margin:-4px auto 0;width:128px;height:156px}
+@media(max-width:420px),(max-height:620px){.modal-host{width:84px;height:108px}#modal.finish-modal .modal-host{width:100px;height:122px}}
+body.reduced-motion .home-host,body.reduced-motion .modal-host img{animation:none}
+@media(prefers-reduced-motion:reduce){.home-host,.modal-host img{animation:none!important}}
+.modal-host{-webkit-mask-image:linear-gradient(#000 68%,transparent 98%);mask-image:linear-gradient(#000 68%,transparent 98%)}

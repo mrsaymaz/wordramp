@@ -18,6 +18,8 @@ WHAT CHANGED IN v0.24.0
 - Rivals race fairly: no brake-checking in your escape lane, no stuck cars,
   and Relaxed is competitive instead of an automatic win.
 - Richer engine, Nitro and arena sound; the world quietens while you read.
+- Traffic arrives in small groups to weave through, busier in later arenas
+  and on Challenge. Mr. Saymaz guides you on the menus and results.
 
 WHAT CHANGED IN v0.23.1
 - Holding acceleration or Nitro commits to open-road driving without

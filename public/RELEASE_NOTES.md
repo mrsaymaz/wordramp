@@ -39,6 +39,28 @@ Graphics, world and presentation
   the world during English focus. Task cues are never ducked. Mute, Pause and
   the browser gesture rule are respected.
 
+Traffic and host (follow-up within v0.24.0)
+- Civilian traffic now arrives in short groups of 2-3 cars from the first
+  stretch: Relaxed 6 / 12 / 18 and Challenge 10 / 18 / 26 cars across Sunlit
+  Boulevard, Coastal Overpass and Stormcrest. A group row never blocks all
+  three lanes, each open lane is reachable from the one before it, and rows
+  are spaced for a lane change at maximum Nitro closing speed. Groups wait
+  parked in the fog until the player is about 300 m away, so they are met,
+  not chased. Static obstacle rows make room for them; total hazards still
+  escalate by arena.
+- Traffic AI fixes exposed by the denser traffic: a stale remembered lane
+  could send a car from one shoulder across the whole road; a car leaving a
+  shoulder could start a three-lane gap move; two civilians could merge into
+  each other in the same instant; and two bunched cars could choose the same
+  shoulder, parking one in the lane the crosswalk exit assist keeps the
+  player in. Each is fixed in the core.
+- Mr. Saymaz hosts the game: a portrait beside "by Mr. Saymaz", a presenting
+  figure beside the showcase car on desktop, and poses in How to play
+  (pointing), Pause (thinking), garage (thumbs up), team points and first
+  place (cheering), other finishes (thumbs up) and DNF (thinking). He never
+  appears over the road while driving. Images are trimmed, 900 px tall
+  palette PNGs (about 60 KB each) supplied by the project owner.
+
 Gameplay and fairness fixes (found by the full test matrix)
 - Deadlock: a rival stopped just ahead of a player in protected crosswalk
   focus could freeze both cars until the clock ran out. A rival parked in the
@@ -57,9 +79,8 @@ Gameplay and fairness fixes (found by the full test matrix)
   (a second deadlock found by the fairness benchmark).
 - The protected (neutral) learning phase no longer charges rivals for their
   own reading on top of the shared pace cap.
-- Relaxed rival profiles are tuned per arena. A perfect, crash-free driver
-  holding full throttle without Nitro now wins about 58% of Relaxed races
-  (was 97%); Nitro still wins 100%. Challenge is unchanged in profile.
+- Relaxed rival profiles are tuned per arena; Challenge is unchanged in
+  profile. `npm run test:rivals` prints the current balance benchmark.
 - Random distractors never contain the answer as a whole word (for example
   "kapı" → gate is no longer paired with "school gate"). No language item was
   edited; seeded courses are unchanged.

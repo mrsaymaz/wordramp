@@ -26,4 +26,8 @@ for(const name of await readdir(output)){
     await access(join(dirname(page),path));references++;
   }
 }
+// Host portraits are chosen in app.js (host('pose')); each must ship in dist.
+const app=await readFile(join(root,'app.js'),'utf8');
+for(const [,pose] of app.matchAll(/host\('([a-z]+)'\)|'(?:cheer|smile|think|point)'/g))if(pose){await access(join(output,'img',`saymaz-${pose}.png`));references++;}
+for(const pose of ['cheer','smile','think']){await access(join(output,'img',`saymaz-${pose}.png`));}
 console.log(`Build complete: dist/index.html and ${references} local HTML asset references verified.`);

@@ -82,6 +82,13 @@ so test on real phones before relying on performance.
 Run the full gameplay matrix faster in four shards with
 `WORDRIFT_TEST_GRADE=5 node tests/gameplay.cjs` (and 6, 7, 8).
 
+## Mr. Saymaz host images
+
+`public/img/saymaz-*.png` are the host portraits supplied by the project
+owner (bust, full/presenting, point, think, smile, cheer), trimmed and
+reduced to 900 px tall palette PNGs. The build fails if any image used by
+`index.html` or `app.js` is missing.
+
 ## Phone and tablet controls
 
 Hold anywhere on the road to accelerate. Keep the thumb down and swipe left
