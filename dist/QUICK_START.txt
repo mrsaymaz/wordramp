@@ -243,7 +243,8 @@ WHAT CHANGED IN v0.14.0
 
 RETAINED FROM v0.13.0
 - Relaxed and Challenge; four team colours; road-contained racing traffic.
-- First place earns 10 Ulti points, each reward expiring after 72 hours.
+- First place earned 10 Ulti points (replaced by the v0.24 points table),
+  each reward expiring after 72 hours.
 - Points export is ready for the separate Netlify deployment to be supplied.
 - Existing stars, mastery, review queues and fuel remain saved.
 
@@ -298,6 +299,13 @@ Stars reward English accuracy and clean driving, separately from race place.
 Missed items return with a different clue; a short review lap is also offered.
 
 TEAM POINTS
+A first place with 2+ stars (75% of tasks right first time) earns Ulti points
+for your team, valid for 3 days:
+               Sunlit   Coastal   Stormcrest
+  Relaxed         2        4          6
+  Challenge       5        7          9
+Each device earns up to 40 points a day; the cap resets at midnight. A first
+place below 2 stars, or after the cap, earns nothing and the result says why.
 Your team is locked for the current run. Changing teams in the garage does
 not move rewards already earned. Second/third place and unfinished races
 award no Ulti points. New wins have their own expiry and do not renew old

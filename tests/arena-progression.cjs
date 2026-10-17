@@ -15,7 +15,7 @@ const restored=P.normaliseProgress(JSON.parse(JSON.stringify(saved)));assert(P.a
 assert(!P.arenaUnlocked(restored,unit.id,'challenge',3));assert(!P.arenaUnlocked(restored,unit.id,'challenge',-1));
 // A real old win is retained, even when its team points have long expired.
 const old=P.normaliseProgress({difficulty:'standard',progress:{'g5u1:standard':[3,2,0]},arenaWins:{'g5u1:standard':[false,true,false]}});
-awardUltiWin(old,base,1,1000);assert(1000+ULTI_LIFETIME_MS<Date.now());
+awardUltiWin(old,base,1,3,1000);assert(1000+ULTI_LIFETIME_MS<Date.now());
 const migrated=P.normaliseProgress(JSON.parse(JSON.stringify(old)));assert(P.arenaUnlocked(migrated,unit.id,'challenge',2));
 assert.deepEqual(migrated.progress['g5u1:challenge'],[3,2,0]);assert(!('g5u1:standard'in migrated.arenaWins));
 const gap=P.normaliseProgress({arenaWins:{'g5u1:challenge':[false,true,false]}});assert(!P.arenaUnlocked(gap,unit.id,'challenge',2),'Winning an old later course does not skip an un-won earlier arena');

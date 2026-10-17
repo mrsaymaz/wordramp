@@ -45,6 +45,21 @@ Graphics, world and presentation
   the world during English focus. Task cues are never ducked. Mute, Pause and
   the browser gesture rule are respected.
 
+Ulti points v2 (follow-up within v0.24.0)
+- Points now rise by arena, and Challenge pays more: Relaxed 2 / 4 / 6 and
+  Challenge 5 / 7 / 9 for Sunlit / Coastal / Stormcrest.
+- A first place needs 2+ stars (75% of tasks right first time) to earn
+  points, and each device earns at most 40 points a local day. The win that
+  crosses the cap pays the remainder.
+- The result screen explains a first place that earned nothing. The
+  team-points window shows the table and today's total.
+- Before this change both modes paid 10 for every first place, so
+  replaying Relaxed Sunlit earned as much as any race. With earned Nitro,
+  any competent student made about 130–140 points an hour, whatever their
+  accuracy or mode.
+- Receipts are version 2 (adding `arenaIndex` and `stars`). Earlier 10-point
+  receipts stay valid until they expire. See ULTI_INTEGRATION.md.
+
 Picture signs (follow-up within v0.24.0)
 - Some vocabulary signs now use Microsoft's Fluent Emoji (3D) pictures:
   - Picture → word: the picture is the clue, with three words on the lanes.
