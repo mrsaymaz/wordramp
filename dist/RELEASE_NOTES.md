@@ -65,7 +65,7 @@ Traffic and host (follow-up within v0.24.0)
   correct answer instead of 10. Without this, traffic cost them several
   seconds a race and Challenge felt almost like Relaxed. Relaxed rivals keep
   the cautious rules. Measured on the 36-race benchmark of a perfect driver
-  who never boosts: Relaxed 26/36 wins, Challenge 15/36; with earned Nitro
+  who never boosts: Relaxed 25/36 wins, Challenge 14/36; with earned Nitro
   36/36 in both.
 - Two rival deadlocks found by the full verification with traffic: a rival
   half into an escape lane beside a rockfall could neither finish the move
