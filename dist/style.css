@@ -612,3 +612,10 @@ body.reduced-motion .road-answer.selected{transform:translate(-50%,-50%)}
 body.reduced-motion .home-host,body.reduced-motion .modal-host img{animation:none}
 @media(prefers-reduced-motion:reduce){.home-host,.modal-host img{animation:none!important}}
 .modal-host{-webkit-mask-image:linear-gradient(#000 68%,transparent 98%);mask-image:linear-gradient(#000 68%,transparent 98%)}
+/* v0.24 · Picture signs: Fluent Emoji (3D) as the clue or as each answer.
+   Sizes follow the sign, so the existing approach layout stays unchanged. */
+.sign-emoji{display:block;width:clamp(56px,9vh,84px);height:clamp(56px,9vh,84px);margin:0 auto 6px;object-fit:contain;filter:drop-shadow(0 4px 6px #0006);user-select:none;-webkit-user-select:none;pointer-events:none}
+.answer-emoji{display:block;width:clamp(46px,7.5vh,68px);height:clamp(46px,7.5vh,68px);margin:0 auto;object-fit:contain;filter:drop-shadow(0 3px 4px #0005);user-select:none;-webkit-user-select:none;pointer-events:none}
+.picture-sign #road-kicker{color:#f9d681}
+@media(max-width:760px){.sign-emoji{width:58px;height:58px;margin-bottom:4px}.answer-emoji{width:50px;height:50px}}
+@media(orientation:landscape) and (max-height:600px){.sign-emoji{width:44px;height:44px;margin-bottom:2px}.answer-emoji{width:40px;height:40px}}

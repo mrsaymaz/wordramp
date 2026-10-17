@@ -3,7 +3,7 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const {execFileSync}=require('node:child_process'),{createHash}=require('node:crypto');
 const root=path.resolve(__dirname,'..'),reference=path.join(root,'reference/language-expansion-2026'),reference2=path.join(root,'reference/language-expansion-2026b');
 const referenceFor=item=>item.importTag==='grade-files-2026-10b'?reference2:reference;
-global.window={};for(const name of ['language-bank','match-bank','repair-bank','game-core'])require(path.join(root,'dist',name+'.js'));
+global.window={};for(const name of ['language-bank','match-bank','repair-bank','emoji-bank','game-core'])require(path.join(root,'dist',name+'.js'));
 const bank=window.LANGUAGE_BANK,M=window.MATCH_BANK,R=window.REPAIR_BANK,C=window.RallyCore;
 const key=s=>s.normalize('NFC').toLowerCase().replace(/[^\p{L}\p{N}_]+/gu,' ').trim();
 const expectedMap={g5u9:'g5u3',g5u10:'g5u10',g7u11:'g7u5',g7u12:'g7u8',g8u11:'g8u2',g8u12:'g8u2'};

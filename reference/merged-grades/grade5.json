@@ -2864,7 +2864,8 @@
         {
           "id": "g5u2t1",
           "en": "pencil",
-          "tr": "kurşun kalem"
+          "tr": "kurşun kalem",
+          "emoji": "✏️"
         },
         {
           "id": "g5u2t2",
@@ -2874,12 +2875,14 @@
         {
           "id": "g5u2t3",
           "en": "ruler",
-          "tr": "cetvel"
+          "tr": "cetvel",
+          "emoji": "📏"
         },
         {
           "id": "g5u2t4",
           "en": "notebook",
-          "tr": "defter"
+          "tr": "defter",
+          "emoji": "📓"
         },
         {
           "id": "g5u2t5",
@@ -2889,7 +2892,8 @@
         {
           "id": "g5u2t6",
           "en": "chair",
-          "tr": "sandalye"
+          "tr": "sandalye",
+          "emoji": "🪑"
         },
         {
           "id": "g5u2t7",
@@ -2899,7 +2903,8 @@
         {
           "id": "g5u2t8",
           "en": "scissors",
-          "tr": "makas"
+          "tr": "makas",
+          "emoji": "✂️"
         },
         {
           "id": "g5u2t9",
@@ -2914,7 +2919,8 @@
         {
           "id": "g5u2t11",
           "en": "pen",
-          "tr": "tükenmez kalem"
+          "tr": "tükenmez kalem",
+          "emoji": "🖊️"
         },
         {
           "id": "g5u2t12",
@@ -5210,7 +5216,8 @@
         {
           "id": "g5u3t1",
           "en": "shirt",
-          "tr": "gömlek"
+          "tr": "gömlek",
+          "emoji": "👔"
         },
         {
           "id": "g5u3t2",
@@ -5220,7 +5227,8 @@
         {
           "id": "g5u3t3",
           "en": "trousers",
-          "tr": "pantolon"
+          "tr": "pantolon",
+          "emoji": "👖"
         },
         {
           "id": "g5u3t4",
@@ -5230,22 +5238,26 @@
         {
           "id": "g5u3t5",
           "en": "coat",
-          "tr": "palto"
+          "tr": "palto",
+          "emoji": "🧥"
         },
         {
           "id": "g5u3t6",
           "en": "gloves",
-          "tr": "eldiven"
+          "tr": "eldiven",
+          "emoji": "🧤"
         },
         {
           "id": "g5u3t7",
           "en": "scarf",
-          "tr": "atkı"
+          "tr": "atkı",
+          "emoji": "🧣"
         },
         {
           "id": "g5u3t8",
           "en": "boots",
-          "tr": "çizme"
+          "tr": "çizme",
+          "emoji": "👢"
         },
         {
           "id": "g5u3t9",
@@ -5300,27 +5312,32 @@
         {
           "id": "g5u3t19",
           "en": "sad",
-          "tr": "üzgün"
+          "tr": "üzgün",
+          "emoji": "😢"
         },
         {
           "id": "g5u3t20",
           "en": "angry",
-          "tr": "kızgın"
+          "tr": "kızgın",
+          "emoji": "😠"
         },
         {
           "id": "g5u3t21",
           "en": "worried",
-          "tr": "endişeli"
+          "tr": "endişeli",
+          "emoji": "😟"
         },
         {
           "id": "g5u3t22",
           "en": "calm",
-          "tr": "sakin"
+          "tr": "sakin",
+          "emoji": "😌"
         },
         {
           "id": "g5u3t23",
           "en": "excited",
-          "tr": "heyecanlı"
+          "tr": "heyecanlı",
+          "emoji": "🤩"
         },
         {
           "id": "g5u3t24",
@@ -5335,7 +5352,8 @@
         {
           "id": "g5u3t26",
           "en": "confused",
-          "tr": "kafası karışmış"
+          "tr": "kafası karışmış",
+          "emoji": "😕"
         },
         {
           "id": "g5u3t27",
@@ -5345,7 +5363,8 @@
         {
           "id": "g5u3t28",
           "en": "happy",
-          "tr": "mutlu"
+          "tr": "mutlu",
+          "emoji": "😀"
         },
         {
           "id": "g5u3t29",
@@ -5365,7 +5384,8 @@
         {
           "id": "g5u3t32",
           "en": "sleepy",
-          "tr": "uykulu"
+          "tr": "uykulu",
+          "emoji": "😴"
         }
       ]
     },
@@ -6739,27 +6759,32 @@
         {
           "id": "g5u4t1",
           "en": "bicycle",
-          "tr": "bisiklet"
+          "tr": "bisiklet",
+          "emoji": "🚲"
         },
         {
           "id": "g5u4t2",
           "en": "guitar",
-          "tr": "gitar"
+          "tr": "gitar",
+          "emoji": "🎸"
         },
         {
           "id": "g5u4t3",
           "en": "camera",
-          "tr": "fotoğraf makinesi"
+          "tr": "fotoğraf makinesi",
+          "emoji": "📷"
         },
         {
           "id": "g5u4t4",
           "en": "piano",
-          "tr": "piyano"
+          "tr": "piyano",
+          "emoji": "🎹"
         },
         {
           "id": "g5u4t5",
           "en": "tent",
-          "tr": "çadır"
+          "tr": "çadır",
+          "emoji": "⛺"
         },
         {
           "id": "g5u4t6",
@@ -6769,17 +6794,20 @@
         {
           "id": "g5u4t7",
           "en": "scooter",
-          "tr": "trotinet"
+          "tr": "trotinet",
+          "emoji": "🛴"
         },
         {
           "id": "g5u4t8",
           "en": "paintbrush",
-          "tr": "boya fırçası"
+          "tr": "boya fırçası",
+          "emoji": "🖌️"
         },
         {
           "id": "g5u4t9",
           "en": "yarn",
-          "tr": "örgü ipi"
+          "tr": "örgü ipi",
+          "emoji": "🧶"
         },
         {
           "id": "g5u4t10",
@@ -6814,7 +6842,8 @@
         {
           "id": "g5u4t16",
           "en": "baby",
-          "tr": "bebek"
+          "tr": "bebek",
+          "emoji": "👶"
         },
         {
           "id": "g5u4t17",
@@ -8221,12 +8250,14 @@
         {
           "id": "g5u5t6",
           "en": "bridge",
-          "tr": "köprü"
+          "tr": "köprü",
+          "emoji": "🌉"
         },
         {
           "id": "g5u5t7",
           "en": "fountain",
-          "tr": "fıskiye"
+          "tr": "fıskiye",
+          "emoji": "⛲"
         },
         {
           "id": "g5u5t8",
@@ -8246,7 +8277,8 @@
         {
           "id": "g5u5t11",
           "en": "hospital",
-          "tr": "hastane"
+          "tr": "hastane",
+          "emoji": "🏥"
         },
         {
           "id": "g5u5t12",
@@ -8271,12 +8303,14 @@
         {
           "id": "g5u5t16",
           "en": "school",
-          "tr": "okul"
+          "tr": "okul",
+          "emoji": "🏫"
         },
         {
           "id": "g5u5t17",
           "en": "shop",
-          "tr": "dükkân"
+          "tr": "dükkân",
+          "emoji": "🏪"
         },
         {
           "id": "g5u5t18",
@@ -8291,12 +8325,14 @@
         {
           "id": "g5u5t20",
           "en": "bed",
-          "tr": "yatak"
+          "tr": "yatak",
+          "emoji": "🛏️"
         },
         {
           "id": "g5u5t21",
           "en": "chair",
-          "tr": "sandalye"
+          "tr": "sandalye",
+          "emoji": "🪑"
         }
       ]
     },
@@ -9675,12 +9711,14 @@
         {
           "id": "g5u6t1",
           "en": "lemon",
-          "tr": "limon"
+          "tr": "limon",
+          "emoji": "🍋"
         },
         {
           "id": "g5u6t2",
           "en": "bread",
-          "tr": "ekmek"
+          "tr": "ekmek",
+          "emoji": "🍞"
         },
         {
           "id": "g5u6t3",
@@ -9690,42 +9728,50 @@
         {
           "id": "g5u6t4",
           "en": "salad",
-          "tr": "salata"
+          "tr": "salata",
+          "emoji": "🥗"
         },
         {
           "id": "g5u6t5",
           "en": "cheese",
-          "tr": "peynir"
+          "tr": "peynir",
+          "emoji": "🧀"
         },
         {
           "id": "g5u6t6",
           "en": "pasta",
-          "tr": "makarna"
+          "tr": "makarna",
+          "emoji": "🍝"
         },
         {
           "id": "g5u6t7",
           "en": "biscuit",
-          "tr": "bisküvi"
+          "tr": "bisküvi",
+          "emoji": "🍪"
         },
         {
           "id": "g5u6t8",
           "en": "bowl",
-          "tr": "kâse"
+          "tr": "kâse",
+          "emoji": "🥣"
         },
         {
           "id": "g5u6t9",
           "en": "spoon",
-          "tr": "kaşık"
+          "tr": "kaşık",
+          "emoji": "🥄"
         },
         {
           "id": "g5u6t10",
           "en": "fork",
-          "tr": "çatal"
+          "tr": "çatal",
+          "emoji": "🍴"
         },
         {
           "id": "g5u6t11",
           "en": "sandwich",
-          "tr": "sandviç"
+          "tr": "sandviç",
+          "emoji": "🥪"
         },
         {
           "id": "g5u6t12",
@@ -9745,7 +9791,8 @@
         {
           "id": "g5u6t15",
           "en": "plate",
-          "tr": "tabak"
+          "tr": "tabak",
+          "emoji": "🍽️"
         },
         {
           "id": "g5u6t16",
@@ -9755,12 +9802,14 @@
         {
           "id": "g5u6t17",
           "en": "egg",
-          "tr": "yumurta"
+          "tr": "yumurta",
+          "emoji": "🥚"
         },
         {
           "id": "g5u6t18",
           "en": "milk",
-          "tr": "süt"
+          "tr": "süt",
+          "emoji": "🥛"
         },
         {
           "id": "g5u6t19",
@@ -11092,72 +11141,86 @@
         {
           "id": "g5u7t1",
           "en": "lion",
-          "tr": "aslan"
+          "tr": "aslan",
+          "emoji": "🦁"
         },
         {
           "id": "g5u7t2",
           "en": "elephant",
-          "tr": "fil"
+          "tr": "fil",
+          "emoji": "🐘"
         },
         {
           "id": "g5u7t3",
           "en": "giraffe",
-          "tr": "zürafa"
+          "tr": "zürafa",
+          "emoji": "🦒"
         },
         {
           "id": "g5u7t4",
           "en": "zebra",
-          "tr": "zebra"
+          "tr": "zebra",
+          "emoji": "🦓"
         },
         {
           "id": "g5u7t5",
           "en": "penguin",
-          "tr": "penguen"
+          "tr": "penguen",
+          "emoji": "🐧"
         },
         {
           "id": "g5u7t6",
           "en": "parrot",
-          "tr": "papağan"
+          "tr": "papağan",
+          "emoji": "🦜"
         },
         {
           "id": "g5u7t7",
           "en": "snake",
-          "tr": "yılan"
+          "tr": "yılan",
+          "emoji": "🐍"
         },
         {
           "id": "g5u7t8",
           "en": "crocodile",
-          "tr": "timsah"
+          "tr": "timsah",
+          "emoji": "🐊"
         },
         {
           "id": "g5u7t9",
           "en": "whale",
-          "tr": "balina"
+          "tr": "balina",
+          "emoji": "🐋"
         },
         {
           "id": "g5u7t10",
           "en": "fox",
-          "tr": "tilki"
+          "tr": "tilki",
+          "emoji": "🦊"
         },
         {
           "id": "g5u7t11",
           "en": "bear",
-          "tr": "ayı"
+          "tr": "ayı",
+          "emoji": "🐻"
         },
         {
           "id": "g5u7t12",
           "en": "camel",
-          "tr": "deve"
+          "tr": "deve",
+          "emoji": "🐫"
         },
         {
           "id": "g5u7t13",
           "en": "dolphin",
-          "tr": "yunus"
+          "tr": "yunus",
+          "emoji": "🐬"
         },
         {
           "id": "g5u7t14",
           "en": "turtle",
-          "tr": "kaplumbağa"
+          "tr": "kaplumbağa",
+          "emoji": "🐢"
         },
         {
           "id": "g5u7t15",
@@ -11172,7 +11235,8 @@
         {
           "id": "g5u7t17",
           "en": "feather",
-          "tr": "tüy"
+          "tr": "tüy",
+          "emoji": "🪶"
         },
         {
           "id": "g5u7t18",
@@ -12491,7 +12555,8 @@
         {
           "id": "g5u8t1",
           "en": "mountain",
-          "tr": "dağ"
+          "tr": "dağ",
+          "emoji": "⛰️"
         },
         {
           "id": "g5u8t2",
@@ -12501,12 +12566,14 @@
         {
           "id": "g5u8t3",
           "en": "island",
-          "tr": "ada"
+          "tr": "ada",
+          "emoji": "🏝️"
         },
         {
           "id": "g5u8t4",
           "en": "desert",
-          "tr": "çöl"
+          "tr": "çöl",
+          "emoji": "🏜️"
         },
         {
           "id": "g5u8t5",
@@ -12516,12 +12583,14 @@
         {
           "id": "g5u8t6",
           "en": "suitcase",
-          "tr": "bavul"
+          "tr": "bavul",
+          "emoji": "🧳"
         },
         {
           "id": "g5u8t7",
           "en": "sunhat",
-          "tr": "güneş şapkası"
+          "tr": "güneş şapkası",
+          "emoji": "👒"
         },
         {
           "id": "g5u8t8",
@@ -12531,7 +12600,8 @@
         {
           "id": "g5u8t9",
           "en": "seashell",
-          "tr": "deniz kabuğu"
+          "tr": "deniz kabuğu",
+          "emoji": "🐚"
         },
         {
           "id": "g5u8t10",
@@ -12551,7 +12621,8 @@
         {
           "id": "g5u8t13",
           "en": "beach",
-          "tr": "kumsal"
+          "tr": "kumsal",
+          "emoji": "🏖️"
         },
         {
           "id": "g5u8t14",
@@ -12566,27 +12637,32 @@
         {
           "id": "g5u8t16",
           "en": "ticket",
-          "tr": "bilet"
+          "tr": "bilet",
+          "emoji": "🎫"
         },
         {
           "id": "g5u8t17",
           "en": "map",
-          "tr": "harita"
+          "tr": "harita",
+          "emoji": "🗺️"
         },
         {
           "id": "g5u8t18",
           "en": "backpack",
-          "tr": "sırt çantası"
+          "tr": "sırt çantası",
+          "emoji": "🎒"
         },
         {
           "id": "g5u8t19",
           "en": "camera",
-          "tr": "fotoğraf makinesi"
+          "tr": "fotoğraf makinesi",
+          "emoji": "📷"
         },
         {
           "id": "g5u8t20",
           "en": "boat",
-          "tr": "tekne"
+          "tr": "tekne",
+          "emoji": "⛵"
         }
       ]
     },
@@ -13453,17 +13529,20 @@
         {
           "id": "g5u9t1",
           "en": "ambulance",
-          "tr": "ambulans"
+          "tr": "ambulans",
+          "emoji": "🚑"
         },
         {
           "id": "g5u9t2",
           "en": "stethoscope",
-          "tr": "stetoskop"
+          "tr": "stetoskop",
+          "emoji": "🩺"
         },
         {
           "id": "g5u9t3",
           "en": "tooth",
-          "tr": "diş"
+          "tr": "diş",
+          "emoji": "🦷"
         },
         {
           "id": "g5u9t4",
@@ -13473,12 +13552,14 @@
         {
           "id": "g5u9t5",
           "en": "aeroplane",
-          "tr": "uçak"
+          "tr": "uçak",
+          "emoji": "✈️"
         },
         {
           "id": "g5u9t6",
           "en": "tractor",
-          "tr": "traktör"
+          "tr": "traktör",
+          "emoji": "🚜"
         },
         {
           "id": "g5u9t7",
@@ -13488,7 +13569,8 @@
         {
           "id": "g5u9t8",
           "en": "bus",
-          "tr": "otobüs"
+          "tr": "otobüs",
+          "emoji": "🚌"
         },
         {
           "id": "g5u9t9",
@@ -13508,7 +13590,8 @@
         {
           "id": "g5u9t12",
           "en": "farmer",
-          "tr": "çiftçi"
+          "tr": "çiftçi",
+          "emoji": "🧑‍🌾"
         },
         {
           "id": "g5u9t13",
@@ -13518,12 +13601,14 @@
         {
           "id": "g5u9t14",
           "en": "chef",
-          "tr": "aşçı"
+          "tr": "aşçı",
+          "emoji": "🧑‍🍳"
         },
         {
           "id": "g5u9t15",
           "en": "mechanic",
-          "tr": "tamirci"
+          "tr": "tamirci",
+          "emoji": "🧑‍🔧"
         },
         {
           "id": "g5u9t16",
@@ -14524,17 +14609,20 @@
         {
           "id": "g5u10t2",
           "en": "teddy bear",
-          "tr": "oyuncak ayı"
+          "tr": "oyuncak ayı",
+          "emoji": "🧸"
         },
         {
           "id": "g5u10t3",
           "en": "kite",
-          "tr": "uçurtma"
+          "tr": "uçurtma",
+          "emoji": "🪁"
         },
         {
           "id": "g5u10t4",
           "en": "yo-yo",
-          "tr": "yoyo"
+          "tr": "yoyo",
+          "emoji": "🪀"
         },
         {
           "id": "g5u10t5",
@@ -14554,17 +14642,20 @@
         {
           "id": "g5u10t8",
           "en": "robot",
-          "tr": "robot"
+          "tr": "robot",
+          "emoji": "🤖"
         },
         {
           "id": "g5u10t9",
           "en": "puzzle",
-          "tr": "yapboz"
+          "tr": "yapboz",
+          "emoji": "🧩"
         },
         {
           "id": "g5u10t10",
           "en": "dice",
-          "tr": "zarlar"
+          "tr": "zarlar",
+          "emoji": "🎲"
         },
         {
           "id": "g5u10t11",

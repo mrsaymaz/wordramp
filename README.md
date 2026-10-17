@@ -87,6 +87,15 @@ so test on real phones before relying on performance.
 Run the full gameplay matrix faster in four shards with
 `WORDRAMP_TEST_GRADE=5 node tests/gameplay.cjs` (and 6, 7, 8).
 
+## Picture signs
+
+Some vocabulary signs use Fluent Emoji (3D) pictures, either as the clue or as
+the three answers. The reviewed word list and confusable groups live in
+`reference/fluent-emoji/` (see its README). After editing it, run
+`python3 scripts/build-emoji-bank.py`, then `npm run build`. `npm run
+test:pictures` checks the pictures, that exactly one option can match, and that
+pictures never change the road layout.
+
 ## Mr. Saymaz host images
 
 `public/img/saymaz-*.png` are the host portraits supplied by the project

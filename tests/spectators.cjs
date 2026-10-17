@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),THREE=require('three');
-global.window={};for(const f of ['language-bank','repair-bank','match-bank','game-core'])require('../dist/'+f+'.js');
+global.window={};for(const f of ['language-bank','repair-bank','match-bank','emoji-bank','game-core'])require('../dist/'+f+'.js');
 const C=window.RallyCore,{RaceSpectators,STAND_OFFSET}=require('./spectators-compiled.cjs'),u=window.LANGUAGE_BANK[0].units[0];
 const scene=new THREE.Scene(),crowd=new RaceSpectators(scene),identities=crowd.stands.map(s=>s.group),prefs={graphics:'auto',reduced:false};let checks=0,recycles=0;
 for(let arena=0;arena<3;arena++){

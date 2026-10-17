@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict');
-global.window={};for(const name of ['language-bank','repair-bank','match-bank','game-core'])require('../dist/'+name+'.js');
+global.window={};for(const name of ['language-bank','repair-bank','match-bank','emoji-bank','game-core'])require('../dist/'+name+'.js');
 const C=window.RallyCore,{displaySpeed}=require('./presentation-compiled.cjs'),unit=window.LANGUAGE_BANK[0].units[0];
 function open(fuel=100){const s=C.createRace(unit,'challenge',2,11,{fuel,rivals:false});s.status='driving';s.tasks=[];s.obstacles=[];C.setAccelerating(s,true);return s;}
 for(const hz of [30,60,120]){

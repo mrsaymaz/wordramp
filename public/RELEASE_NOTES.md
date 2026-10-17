@@ -45,6 +45,26 @@ Graphics, world and presentation
   the world during English focus. Task cues are never ducked. Mute, Pause and
   the browser gesture rule are respected.
 
+Picture signs (follow-up within v0.24.0)
+- Some vocabulary signs now use Microsoft's Fluent Emoji (3D) pictures:
+  - Picture → word: the picture is the clue, with three words on the lanes.
+    It appears at the second traffic light of every race.
+  - Word → picture: the word is the clue, with three pictures on the lane
+    signs. It appears at the last route fork in Stormcrest and, for Grades
+    5–6, at the fourth light in the later arenas.
+- Most races in the first two arenas have one picture sign, and Stormcrest
+  has one or two (about 0.6–0.8 and 1.4–2.2 per race).
+- 226 reviewed words have one of 220 pictures. Only clearly picturable words
+  are included, and lookalikes (tram/train, happy/excited, pasta/noodles, …)
+  are never offered against each other, so exactly one option matches.
+- Answers stay English words, so scoring, missed-word reviews and progress
+  are unchanged. The pictures (about 1 MB, MIT licence) ship inside the game
+  and are fetched at the start line.
+- Card choices now use their own random stream. Language content and bank
+  edits no longer move traffic, obstacles or rivals for a given course; the
+  two language imports had been shifting them.
+- The merged grade files gain an `emoji` field for the pictured words.
+
 Language expansion, second batch (follow-up within v0.24.0)
 - Four more grade files (grade5-2 to grade8-2) are imported after the first
   batch, adding only what is not already in the game. That adds 648 playable

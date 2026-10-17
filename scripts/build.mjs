@@ -30,4 +30,6 @@ for(const name of await readdir(output)){
 const app=await readFile(join(root,'app.js'),'utf8');
 for(const [,pose] of app.matchAll(/host\('([a-z]+)'\)|'(?:cheer|smile|think|point)'/g))if(pose){await access(join(output,'img',`saymaz-${pose}.png`));references++;}
 for(const pose of ['cheer','smile','think']){await access(join(output,'img',`saymaz-${pose}.png`));}
+// Every picture-sign image named in the emoji bank must ship.
+{const bank=await readFile(join(output,'emoji-bank.js'),'utf8'),stems=new Set(Object.values(JSON.parse(bank.slice(bank.indexOf('=')+1).trim().replace(/;$/,'')).words));for(const stem of stems){await access(join(output,'emoji',stem+'.webp'));references++;}}
 console.log(`Build complete: dist/index.html and ${references} local HTML asset references verified.`);

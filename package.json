@@ -42,6 +42,7 @@
     "test:language": "node tests/language-expansion.cjs",
     "test:touch": "esbuild presentation.js --bundle --platform=node --format=cjs --outfile=tests/presentation-compiled.cjs && esbuild road-layout.js --bundle --platform=node --format=cjs --outfile=tests/layout-compiled.cjs && node tests/touch-driving.cjs",
     "test:damage": "node tests/car-condition.cjs",
-    "test:impacts": "esbuild driving-feel.js --bundle --platform=node --format=cjs --outfile=tests/driving-feel-compiled.cjs && node tests/impact-recovery.cjs"
+    "test:impacts": "esbuild driving-feel.js --bundle --platform=node --format=cjs --outfile=tests/driving-feel-compiled.cjs && node tests/impact-recovery.cjs",
+    "test:pictures": "node tests/picture-signs.cjs"
   }
 }

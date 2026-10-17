@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict');
-global.window={};for(const name of ['language-bank','repair-bank','match-bank','game-core'])require('../dist/'+name+'.js');
+global.window={};for(const name of ['language-bank','repair-bank','match-bank','emoji-bank','game-core'])require('../dist/'+name+'.js');
 const C=window.RallyCore,u=window.LANGUAGE_BANK[0].units[0];
 assert.deepEqual(Object.keys(C.DIFFICULTIES),['relaxed','challenge']);assert.equal(C.createRace(u,'standard').difficulty,'challenge');
 let checks=0;

@@ -29,15 +29,37 @@
   // Random distractors must be clearly wrong: skip one that contains the
   // answer as a whole word or vice versa (kapı → gate vs “school gate”).
   // The full shuffle keeps RNG use identical, so seeded courses do not move.
-  function decoyPair(item,rng){
-    const words=t=>' '+String(t).toLowerCase().replace(/[^a-z0-9çğıöşü' ]+/g,' ').trim()+' ',a=words(item.answer),pool=shuffle(item.decoys,rng);
-    const clear=pool.filter(d=>{const w=words(d);return !w.includes(a)&&!a.includes(w);});
+  const signWords=t=>' '+String(t).toLowerCase().replace(/[^a-z0-9çğıöşü' ]+/g,' ').trim()+' ';
+  function clearDecoy(answer,decoy){const a=signWords(answer),w=signWords(decoy);return !w.includes(a)&&!a.includes(w);}
+  function decoyPair(item,rng,keep=null){
+    const pool=shuffle(item.decoys,rng),clear=pool.filter(d=>clearDecoy(item.answer,d)&&(!keep||keep(d)));
     return (clear.length>=2?clear:pool).slice(0,2);
+  }
+  // Picture signs: a reviewed Fluent Emoji stands in for the word (picture to
+  // word) or for each answer (word to picture). Wrong answers must have their
+  // own, clearly different picture, so no option can also match the image.
+  // The mode depends only on the slot and the card, never on the course RNG.
+  const emojiFor=word=>root.EMOJI_BANK?.words?.[String(word).toLowerCase()]||null;
+  function pictureDistinct(answer,decoy){
+    const bank=root.EMOJI_BANK,a=String(answer).toLowerCase(),d=String(decoy).toLowerCase(),group=bank?.groups||{};
+    return !!emojiFor(d)&&emojiFor(d)!==emojiFor(a)&&(group[a]==null||group[a]!==group[d]);
+  }
+  // Each wrong answer also needs its own picture, distinct from the other one.
+  function pictureKeep(answer){const seen=new Set();return d=>{const e=emojiFor(d);if(!pictureDistinct(answer,d)||seen.has(e))return false;seen.add(e);return true;};}
+  function pictureMode(unit,item,kind,index){
+    if(item.type!=='translation'||!emojiFor(item.answer))return null;
+    if(new Set(item.decoys.filter(d=>clearDecoy(item.answer,d)&&pictureDistinct(item.answer,d)).map(emojiFor)).size<2)return null;
+    if(kind==='light'&&index===4)return 'word';
+    if(kind==='light'&&index===12&&/^g[56]u/.test(unit.id))return 'image';
+    if(kind==='junction'&&index===14)return 'image';
+    return null;
   }
   function makeTasks(unit,difficulty,arenaIndex,rng){
     const count=ARENAS[arenaIndex].checkpoints,used=new Set(),usedWords=new Set();
     const takeWords=words=>{const key=w=>w.toLowerCase(),fresh=words.filter(w=>!usedWords.has(key(w))),seen=words.filter(w=>usedWords.has(key(w))),picked=[...shuffle(fresh,rng),...shuffle(seen,rng)].slice(0,2);picked.forEach(w=>usedWords.add(key(w)));return picked;};
-    const take=arr=>{let fresh=arr.filter(x=>!used.has(x.id));let item=shuffle(fresh.length?fresh:arr,rng)[0];used.add(item.id);return item;};
+    // prefer looks only at the first four of the shuffled draw: picture signs
+    // become common without crowding out the cards that have no picture.
+    const take=(arr,prefer=null)=>{let fresh=arr.filter(x=>!used.has(x.id)),list=shuffle(fresh.length?fresh:arr,rng),item=(prefer&&list.slice(0,4).find(prefer))||list[0];used.add(item.id);return item;};
     const tasks=[];
     for(let i=0;i<count;i++){
       let kind=['light','repair','junction','pedestrian'][i%4], t;
@@ -62,8 +84,12 @@
         if(type==='question'&&!root.MATCH_BANK?.[unit.id]?.some(x=>x.type===type))type='description';
         const candidates=root.MATCH_BANK?.[unit.id]?.filter(x=>x.type===type);
         if(!candidates?.length)throw new Error('Missing reviewed match bank: '+unit.id);
-        const item=take(candidates),options=shuffle(item.options||[item.answer,...decoyPair(item,rng)],rng);
+        // The first light and the final route prefer a card that has a picture.
+        const item=take(candidates,type==='translation'&&(i===4||i===14)?x=>!!pictureMode(unit,x,kind,i):null),picture=pictureMode(unit,item,kind,i),options=shuffle(item.options||[item.answer,...decoyPair(item,rng,picture?pictureKeep(item.answer):null)],rng);
         t={kind,type,id:item.id,prompt:item.prompt,answer:item.answer,options,correctIndex:options.indexOf(item.answer),tr:item.tr||'',attempts:0};
+        // Answers stay English words, so scoring, reviews and results are unchanged.
+        if(picture)Object.assign(t,{picture,image:emojiFor(item.answer),optionImages:picture==='image'?options.map(emojiFor):null,
+          prompt:picture==='word'?'Which word matches the picture?':'Which picture shows “'+item.answer+'”?'});
       }
       t.at=220+i*(ARENAS[arenaIndex].length-440)/(count-1);
       if(t.kind==='pedestrian')t.rows=[{at:t.at+56,options:t.labels,answer:t.answer,correctIndex:null}];
@@ -75,7 +101,9 @@
   }
   function createRace(unit,difficulty='relaxed',arenaIndex=0,seed=Date.now(),settings={}){
     difficulty=difficulty==='standard'?'challenge':DIFFICULTIES[difficulty]?difficulty:'relaxed';
-    const rng=random(seed),arena=ARENAS[arenaIndex],diff=DIFFICULTIES[difficulty],tasks=makeTasks(unit,difficulty,arenaIndex,rng),obstacles=[];
+    const rng=random(seed),arena=ARENAS[arenaIndex],diff=DIFFICULTIES[difficulty],tasks=makeTasks(unit,difficulty,arenaIndex,random(Math.floor(rng()*4294967296))),obstacles=[];
+    // Language content draws from its own stream (one draw from the course
+    // seed), so card choices and bank edits never move traffic or obstacles.
     // Sparse moving traffic; stationary driving challenges belong to the open
     // intervals between generous task approaches, never inside answer lanes.
     const patterns=[],speed=8+arenaIndex*2,reactionTime={relaxed:2.3,challenge:1.6}[difficulty];
@@ -708,5 +736,5 @@
   function stars(s){if(!raceSucceeded(s))return 0;const accuracy=s.correct/s.tasks.length;return accuracy>=.9&&s.collisions<=2?3:accuracy>=.75?2:1;}
   function pause(s){if(!['finished','failed','paused'].includes(s.status)){s.previousStatus=s.status;s.status='paused';s.accelerationHeld=false;s.accelerating=false;s.nitroHeld=false;s.nitroActive=false;return true;}return false;}
   function resume(s){if(s.status==='paused')s.status=s.previousStatus;}
-  root.RallyCore={ARENAS,DIFFICULTIES,RIVAL_PROFILES,PEDESTRIAN_WALK_TIME,PEDESTRIAN_ENTRY_TIME,VEHICLE_GAP,TASK_VIEW_DISTANCE,REGULAR_MAX_SPEED,MAX_SPEED,DAMAGE_LIMIT,COLLISION_GRACE,BREAKDOWN_DURATION,IMPACT_RECOVERY,carCondition,NITRO_COST,NITRO_DURATION,NITRO_MAX_STACKS,CHOICE_FOCUS_DISTANCE,nitroSpeed,taskZone,taskRoadZone,apronWidth,roadSpans,vehicleOnRoad,courseCurve,actorX,playerLaneClear,playerLaneBlocker,contactBump,learningPaceProtected,focusCruise,steeringLocked,repairCruise,canShortenFocus,canNitro,canEngageNitro,setNitroHeld,engageNitro,activateNitro,makeRoute,routeOffset,raceOrder,raceFailed,raceSucceeded,alternateReview,createReviewLap,exitAssist,pedestrianReady,crosswalkOccupied,crosswalkTimeLeft,random,shuffle,createRace,makeTasks,tick,move,choose,setAccelerating,currentRow,connectRepair,sortPerson,answer,stars,pause,resume,obstacleLane,clamp};
+  root.RallyCore={ARENAS,emojiFor,pictureDistinct,DIFFICULTIES,RIVAL_PROFILES,PEDESTRIAN_WALK_TIME,PEDESTRIAN_ENTRY_TIME,VEHICLE_GAP,TASK_VIEW_DISTANCE,REGULAR_MAX_SPEED,MAX_SPEED,DAMAGE_LIMIT,COLLISION_GRACE,BREAKDOWN_DURATION,IMPACT_RECOVERY,carCondition,NITRO_COST,NITRO_DURATION,NITRO_MAX_STACKS,CHOICE_FOCUS_DISTANCE,nitroSpeed,taskZone,taskRoadZone,apronWidth,roadSpans,vehicleOnRoad,courseCurve,actorX,playerLaneClear,playerLaneBlocker,contactBump,learningPaceProtected,focusCruise,steeringLocked,repairCruise,canShortenFocus,canNitro,canEngageNitro,setNitroHeld,engageNitro,activateNitro,makeRoute,routeOffset,raceOrder,raceFailed,raceSucceeded,alternateReview,createReviewLap,exitAssist,pedestrianReady,crosswalkOccupied,crosswalkTimeLeft,random,shuffle,createRace,makeTasks,tick,move,choose,setAccelerating,currentRow,connectRepair,sortPerson,answer,stars,pause,resume,obstacleLane,clamp};
 })(typeof window==='undefined'?globalThis:window);

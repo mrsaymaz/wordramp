@@ -1,5 +1,5 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
-const ctx={window:{}};vm.createContext(ctx);for(const file of ['language-bank.js','repair-bank.js','match-bank.js','game-core.js'])vm.runInContext(fs.readFileSync((fs.existsSync('dist/language-bank.js')?'dist/':'')+file,'utf8'),ctx);
+const ctx={window:{}};vm.createContext(ctx);for(const file of ['language-bank.js','repair-bank.js','match-bank.js','emoji-bank.js','game-core.js'])vm.runInContext(fs.readFileSync((fs.existsSync('dist/language-bank.js')?'dist/':'')+file,'utf8'),ctx);
 const C=ctx.window.RallyCore,u=ctx.window.LANGUAGE_BANK[0].units[0];
 function approach(){const s=C.createRace(u,'relaxed',0,15,{rivals:false});s.status='driving';s.taskIndex=0;s.distance=s.tasks[0].at-C.CHOICE_FOCUS_DISTANCE;s.lane=s.tasks[0].correctIndex-1;s.speedFactor=1;s.obstacles=[];return s;}
 let slow=approach(),fast=approach(),normalElapsed=0,fastElapsed=0;

@@ -2,7 +2,7 @@ const fs=require('node:fs');const assert=require('node:assert/strict');
 global.window={devicePixelRatio:2,addEventListener(){}};global.innerWidth=390;global.innerHeight=844;
 const noop=()=>{};const gradient={addColorStop:noop};const context=new Proxy({}, {get:(t,k)=>['createRadialGradient','createLinearGradient'].includes(k)?()=>gradient:noop,set:()=>true});
 global.document={createElement:()=>({width:0,height:0,getContext:()=>context}),dispatchEvent:noop};
-require('../dist/match-bank.js');require('../dist/repair-bank.js');require('../dist/game-core.js');require('../dist/language-bank.js');
+require('../dist/match-bank.js');require('../dist/repair-bank.js');require('../dist/emoji-bank.js');require('../dist/game-core.js');require('../dist/language-bank.js');
 const {RallyScene}=require('./scene-compiled.cjs');
 let renderedSize;
 const renderer={setPixelRatio:noop,setSize:(w,h)=>renderedSize=[w,h],shadowMap:{},domElement:{addEventListener:noop},render(scene,camera){scene.updateMatrixWorld();camera.updateMatrixWorld();}};

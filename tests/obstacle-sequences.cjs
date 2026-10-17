@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict');
-global.window={};for(const file of ['language-bank','repair-bank','match-bank','game-core'])require('../dist/'+file+'.js');
+global.window={};for(const file of ['language-bank','repair-bank','match-bank','emoji-bank','game-core'])require('../dist/'+file+'.js');
 const C=window.RallyCore,unit=window.LANGUAGE_BANK[0].units[0];let courses=0,rows=0,obstacles=0,turns=0;const totals={relaxed:[[],[],[]],challenge:[[],[],[]]};
 for(const mode of Object.keys(C.DIFFICULTIES))for(let arena=0;arena<3;arena++)for(let seed=1;seed<=32;seed++){
  const s=C.createRace(unit,mode,arena,seed),groups=Map.groupBy(s.patterns,p=>p.sequenceId);

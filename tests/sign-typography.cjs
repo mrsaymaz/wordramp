@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict');
 const {wordFontSize,categoryTitle,laneLayout}=require('./layout-compiled.cjs');
-global.window={};for(const f of ['language-bank','repair-bank','match-bank','game-core'])require('../dist/'+f+'.js');
+global.window={};for(const f of ['language-bank','repair-bank','match-bank','emoji-bank','game-core'])require('../dist/'+f+'.js');
 const labels=new Set(['Personality','Appearance','Appearance Words','Personality Traits','hard-working']);
 for(const grade of window.LANGUAGE_BANK)for(const unit of grade.units){
  for(const item of window.MATCH_BANK[unit.id]){

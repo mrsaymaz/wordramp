@@ -1422,7 +1422,8 @@
         {
           "id": "g8u1t2",
           "en": "basket",
-          "tr": "sepet"
+          "tr": "sepet",
+          "emoji": "🧺"
         },
         {
           "id": "g8u1t3",
@@ -1432,7 +1433,8 @@
         {
           "id": "g8u1t4",
           "en": "skateboard",
-          "tr": "kaykay"
+          "tr": "kaykay",
+          "emoji": "🛹"
         },
         {
           "id": "g8u1t5",
@@ -1447,7 +1449,8 @@
         {
           "id": "g8u1t7",
           "en": "sandwich",
-          "tr": "sandviç"
+          "tr": "sandviç",
+          "emoji": "🥪"
         },
         {
           "id": "g8u1t8",
@@ -1457,7 +1460,8 @@
         {
           "id": "g8u1t9",
           "en": "balloon",
-          "tr": "balon"
+          "tr": "balon",
+          "emoji": "🎈"
         },
         {
           "id": "g8u1t10",
@@ -4740,12 +4744,14 @@
         {
           "id": "g8u2t1",
           "en": "headphones",
-          "tr": "kulaklık"
+          "tr": "kulaklık",
+          "emoji": "🎧"
         },
         {
           "id": "g8u2t2",
           "en": "guitar",
-          "tr": "gitar"
+          "tr": "gitar",
+          "emoji": "🎸"
         },
         {
           "id": "g8u2t3",
@@ -4770,17 +4776,20 @@
         {
           "id": "g8u2t7",
           "en": "camera",
-          "tr": "fotoğraf makinesi"
+          "tr": "fotoğraf makinesi",
+          "emoji": "📷"
         },
         {
           "id": "g8u2t8",
           "en": "trainers",
-          "tr": "spor ayakkabı"
+          "tr": "spor ayakkabı",
+          "emoji": "👟"
         },
         {
           "id": "g8u2t9",
           "en": "alarm clock",
-          "tr": "çalar saat"
+          "tr": "çalar saat",
+          "emoji": "⏰"
         },
         {
           "id": "g8u2t10",
@@ -4815,7 +4824,8 @@
         {
           "id": "g8u2t16",
           "en": "music",
-          "tr": "müzik"
+          "tr": "müzik",
+          "emoji": "🎵"
         },
         {
           "id": "g8u2t17",
@@ -4885,7 +4895,8 @@
         {
           "id": "g8u2t30",
           "en": "fever",
-          "tr": "ateş"
+          "tr": "ateş",
+          "emoji": "🤒"
         },
         {
           "id": "g8u2t31",
@@ -4910,7 +4921,8 @@
         {
           "id": "g8u2t35",
           "en": "sleepy",
-          "tr": "uykulu"
+          "tr": "uykulu",
+          "emoji": "😴"
         },
         {
           "id": "g8u2t36",
@@ -4960,12 +4972,14 @@
         {
           "id": "g8u2t45",
           "en": "plaster",
-          "tr": "yara bandı"
+          "tr": "yara bandı",
+          "emoji": "🩹"
         },
         {
           "id": "g8u2t46",
           "en": "bandage",
-          "tr": "bandaj"
+          "tr": "bandaj",
+          "emoji": "🩹"
         }
       ]
     },
@@ -6374,7 +6388,8 @@
         {
           "id": "g8u3t7",
           "en": "frying pan",
-          "tr": "tava"
+          "tr": "tava",
+          "emoji": "🍳"
         },
         {
           "id": "g8u3t8",
@@ -6394,7 +6409,8 @@
         {
           "id": "g8u3t11",
           "en": "garlic",
-          "tr": "sarımsak"
+          "tr": "sarımsak",
+          "emoji": "🧄"
         },
         {
           "id": "g8u3t12",
@@ -6409,7 +6425,8 @@
         {
           "id": "g8u3t14",
           "en": "butter",
-          "tr": "tereyağı"
+          "tr": "tereyağı",
+          "emoji": "🧈"
         },
         {
           "id": "g8u3t15",
@@ -6419,12 +6436,14 @@
         {
           "id": "g8u3t16",
           "en": "onion",
-          "tr": "soğan"
+          "tr": "soğan",
+          "emoji": "🧅"
         },
         {
           "id": "g8u3t17",
           "en": "salt",
-          "tr": "tuz"
+          "tr": "tuz",
+          "emoji": "🧂"
         },
         {
           "id": "g8u3t18",
@@ -6434,7 +6453,8 @@
         {
           "id": "g8u3t19",
           "en": "egg",
-          "tr": "yumurta"
+          "tr": "yumurta",
+          "emoji": "🥚"
         },
         {
           "id": "g8u3t20",
@@ -7885,7 +7905,8 @@
         {
           "id": "g8u4t7",
           "en": "smartphone",
-          "tr": "akıllı telefon"
+          "tr": "akıllı telefon",
+          "emoji": "📱"
         },
         {
           "id": "g8u4t8",
@@ -7895,12 +7916,14 @@
         {
           "id": "g8u4t9",
           "en": "pen",
-          "tr": "tükenmez kalem"
+          "tr": "tükenmez kalem",
+          "emoji": "🖊️"
         },
         {
           "id": "g8u4t10",
           "en": "phone",
-          "tr": "telefon"
+          "tr": "telefon",
+          "emoji": "☎️"
         },
         {
           "id": "g8u4t11",
@@ -7930,12 +7953,14 @@
         {
           "id": "g8u4t16",
           "en": "mobile phone",
-          "tr": "cep telefonu"
+          "tr": "cep telefonu",
+          "emoji": "📱"
         },
         {
           "id": "g8u4t17",
           "en": "ring",
-          "tr": "halka"
+          "tr": "halka",
+          "emoji": "💍"
         },
         {
           "id": "g8u4t18",
@@ -9319,7 +9344,8 @@
         {
           "id": "g8u5t1",
           "en": "keyboard",
-          "tr": "klavye"
+          "tr": "klavye",
+          "emoji": "⌨️"
         },
         {
           "id": "g8u5t2",
@@ -9334,7 +9360,8 @@
         {
           "id": "g8u5t4",
           "en": "laptop",
-          "tr": "dizüstü bilgisayar"
+          "tr": "dizüstü bilgisayar",
+          "emoji": "💻"
         },
         {
           "id": "g8u5t5",
@@ -9354,7 +9381,8 @@
         {
           "id": "g8u5t8",
           "en": "printer",
-          "tr": "yazıcı"
+          "tr": "yazıcı",
+          "emoji": "🖨️"
         },
         {
           "id": "g8u5t9",
@@ -10758,7 +10786,8 @@
         {
           "id": "g8u6t4",
           "en": "rope",
-          "tr": "ip"
+          "tr": "ip",
+          "emoji": "🪢"
         },
         {
           "id": "g8u6t5",
@@ -10768,7 +10797,8 @@
         {
           "id": "g8u6t6",
           "en": "goggles",
-          "tr": "koruyucu gözlük"
+          "tr": "koruyucu gözlük",
+          "emoji": "🥽"
         },
         {
           "id": "g8u6t7",
@@ -10778,12 +10808,14 @@
         {
           "id": "g8u6t8",
           "en": "parachute",
-          "tr": "paraşüt"
+          "tr": "paraşüt",
+          "emoji": "🪂"
         },
         {
           "id": "g8u6t9",
           "en": "kayak",
-          "tr": "kano"
+          "tr": "kano",
+          "emoji": "🛶"
         },
         {
           "id": "g8u6t10",
@@ -10793,7 +10825,8 @@
         {
           "id": "g8u6t11",
           "en": "climbing",
-          "tr": "tırmanış"
+          "tr": "tırmanış",
+          "emoji": "🧗"
         },
         {
           "id": "g8u6t12",
@@ -10808,17 +10841,20 @@
         {
           "id": "g8u6t14",
           "en": "camping",
-          "tr": "kamp yapma"
+          "tr": "kamp yapma",
+          "emoji": "🏕️"
         },
         {
           "id": "g8u6t15",
           "en": "cycling",
-          "tr": "bisiklet sürme"
+          "tr": "bisiklet sürme",
+          "emoji": "🚴"
         },
         {
           "id": "g8u6t16",
           "en": "diving",
-          "tr": "dalış"
+          "tr": "dalış",
+          "emoji": "🤿"
         },
         {
           "id": "g8u6t17",
@@ -12157,7 +12193,8 @@
         {
           "id": "g8u7t1",
           "en": "castle",
-          "tr": "kale"
+          "tr": "kale",
+          "emoji": "🏰"
         },
         {
           "id": "g8u7t2",
@@ -12177,7 +12214,8 @@
         {
           "id": "g8u7t5",
           "en": "bridge",
-          "tr": "köprü"
+          "tr": "köprü",
+          "emoji": "🌉"
         },
         {
           "id": "g8u7t6",
@@ -12192,7 +12230,8 @@
         {
           "id": "g8u7t8",
           "en": "suitcase",
-          "tr": "bavul"
+          "tr": "bavul",
+          "emoji": "🧳"
         },
         {
           "id": "g8u7t9",
@@ -12222,27 +12261,32 @@
         {
           "id": "g8u7t14",
           "en": "beach",
-          "tr": "kumsal"
+          "tr": "kumsal",
+          "emoji": "🏖️"
         },
         {
           "id": "g8u7t15",
           "en": "island",
-          "tr": "ada"
+          "tr": "ada",
+          "emoji": "🏝️"
         },
         {
           "id": "g8u7t16",
           "en": "mountain",
-          "tr": "dağ"
+          "tr": "dağ",
+          "emoji": "⛰️"
         },
         {
           "id": "g8u7t17",
           "en": "city",
-          "tr": "şehir"
+          "tr": "şehir",
+          "emoji": "🏙️"
         },
         {
           "id": "g8u7t18",
           "en": "map",
-          "tr": "harita"
+          "tr": "harita",
+          "emoji": "🗺️"
         },
         {
           "id": "g8u7t19",
@@ -13608,7 +13652,8 @@
         {
           "id": "g8u8t1",
           "en": "broom",
-          "tr": "süpürge"
+          "tr": "süpürge",
+          "emoji": "🧹"
         },
         {
           "id": "g8u8t2",
@@ -13618,7 +13663,8 @@
         {
           "id": "g8u8t3",
           "en": "bucket",
-          "tr": "kova"
+          "tr": "kova",
+          "emoji": "🪣"
         },
         {
           "id": "g8u8t4",
@@ -13628,7 +13674,8 @@
         {
           "id": "g8u8t5",
           "en": "sponge",
-          "tr": "sünger"
+          "tr": "sünger",
+          "emoji": "🧽"
         },
         {
           "id": "g8u8t6",
@@ -13678,7 +13725,8 @@
         {
           "id": "g8u8t15",
           "en": "recycling",
-          "tr": "geri dönüşüm"
+          "tr": "geri dönüşüm",
+          "emoji": "♻️"
         },
         {
           "id": "g8u8t16",
@@ -15023,12 +15071,14 @@
         {
           "id": "g8u9t1",
           "en": "microscope",
-          "tr": "mikroskop"
+          "tr": "mikroskop",
+          "emoji": "🔬"
         },
         {
           "id": "g8u9t2",
           "en": "test tube",
-          "tr": "deney tüpü"
+          "tr": "deney tüpü",
+          "emoji": "🧪"
         },
         {
           "id": "g8u9t3",
@@ -15038,12 +15088,14 @@
         {
           "id": "g8u9t4",
           "en": "magnet",
-          "tr": "mıknatıs"
+          "tr": "mıknatıs",
+          "emoji": "🧲"
         },
         {
           "id": "g8u9t5",
           "en": "thermometer",
-          "tr": "termometre"
+          "tr": "termometre",
+          "emoji": "🌡️"
         },
         {
           "id": "g8u9t6",
@@ -15058,7 +15110,8 @@
         {
           "id": "g8u9t8",
           "en": "lab coat",
-          "tr": "laboratuvar önlüğü"
+          "tr": "laboratuvar önlüğü",
+          "emoji": "🥼"
         },
         {
           "id": "g8u9t9",
@@ -15073,7 +15126,8 @@
         {
           "id": "g8u9t11",
           "en": "scientist",
-          "tr": "bilim insanı"
+          "tr": "bilim insanı",
+          "emoji": "🧑‍🔬"
         },
         {
           "id": "g8u9t12",
@@ -16530,12 +16584,14 @@
         {
           "id": "g8u10t1",
           "en": "torch",
-          "tr": "el feneri"
+          "tr": "el feneri",
+          "emoji": "🔦"
         },
         {
           "id": "g8u10t2",
           "en": "radio",
-          "tr": "radyo"
+          "tr": "radyo",
+          "emoji": "📻"
         },
         {
           "id": "g8u10t3",
@@ -16545,7 +16601,8 @@
         {
           "id": "g8u10t4",
           "en": "bandage",
-          "tr": "sargı bezi"
+          "tr": "sargı bezi",
+          "emoji": "🩹"
         },
         {
           "id": "g8u10t5",
@@ -16555,12 +16612,14 @@
         {
           "id": "g8u10t6",
           "en": "backpack",
-          "tr": "sırt çantası"
+          "tr": "sırt çantası",
+          "emoji": "🎒"
         },
         {
           "id": "g8u10t7",
           "en": "volcano",
-          "tr": "yanardağ"
+          "tr": "yanardağ",
+          "emoji": "🌋"
         },
         {
           "id": "g8u10t8",
@@ -16590,12 +16649,14 @@
         {
           "id": "g8u10t13",
           "en": "tornado",
-          "tr": "hortum"
+          "tr": "hortum",
+          "emoji": "🌪️"
         },
         {
           "id": "g8u10t14",
           "en": "storm",
-          "tr": "fırtına"
+          "tr": "fırtına",
+          "emoji": "⛈️"
         },
         {
           "id": "g8u10t15",
@@ -16615,17 +16676,20 @@
         {
           "id": "g8u10t18",
           "en": "rain",
-          "tr": "yağmur"
+          "tr": "yağmur",
+          "emoji": "🌧️"
         },
         {
           "id": "g8u10t19",
           "en": "wind",
-          "tr": "rüzgâr"
+          "tr": "rüzgâr",
+          "emoji": "🌬️"
         },
         {
           "id": "g8u10t20",
           "en": "lightning",
-          "tr": "şimşek"
+          "tr": "şimşek",
+          "emoji": "⚡"
         },
         {
           "id": "g8u10t21",
@@ -16635,7 +16699,8 @@
         {
           "id": "g8u10t22",
           "en": "wave",
-          "tr": "dalga"
+          "tr": "dalga",
+          "emoji": "🌊"
         }
       ]
     },
@@ -17122,17 +17187,20 @@
         {
           "id": "g8u11t1",
           "en": "receipt",
-          "tr": "fiş"
+          "tr": "fiş",
+          "emoji": "🧾"
         },
         {
           "id": "g8u11t2",
           "en": "price tag",
-          "tr": "fiyat etiketi"
+          "tr": "fiyat etiketi",
+          "emoji": "🏷️"
         },
         {
           "id": "g8u11t3",
           "en": "trolley",
-          "tr": "alışveriş arabası"
+          "tr": "alışveriş arabası",
+          "emoji": "🛒"
         },
         {
           "id": "g8u11t4",
@@ -17142,22 +17210,26 @@
         {
           "id": "g8u11t5",
           "en": "shopping bag",
-          "tr": "alışveriş poşeti"
+          "tr": "alışveriş poşeti",
+          "emoji": "🛍️"
         },
         {
           "id": "g8u11t6",
           "en": "coin",
-          "tr": "madeni para"
+          "tr": "madeni para",
+          "emoji": "🪙"
         },
         {
           "id": "g8u11t7",
           "en": "banknote",
-          "tr": "banknot"
+          "tr": "banknot",
+          "emoji": "💵"
         },
         {
           "id": "g8u11t8",
           "en": "purse",
-          "tr": "bozuk para cüzdanı"
+          "tr": "bozuk para cüzdanı",
+          "emoji": "👛"
         },
         {
           "id": "g8u11t9",

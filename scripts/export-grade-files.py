@@ -13,6 +13,8 @@ supplied style (g5u1d1, g5u1d2, ...). Extra keys record how items are played:
 - sentences[].repair / repairBlocks / repairTr: used as a three-block road
   repair; repairBlocks only when the played blocks differ from blocks.
 - sentences[].grammar: the grammar choices built from the sentence.
+- translations[].emoji: the reviewed Fluent Emoji used for picture signs
+  (reference/fluent-emoji/word-emoji.json); only clearly picturable words.
 
 Run after scripts/expand-language-bank.py. Output: reference/merged-grades/.
 """
@@ -27,6 +29,7 @@ def read_bank(name):
     return json.loads(text[text.index('=') + 1:].strip().rstrip(';'))
 
 bank, matches, repairs = read_bank('language-bank'), read_bank('match-bank'), read_bank('repair-bank')
+pictures = json.loads((ROOT / 'reference/fluent-emoji/word-emoji.json').read_text())['words']
 version = json.loads((ROOT / 'package.json').read_text())['version']
 OUT.mkdir(parents=True, exist_ok=True)
 summary = {}
@@ -94,7 +97,7 @@ for grade in bank:
             'questions': questions,
             'completions': completions,
             'sentences': sentences,
-            'translations': [{'id': translation_ids[t['id']], 'en': t['en'], 'tr': t['tr']} for t in unit['translations']],
+            'translations': [{'id': translation_ids[t['id']], 'en': t['en'], 'tr': t['tr'], **({'emoji': pictures[t['en'].lower()]} if t['en'].lower() in pictures else {})} for t in unit['translations']],
         })
     data = {'grade': grade['grade'], 'cefr': grade['cefr'],
             'note': f'Wordramp {version}: original lessons merged with both reviewed grade-file batches.',
@@ -104,5 +107,6 @@ for grade in bank:
     summary[grade['grade']] = {'units': len(units), **{k: count(k) for k in ['categories','descriptions','pictures','questions','completions','sentences','translations']},
         'questionSigns': sum(1 for u in units for q in u['questions'] if 'sign' in q),
         'repairs': sum(1 for u in units for s in u['sentences'] if s.get('repair')),
-        'grammar': sum(len(s.get('grammar', [])) for u in units for s in u['sentences'])}
+        'grammar': sum(len(s.get('grammar', [])) for u in units for s in u['sentences']),
+        'pictured': sum(1 for u in units for t in u['translations'] if 'emoji' in t)}
 print(json.dumps(summary, indent=1))

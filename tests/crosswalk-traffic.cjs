@@ -1,5 +1,5 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
-const ctx={window:{}};vm.createContext(ctx);for(const file of ['language-bank.js','repair-bank.js','match-bank.js','game-core.js'])vm.runInContext(fs.readFileSync((fs.existsSync('dist/language-bank.js')?'dist/':'')+file,'utf8'),ctx);
+const ctx={window:{}};vm.createContext(ctx);for(const file of ['language-bank.js','repair-bank.js','match-bank.js','emoji-bank.js','game-core.js'])vm.runInContext(fs.readFileSync((fs.existsSync('dist/language-bank.js')?'dist/':'')+file,'utf8'),ctx);
 const C=ctx.window.RallyCore,bank=ctx.window.LANGUAGE_BANK;
 const unit=bank[0].units[0];
 function crosswalk(){const s=C.createRace(unit,'challenge',2,21);s.status='driving';s.taskIndex=3;s.distance=s.tasks[3].at-70;C.tick(s,.01);assert.equal(s.task.kind,'pedestrian');for(let i=0;i<160&&!C.pedestrianReady(s);i++)C.tick(s,.05);assert(C.pedestrianReady(s));return s;}

@@ -1,6 +1,6 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const {keepHolding}=require('./attentive-driver.cjs');
-global.window={};for(const f of ['language-bank','repair-bank','match-bank','game-core'])require(path.resolve((fs.existsSync('dist/game-core.js')?'dist/':'')+f+'.js'));
+global.window={};for(const f of ['language-bank','repair-bank','match-bank','emoji-bank','game-core'])require(path.resolve((fs.existsSync('dist/game-core.js')?'dist/':'')+f+'.js'));
 const C=window.RallyCore,{createDrivingFeel,updateDrivingFeel}=require('./driving-feel-compiled.cjs'),u=window.LANGUAGE_BANK[0].units[0];
 const types=new Set();let races=0,frames=0,pairs=0,clearFrames=0;
 function avoid(s,m){

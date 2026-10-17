@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict');
-global.window={};for(const f of ['language-bank','repair-bank','match-bank','game-core'])require('../dist/'+f+'.js');
+global.window={};for(const f of ['language-bank','repair-bank','match-bank','emoji-bank','game-core'])require('../dist/'+f+'.js');
 const C=window.RallyCore,{createDrivingFeel,updateDrivingFeel}=require('./driving-feel-compiled.cjs'),unit=window.LANGUAGE_BANK[0].units[0];
 let cases=0;
 for(const kind of ['light','junction'])for(const difficulty of Object.keys(C.DIFFICULTIES))for(let arena=0;arena<3;arena++)for(const hz of [30,60,120])for(const entry of [1,C.REGULAR_MAX_SPEED,C.MAX_SPEED]){

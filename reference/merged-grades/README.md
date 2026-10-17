@@ -21,9 +21,12 @@ regrouped repairs. A few extra keys record how items are played:
 | `questions[].sign` | The reviewed road sign: answer, two wrong answers, review prompt. Questions without `sign` are source material only. |
 | `sentences[].repair` | Played as a three-block road repair. `repairBlocks` / `repairTr` appear only when the played version differs. |
 | `sentences[].grammar` | Grammar choices built from the sentence. |
+| `translations[].emoji` | The reviewed Fluent Emoji shown on picture signs. Only clearly picturable words have one; edit the list in `reference/fluent-emoji/word-emoji.json`. |
 
-Pictures and sentence completions are kept as source material; the game does
-not play them.
+The `pictures` entries (text descriptions of drawings) and sentence
+completions are kept as source material; the game does not play them. Picture
+signs use the `emoji` field instead: 91, 75, 84 and 72 pictured words in
+Grades 5 to 8.
 
 | Grade | Lessons | Clues | Translations | Q&A signs | Grammar | Repairs | Category pairs |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |

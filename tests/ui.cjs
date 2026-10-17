@@ -5,6 +5,7 @@ class Element{
  constructor(tag='div',attrs={}){this.tagName=tag.toUpperCase();this.attrs=attrs;this.id=attrs.id;this.dataset={};for(const [k,v]of Object.entries(attrs))if(k.startsWith('data-'))this.dataset[k.slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase())]=v;this.hidden='hidden'in attrs;this.disabled='disabled'in attrs;this.children=[];this.listeners={};this.style={setProperty(k,v){this[k]=v;}};this.classes=new Set((attrs.class||'').split(/\s+/));this.classList={add:(...s)=>s.forEach(x=>this.classes.add(x)),remove:(...s)=>s.forEach(x=>this.classes.delete(x)),toggle:(s,on)=>{on??=!this.classes.has(s);on?this.classes.add(s):this.classes.delete(s);return on;},contains:s=>this.classes.has(s)};this.captures=new Set();this._text='';}
  append(e){e.parentElement=this;this.children.push(e);}
  set innerHTML(html){this.children=[];parse(html,this);}
+ insertAdjacentHTML(where,html){const box=new Element();parse(html,box);box.children.forEach(c=>c.parentElement=this);this.children=where==='afterbegin'?[...box.children,...this.children]:[...this.children,...box.children];}
  get innerHTML(){return '';}
  set textContent(text){this._text=String(text);this.children=[];}
  get textContent(){return this._text+this.children.map(n=>n.textContent).join('');}
@@ -35,7 +36,7 @@ document.createElement=()=>({getContext:()=>({font:'',measureText(text){const si
 global.innerWidth=390;global.innerHeight=844;global.navigator={};let storage=JSON.stringify({grade:5,unit:'g5u1',difficulty:'challenge',crosswalkTutorial:true,sound:false,fuel:60,progress:{}});
 global.localStorage={getItem:()=>storage,setItem:(k,v)=>storage=v};global.window={visualViewport:{width:390,height:672,scale:1,listeners:{},addEventListener(n,f){(this.listeners[n]||=[]).push(f);}},listeners:{},matchMedia:()=>({matches:false,addEventListener(){}}),addEventListener(n,f){(this.listeners[n]||=[]).push(f);}};
 let selectedRanges=1,selectionClears=0;window.getSelection=()=>({get rangeCount(){return selectedRanges;},removeAllRanges(){selectedRanges=0;selectionClears++;}});
-for(const file of ['language-bank','repair-bank','match-bank','game-core'])require('../dist/'+file+'.js');
+for(const file of ['language-bank','repair-bank','match-bank','emoji-bank','game-core'])require('../dist/'+file+'.js');
 Object.assign(global,require('./presentation-compiled.cjs'),require('./progression-compiled.cjs'),require('./layout-compiled.cjs'),require('./ulti-compiled.cjs'));
 global.Sound=class{unlock(){}tone(){}update(){}};
 global.RallyScene=class{constructor(){this.currentLane=0;}resize(){}setup(){}clearGate(){}setCosmetics(look){this.look=look;}setPreferences(p){this.preferences=p;}samplePerformance(){}update(){}rivalProjection(){return [];}isCarHit(x,y){return y>500;}pedestrianProjection(){return Array.from({length:4},()=>({x:195,y:300,visible:true}));}roadProjection(){return {prompt:{x:195,y:200},answers:[{x:80,y:320},{x:195,y:320},{x:310,y:320}]};}};
@@ -157,7 +158,21 @@ for(const kind of ['light','junction'])for(const type of ['up','car','throttle']
  for(let i=0;i<80&&C.focusCruise(race);i++){applyAcceleration();C.tick(race,.05,race.lane);updateUI(now+50.9);}applyAcceleration();
  assert(!C.focusCruise(race));assert(cancel?race.elapsed-choiceAt>=1.3:race.elapsed-choiceAt<.6,`${kind}/${type}: the live input controls return duration`);assert.equal(race.accelerating,!cancel);handoffInput(type,false);choiceHandoffs++;
 }
-console.log(`PASS: ${choiceHandoffs} light/fork UI handoffs; enabled arrows, working full-text sign taps, held Up/car/throttle restoration and cancellation.`);
+// Picture signs: the Fluent picture is the clue (word mode) or each answer
+// (image mode, alt text = the word); a tap on the right picture still steers.
+let pictureSigns=0;const handoffUnit=race.unit;
+for(const mode of ['word','image']){
+ let seed=1,unit=null;for(const u of window.LANGUAGE_BANK.flatMap(g=>g.units)){for(seed=1;seed<60;seed++)if(C.createRace(u,'challenge',2,seed,{rivals:false,fuel:0}).tasks.some(t=>t.picture===mode)){unit=u;break;}if(unit)break;}
+ clearAcceleration();Object.assign(race,C.createRace(unit,'challenge',2,seed,{rivals:false,fuel:0}));race.status='driving';race.obstacles=[];el('rival-tags').innerHTML='';
+ const t=race.tasks.find(t=>t.picture===mode);assert(t,'A picture sign of each mode is reachable: '+mode);race.taskIndex=race.tasks.indexOf(t);race.distance=t.at-52;race.speedFactor=C.REGULAR_MAX_SPEED;
+ handoffInput('up',true);handoffStep();assert(/^PICTURE/.test(el('road-kicker').textContent),'Picture signs are labelled');
+ const clue=el('road-question').querySelector('.sign-emoji'),pictures=el('road-answers').querySelectorAll('.answer-emoji');
+ if(mode==='word'){assert.equal(clue.attrs.src,'emoji/'+t.image+'.webp');assert.equal(pictures.length,0);}
+ else{assert(!clue);assert.deepEqual(pictures.map(p=>p.attrs.alt),t.options,'Picture answers carry their word for screen readers');assert.deepEqual(pictures.map(p=>p.attrs.src),t.optionImages.map(x=>'emoji/'+x+'.webp'));}
+ el('road-answers').children[t.correctIndex].click();assert.equal(race.lane,t.correctIndex-1,'A tap on the right picture steers into it');handoffInput('up',false);pictureSigns++;
+}
+clearAcceleration();Object.assign(race,C.createRace(handoffUnit,'challenge',0,53,{rivals:false,fuel:0}));race.status='driving';race.obstacles=[];
+console.log(`PASS: ${choiceHandoffs} light/fork UI handoffs; enabled arrows, working full-text sign taps, held Up/car/throttle restoration and cancellation; ${pictureSigns} picture-sign modes render and steer.`);
 // The reported category labels remain complete words in the real DOM path.
 clearAcceleration();Object.assign(race,C.createRace(race.unit,'relaxed',0,29,{rivals:false}));race.status='task';race.obstacles=[];race.task=race.tasks.find(t=>t.kind==='pedestrian');race.task.id+='-category-type';race.taskIndex=race.tasks.indexOf(race.task);race.distance=race.task.at-100;
 race.task.rows[0].options=['PERSONALITY','APPEARANCE'];updateUI(now+50.95);

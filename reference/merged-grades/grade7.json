@@ -1418,7 +1418,8 @@
         {
           "id": "g7u1t4",
           "en": "glasses",
-          "tr": "gözlük"
+          "tr": "gözlük",
+          "emoji": "👓"
         },
         {
           "id": "g7u1t5",
@@ -1443,7 +1444,8 @@
         {
           "id": "g7u1t9",
           "en": "mirror",
-          "tr": "ayna"
+          "tr": "ayna",
+          "emoji": "🪞"
         },
         {
           "id": "g7u1t10",
@@ -2834,12 +2836,14 @@
         {
           "id": "g7u2t2",
           "en": "basketball",
-          "tr": "basketbol topu"
+          "tr": "basketbol topu",
+          "emoji": "🏀"
         },
         {
           "id": "g7u2t3",
           "en": "goggles",
-          "tr": "yüzücü gözlüğü"
+          "tr": "yüzücü gözlüğü",
+          "emoji": "🥽"
         },
         {
           "id": "g7u2t4",
@@ -2854,17 +2858,20 @@
         {
           "id": "g7u2t6",
           "en": "goal",
-          "tr": "kale"
+          "tr": "kale",
+          "emoji": "🥅"
         },
         {
           "id": "g7u2t7",
           "en": "stopwatch",
-          "tr": "kronometre"
+          "tr": "kronometre",
+          "emoji": "⏱️"
         },
         {
           "id": "g7u2t8",
           "en": "trainers",
-          "tr": "spor ayakkabısı"
+          "tr": "spor ayakkabısı",
+          "emoji": "👟"
         },
         {
           "id": "g7u2t9",
@@ -2904,12 +2911,14 @@
         {
           "id": "g7u2t16",
           "en": "football",
-          "tr": "futbol"
+          "tr": "futbol",
+          "emoji": "⚽"
         },
         {
           "id": "g7u2t17",
           "en": "swimming",
-          "tr": "yüzme"
+          "tr": "yüzme",
+          "emoji": "🏊"
         }
       ]
     },
@@ -4264,22 +4273,26 @@
         {
           "id": "g7u3t1",
           "en": "baby",
-          "tr": "bebek"
+          "tr": "bebek",
+          "emoji": "👶"
         },
         {
           "id": "g7u3t2",
           "en": "school",
-          "tr": "okul"
+          "tr": "okul",
+          "emoji": "🏫"
         },
         {
           "id": "g7u3t3",
           "en": "book",
-          "tr": "kitap"
+          "tr": "kitap",
+          "emoji": "📕"
         },
         {
           "id": "g7u3t4",
           "en": "medal",
-          "tr": "madalya"
+          "tr": "madalya",
+          "emoji": "🏅"
         },
         {
           "id": "g7u3t5",
@@ -4289,22 +4302,26 @@
         {
           "id": "g7u3t6",
           "en": "suitcase",
-          "tr": "bavul"
+          "tr": "bavul",
+          "emoji": "🧳"
         },
         {
           "id": "g7u3t7",
           "en": "calendar",
-          "tr": "takvim"
+          "tr": "takvim",
+          "emoji": "📅"
         },
         {
           "id": "g7u3t8",
           "en": "pencil",
-          "tr": "kurşun kalem"
+          "tr": "kurşun kalem",
+          "emoji": "✏️"
         },
         {
           "id": "g7u3t9",
           "en": "piano",
-          "tr": "piyano"
+          "tr": "piyano",
+          "emoji": "🎹"
         },
         {
           "id": "g7u3t10",
@@ -5761,7 +5778,8 @@
         {
           "id": "g7u4t1",
           "en": "dolphin",
-          "tr": "yunus"
+          "tr": "yunus",
+          "emoji": "🐬"
         },
         {
           "id": "g7u4t2",
@@ -5771,7 +5789,8 @@
         {
           "id": "g7u4t3",
           "en": "tortoise",
-          "tr": "kara kaplumbağası"
+          "tr": "kara kaplumbağası",
+          "emoji": "🐢"
         },
         {
           "id": "g7u4t4",
@@ -5781,27 +5800,32 @@
         {
           "id": "g7u4t5",
           "en": "owl",
-          "tr": "baykuş"
+          "tr": "baykuş",
+          "emoji": "🦉"
         },
         {
           "id": "g7u4t6",
           "en": "crocodile",
-          "tr": "timsah"
+          "tr": "timsah",
+          "emoji": "🐊"
         },
         {
           "id": "g7u4t7",
           "en": "zebra",
-          "tr": "zebra"
+          "tr": "zebra",
+          "emoji": "🦓"
         },
         {
           "id": "g7u4t8",
           "en": "giraffe",
-          "tr": "zürafa"
+          "tr": "zürafa",
+          "emoji": "🦒"
         },
         {
           "id": "g7u4t9",
           "en": "gorilla",
-          "tr": "goril"
+          "tr": "goril",
+          "emoji": "🦍"
         },
         {
           "id": "g7u4t10",
@@ -5826,7 +5850,8 @@
         {
           "id": "g7u4t14",
           "en": "bird",
-          "tr": "kuş"
+          "tr": "kuş",
+          "emoji": "🐦"
         },
         {
           "id": "g7u4t15",
@@ -5836,17 +5861,20 @@
         {
           "id": "g7u4t16",
           "en": "lion",
-          "tr": "aslan"
+          "tr": "aslan",
+          "emoji": "🦁"
         },
         {
           "id": "g7u4t17",
           "en": "elephant",
-          "tr": "fil"
+          "tr": "fil",
+          "emoji": "🐘"
         },
         {
           "id": "g7u4t18",
           "en": "turtle",
-          "tr": "kaplumbağa"
+          "tr": "kaplumbağa",
+          "emoji": "🐢"
         },
         {
           "id": "g7u4t19",
@@ -7668,7 +7696,8 @@
         {
           "id": "g7u5t1",
           "en": "television",
-          "tr": "televizyon"
+          "tr": "televizyon",
+          "emoji": "📺"
         },
         {
           "id": "g7u5t2",
@@ -7683,7 +7712,8 @@
         {
           "id": "g7u5t4",
           "en": "speaker",
-          "tr": "hoparlör"
+          "tr": "hoparlör",
+          "emoji": "🔊"
         },
         {
           "id": "g7u5t5",
@@ -7698,17 +7728,20 @@
         {
           "id": "g7u5t7",
           "en": "headphones",
-          "tr": "kulaklık"
+          "tr": "kulaklık",
+          "emoji": "🎧"
         },
         {
           "id": "g7u5t8",
           "en": "battery",
-          "tr": "pil"
+          "tr": "pil",
+          "emoji": "🔋"
         },
         {
           "id": "g7u5t9",
           "en": "sofa",
-          "tr": "kanepe"
+          "tr": "kanepe",
+          "emoji": "🛋️"
         },
         {
           "id": "g7u5t10",
@@ -7758,7 +7791,8 @@
         {
           "id": "g7u5t19",
           "en": "keyboard",
-          "tr": "klavye"
+          "tr": "klavye",
+          "emoji": "⌨️"
         },
         {
           "id": "g7u5t20",
@@ -7768,7 +7802,8 @@
         {
           "id": "g7u5t21",
           "en": "printer",
-          "tr": "yazıcı"
+          "tr": "yazıcı",
+          "emoji": "🖨️"
         },
         {
           "id": "g7u5t22",
@@ -7778,7 +7813,8 @@
         {
           "id": "g7u5t23",
           "en": "laptop",
-          "tr": "dizüstü bilgisayar"
+          "tr": "dizüstü bilgisayar",
+          "emoji": "💻"
         },
         {
           "id": "g7u5t24",
@@ -9165,7 +9201,8 @@
         {
           "id": "g7u6t1",
           "en": "balloon",
-          "tr": "balon"
+          "tr": "balon",
+          "emoji": "🎈"
         },
         {
           "id": "g7u6t2",
@@ -9175,7 +9212,8 @@
         {
           "id": "g7u6t3",
           "en": "candle",
-          "tr": "mum"
+          "tr": "mum",
+          "emoji": "🕯️"
         },
         {
           "id": "g7u6t4",
@@ -9190,12 +9228,14 @@
         {
           "id": "g7u6t6",
           "en": "present",
-          "tr": "hediye"
+          "tr": "hediye",
+          "emoji": "🎁"
         },
         {
           "id": "g7u6t7",
           "en": "ribbon",
-          "tr": "kurdele"
+          "tr": "kurdele",
+          "emoji": "🎀"
         },
         {
           "id": "g7u6t8",
@@ -9205,7 +9245,8 @@
         {
           "id": "g7u6t9",
           "en": "cake",
-          "tr": "pasta"
+          "tr": "pasta",
+          "emoji": "🍰"
         },
         {
           "id": "g7u6t10",
@@ -9230,7 +9271,8 @@
         {
           "id": "g7u6t14",
           "en": "music",
-          "tr": "müzik"
+          "tr": "müzik",
+          "emoji": "🎵"
         },
         {
           "id": "g7u6t15",
@@ -9240,12 +9282,14 @@
         {
           "id": "g7u6t16",
           "en": "sandwich",
-          "tr": "sandviç"
+          "tr": "sandviç",
+          "emoji": "🥪"
         },
         {
           "id": "g7u6t17",
           "en": "juice",
-          "tr": "meyve suyu"
+          "tr": "meyve suyu",
+          "emoji": "🧃"
         }
       ]
     },
@@ -10675,7 +10719,8 @@
         {
           "id": "g7u7t1",
           "en": "robot",
-          "tr": "robot"
+          "tr": "robot",
+          "emoji": "🤖"
         },
         {
           "id": "g7u7t2",
@@ -10685,37 +10730,44 @@
         {
           "id": "g7u7t3",
           "en": "house",
-          "tr": "ev"
+          "tr": "ev",
+          "emoji": "🏠"
         },
         {
           "id": "g7u7t4",
           "en": "stethoscope",
-          "tr": "stetoskop"
+          "tr": "stetoskop",
+          "emoji": "🩺"
         },
         {
           "id": "g7u7t5",
           "en": "paintbrush",
-          "tr": "boya fırçası"
+          "tr": "boya fırçası",
+          "emoji": "🖌️"
         },
         {
           "id": "g7u7t6",
           "en": "guitar",
-          "tr": "gitar"
+          "tr": "gitar",
+          "emoji": "🎸"
         },
         {
           "id": "g7u7t7",
           "en": "lab coat",
-          "tr": "laboratuvar önlüğü"
+          "tr": "laboratuvar önlüğü",
+          "emoji": "🥼"
         },
         {
           "id": "g7u7t8",
           "en": "laptop",
-          "tr": "dizüstü bilgisayar"
+          "tr": "dizüstü bilgisayar",
+          "emoji": "💻"
         },
         {
           "id": "g7u7t9",
           "en": "bicycle",
-          "tr": "bisiklet"
+          "tr": "bisiklet",
+          "emoji": "🚲"
         },
         {
           "id": "g7u7t10",
@@ -10730,7 +10782,8 @@
         {
           "id": "g7u7t12",
           "en": "goal",
-          "tr": "gol"
+          "tr": "gol",
+          "emoji": "🥅"
         },
         {
           "id": "g7u7t13",
@@ -12676,7 +12729,8 @@
         {
           "id": "g7u8t4",
           "en": "hospital",
-          "tr": "hastane"
+          "tr": "hastane",
+          "emoji": "🏥"
         },
         {
           "id": "g7u8t5",
@@ -12706,7 +12760,8 @@
         {
           "id": "g7u8t10",
           "en": "bank",
-          "tr": "banka"
+          "tr": "banka",
+          "emoji": "🏦"
         },
         {
           "id": "g7u8t11",
@@ -12731,17 +12786,20 @@
         {
           "id": "g7u8t15",
           "en": "coin",
-          "tr": "madeni para"
+          "tr": "madeni para",
+          "emoji": "🪙"
         },
         {
           "id": "g7u8t16",
           "en": "receipt",
-          "tr": "fiş"
+          "tr": "fiş",
+          "emoji": "🧾"
         },
         {
           "id": "g7u8t17",
           "en": "basket",
-          "tr": "sepet"
+          "tr": "sepet",
+          "emoji": "🧺"
         },
         {
           "id": "g7u8t18",
@@ -12751,7 +12809,8 @@
         {
           "id": "g7u8t19",
           "en": "trolley",
-          "tr": "alışveriş arabası"
+          "tr": "alışveriş arabası",
+          "emoji": "🛒"
         },
         {
           "id": "g7u8t20",
@@ -12776,7 +12835,8 @@
         {
           "id": "g7u8t24",
           "en": "parcel",
-          "tr": "paket"
+          "tr": "paket",
+          "emoji": "📦"
         },
         {
           "id": "g7u8t25",
@@ -12796,7 +12856,8 @@
         {
           "id": "g7u8t28",
           "en": "ticket",
-          "tr": "bilet"
+          "tr": "bilet",
+          "emoji": "🎫"
         }
       ]
     },
@@ -14246,7 +14307,8 @@
         {
           "id": "g7u9t4",
           "en": "sapling",
-          "tr": "fidan"
+          "tr": "fidan",
+          "emoji": "🌱"
         },
         {
           "id": "g7u9t5",
@@ -14266,7 +14328,8 @@
         {
           "id": "g7u9t8",
           "en": "light bulb",
-          "tr": "ampul"
+          "tr": "ampul",
+          "emoji": "💡"
         },
         {
           "id": "g7u9t9",
@@ -15680,17 +15743,20 @@
         {
           "id": "g7u10t1",
           "en": "rocket",
-          "tr": "roket"
+          "tr": "roket",
+          "emoji": "🚀"
         },
         {
           "id": "g7u10t2",
           "en": "telescope",
-          "tr": "teleskop"
+          "tr": "teleskop",
+          "emoji": "🔭"
         },
         {
           "id": "g7u10t3",
           "en": "satellite",
-          "tr": "uydu"
+          "tr": "uydu",
+          "emoji": "🛰️"
         },
         {
           "id": "g7u10t4",
@@ -15715,17 +15781,20 @@
         {
           "id": "g7u10t8",
           "en": "Moon",
-          "tr": "Ay"
+          "tr": "Ay",
+          "emoji": "🌙"
         },
         {
           "id": "g7u10t9",
           "en": "Saturn",
-          "tr": "Satürn"
+          "tr": "Satürn",
+          "emoji": "🪐"
         },
         {
           "id": "g7u10t10",
           "en": "planet",
-          "tr": "gezegen"
+          "tr": "gezegen",
+          "emoji": "🪐"
         },
         {
           "id": "g7u10t11",
@@ -15755,7 +15824,8 @@
         {
           "id": "g7u10t16",
           "en": "Earth",
-          "tr": "Dünya"
+          "tr": "Dünya",
+          "emoji": "🌍"
         },
         {
           "id": "g7u10t17",
@@ -15770,7 +15840,8 @@
         {
           "id": "g7u10t19",
           "en": "comet",
-          "tr": "kuyruklu yıldız"
+          "tr": "kuyruklu yıldız",
+          "emoji": "☄️"
         },
         {
           "id": "g7u10t20",
@@ -15780,7 +15851,8 @@
         {
           "id": "g7u10t21",
           "en": "star",
-          "tr": "yıldız"
+          "tr": "yıldız",
+          "emoji": "⭐"
         },
         {
           "id": "g7u10t22",
@@ -16722,12 +16794,14 @@
         {
           "id": "g7u11t2",
           "en": "frying pan",
-          "tr": "tava"
+          "tr": "tava",
+          "emoji": "🍳"
         },
         {
           "id": "g7u11t3",
           "en": "spoon",
-          "tr": "kaşık"
+          "tr": "kaşık",
+          "emoji": "🥄"
         },
         {
           "id": "g7u11t4",
@@ -16747,17 +16821,20 @@
         {
           "id": "g7u11t7",
           "en": "carrot",
-          "tr": "havuç"
+          "tr": "havuç",
+          "emoji": "🥕"
         },
         {
           "id": "g7u11t8",
           "en": "potato",
-          "tr": "patates"
+          "tr": "patates",
+          "emoji": "🥔"
         },
         {
           "id": "g7u11t9",
           "en": "onion",
-          "tr": "soğan"
+          "tr": "soğan",
+          "emoji": "🧅"
         },
         {
           "id": "g7u11t10",
@@ -17738,17 +17815,20 @@
         {
           "id": "g7u12t2",
           "en": "map",
-          "tr": "harita"
+          "tr": "harita",
+          "emoji": "🗺️"
         },
         {
           "id": "g7u12t3",
           "en": "backpack",
-          "tr": "sırt çantası"
+          "tr": "sırt çantası",
+          "emoji": "🎒"
         },
         {
           "id": "g7u12t4",
           "en": "ticket",
-          "tr": "bilet"
+          "tr": "bilet",
+          "emoji": "🎫"
         },
         {
           "id": "g7u12t5",
@@ -17763,7 +17843,8 @@
         {
           "id": "g7u12t7",
           "en": "sunhat",
-          "tr": "güneş şapkası"
+          "tr": "güneş şapkası",
+          "emoji": "👒"
         },
         {
           "id": "g7u12t8",
@@ -17773,17 +17854,20 @@
         {
           "id": "g7u12t9",
           "en": "beach",
-          "tr": "plaj"
+          "tr": "plaj",
+          "emoji": "🏖️"
         },
         {
           "id": "g7u12t10",
           "en": "suitcase",
-          "tr": "bavul"
+          "tr": "bavul",
+          "emoji": "🧳"
         },
         {
           "id": "g7u12t11",
           "en": "compass",
-          "tr": "pusula"
+          "tr": "pusula",
+          "emoji": "🧭"
         },
         {
           "id": "g7u12t12",

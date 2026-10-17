@@ -4,6 +4,10 @@ v0.24.0 · Grand Prix Polish
 Wordramp is the new name of Wordrift. Saved progress, stars, team points and
 Ulti receipts carry over unchanged.
 
+PICTURE SIGNS
+Some vocabulary signs show a 3D Fluent Emoji picture: choose the word that
+matches the picture, or steer into the picture that shows the word.
+
 NETLIFY DEPLOYMENT
 For a build-based deployment, use the whole extracted project. The included
 netlify.toml specifies Build command: npm run build; Publish directory: dist.

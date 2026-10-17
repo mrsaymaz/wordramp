@@ -1,7 +1,7 @@
 const fs=require('node:fs'),assert=require('node:assert/strict');
 // Run the standalone runtime in Node's normal realm so the full matrix uses
 // the same plain JavaScript objects as the shipped build.
-global.window={};for(const f of ['language-bank.js','repair-bank.js','match-bank.js','game-core.js'])require(require('node:path').resolve((fs.existsSync('dist/language-bank.js')?'dist/':'')+f));
+global.window={};for(const f of ['language-bank.js','repair-bank.js','match-bank.js','emoji-bank.js','game-core.js'])require(require('node:path').resolve((fs.existsSync('dist/language-bank.js')?'dist/':'')+f));
 const C=window.RallyCore,bank=window.LANGUAGE_BANK;
 // Moving cars are assessed by relative closing speed; a vehicle that is
 // pulling away is not a parked obstacle. Physical side clearance stays live.

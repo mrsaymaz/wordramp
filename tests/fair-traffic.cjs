@@ -1,6 +1,6 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const {keepHolding}=require('./attentive-driver.cjs');
-global.window={};for(const f of ['language-bank.js','repair-bank.js','match-bank.js','game-core.js'])require(path.resolve((fs.existsSync('dist/language-bank.js')?'dist/':'')+f));
+global.window={};for(const f of ['language-bank.js','repair-bank.js','match-bank.js','emoji-bank.js','game-core.js'])require(path.resolve((fs.existsSync('dist/language-bank.js')?'dist/':'')+f));
 const C=window.RallyCore,{createDrivingFeel,updateDrivingFeel}=require('./driving-feel-compiled.cjs'),u=window.LANGUAGE_BANK[0].units[0];
 // This driver reads actual vehicles, not the generator's reserved escape lane.
 function evade(s,m){

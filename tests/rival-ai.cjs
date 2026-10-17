@@ -1,6 +1,6 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const {keepHolding}=require('./attentive-driver.cjs');
-global.window={};for(const f of ['language-bank','match-bank','repair-bank','game-core'])require(path.resolve((fs.existsSync('dist/game-core.js')?'dist/':'')+f+'.js'));
+global.window={};for(const f of ['language-bank','match-bank','repair-bank','emoji-bank','game-core'])require(path.resolve((fs.existsSync('dist/game-core.js')?'dist/':'')+f+'.js'));
 const C=window.RallyCore,{createDrivingFeel,updateDrivingFeel}=require('./driving-feel-compiled.cjs'),u=window.LANGUAGE_BANK[0].units[0];
 function drive(difficulty,arena,seed,nitro,traffic=true,fuel=30){
  const s=C.createRace(u,difficulty,arena,seed,{fuel}),m=createDrivingFeel();s.status='driving';if(!traffic)s.obstacles=[];C.setAccelerating(s,true);let key='',readAt=0,firstBump=null;

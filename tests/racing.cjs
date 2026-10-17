@@ -1,5 +1,5 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
-global.window={};for(const f of ['language-bank','match-bank','repair-bank','game-core'])require(path.resolve((fs.existsSync('dist/game-core.js')?'dist/':'')+f+'.js'));
+global.window={};for(const f of ['language-bank','match-bank','repair-bank','emoji-bank','game-core'])require(path.resolve((fs.existsSync('dist/game-core.js')?'dist/':'')+f+'.js'));
 const {createDrivingFeel,updateDrivingFeel}=require('./driving-feel-compiled.cjs');
 const C=window.RallyCore,P=require('./progression-compiled.cjs'),bank=window.LANGUAGE_BANK,u=bank[0].units[0];
 function race(settings={}){const s=C.createRace(u,'challenge',0,15,settings);s.obstacles=[];s.rivals=[];s.status='driving';return s;}

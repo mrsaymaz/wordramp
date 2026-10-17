@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict');
-global.window={};for(const name of ['language-bank','repair-bank','match-bank','game-core'])require('../dist/'+name+'.js');
+global.window={};for(const name of ['language-bank','repair-bank','match-bank','emoji-bank','game-core'])require('../dist/'+name+'.js');
 const C=window.RallyCore,{forkSurface,surfaceUnion}=require('./route-road-compiled.cjs');
 let sections=0,coverage=0;
 function crossSections(surface,at){

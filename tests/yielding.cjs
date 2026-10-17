@@ -1,5 +1,5 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
-global.window={};for(const file of ['language-bank.js','repair-bank.js','match-bank.js','game-core.js'])require(path.resolve((fs.existsSync('dist/language-bank.js')?'dist/':'')+file));
+global.window={};for(const file of ['language-bank.js','repair-bank.js','match-bank.js','emoji-bank.js','game-core.js'])require(path.resolve((fs.existsSync('dist/language-bank.js')?'dist/':'')+file));
 const C=window.RallyCore,u=window.LANGUAGE_BANK[0].units[0];
 const car=(at,lane,id)=>({id,at,lane,lanePos:lane,type:'traffic',speed:8,cruiseSpeed:8,waiting:false,braking:false,passed:false,moving:false,target:lane,laneProgress:0});
 function step(s,count){for(let i=0;i<count;i++)C.tick(s,.05,0);}

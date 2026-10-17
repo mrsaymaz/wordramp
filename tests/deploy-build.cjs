@@ -14,7 +14,7 @@ try{
  const files=fs.readdirSync(path.join(root,'public'),{recursive:true}).filter(n=>fs.statSync(path.join(root,'public',n)).isFile());assert(files.some(n=>n.startsWith('img')),'Host images are published');
  for(const name of files)assert.deepEqual(fs.readFileSync(path.join(output,name)),fs.readFileSync(path.join(root,'public',name)),name);
  assert(fs.statSync(path.join(output,'game.bundle.js')).size>100000);
- for(const name of ['index.html','style.css','game-core.js','language-bank.js','repair-bank.js','match-bank.js','icon.svg','phone-preview.html'])assert(fs.existsSync(path.join(output,name)),name);
+ for(const name of ['index.html','style.css','game-core.js','language-bank.js','repair-bank.js','match-bank.js','emoji-bank.js','icon.svg','phone-preview.html'])assert(fs.existsSync(path.join(output,name)),name);
  assert(!fs.existsSync(path.join(output,'package.json')));assert(!fs.existsSync(path.join(output,'app.js')));
  // A second build replaces stale output instead of accidentally publishing it.
  fs.writeFileSync(path.join(output,'stale-file.txt'),'old build');
