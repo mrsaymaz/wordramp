@@ -4,10 +4,10 @@ export const TEAMS=Object.freeze([
   {id:'gryffindor',name:'Gryffindor',color:0xc84953,accent:'#ffadb1',letter:'G'},
   {id:'ravenclaw',name:'Ravenclaw',color:0x477fce,accent:'#a5caff',letter:'R'}
 ].map(Object.freeze));
-// Rules v2: points rise by arena, Challenge pays more, a win needs 2+ stars
-// (75%+ first-try accuracy) and each browser earns at most ULTI_DAILY_CAP a
-// local day. Version 1 receipts (10 per win) stay valid until they expire.
-export const ULTI_POINTS=Object.freeze({relaxed:Object.freeze([2,4,6]),challenge:Object.freeze([5,7,9])}),ULTI_MIN_STARS=2,ULTI_DAILY_CAP=40;
+// Rules v2: points rise by arena and Challenge pays more. A Relaxed first
+// place needs 60%+ of tasks right first time; a Challenge one needs 2+ stars
+// (75%+). Each browser earns at most ULTI_DAILY_CAP a local day. Version 1 receipts (10 per win) stay valid until they expire.
+export const ULTI_POINTS=Object.freeze({relaxed:Object.freeze([2,4,6]),challenge:Object.freeze([5,7,9])}),ULTI_MIN_STARS=2,ULTI_MIN_RELAXED_ACCURACY=.6,ULTI_DAILY_CAP=40;
 export const ULTI_WIN_POINTS=10,ULTI_LIFETIME_MS=72*60*60*1000;
 const ultiMode=difficulty=>difficulty==='challenge'||difficulty==='standard'?'challenge':'relaxed';
 export const ultiPointsFor=(difficulty,arenaIndex)=>ULTI_POINTS[ultiMode(difficulty)][arenaIndex]??0;
@@ -43,7 +43,7 @@ export function normaliseUlti(saved){
 export function ultiSnapshot(saved,now=Date.now()){
   const ledger=normaliseUlti(saved),receipts=ledger.receipts.filter(r=>r.earnedAt<=now&&r.expiresAt>now).map(r=>({...r}));
   const totals=Object.fromEntries(TEAMS.map(t=>[t.id,receipts.filter(r=>r.teamId===t.id).reduce((n,r)=>n+r.points,0)]));
-  return {schemaVersion:2,sourceGame:'wordshift-rally',driverId:ledger.driverId,generatedAt:now,validityHours:72,rules:{points:ULTI_POINTS,minStars:ULTI_MIN_STARS,dailyCap:ULTI_DAILY_CAP,earnedToday:ultiEarnedToday(saved,now)},totals,receipts};
+  return {schemaVersion:2,sourceGame:'wordshift-rally',driverId:ledger.driverId,generatedAt:now,validityHours:72,rules:{points:ULTI_POINTS,minRelaxedAccuracy:ULTI_MIN_RELAXED_ACCURACY,minChallengeStars:ULTI_MIN_STARS,dailyCap:ULTI_DAILY_CAP,earnedToday:ultiEarnedToday(saved,now)},totals,receipts};
 }
 // outcome.status: 'awarded' (receipt), 'stars' (first place below 2 stars),
 // 'cap' (daily limit already reached) or 'none' (no eligible first place).
@@ -52,10 +52,13 @@ export function ultiWinOutcome(saved,race,position,stars,now=Date.now()){
   if(!isFinishEligible(race)||race.reviewLap||position!==1||!teamById(race.teamId)||typeof race.runId!=='string'||!race.runId||!Number.isFinite(now))return {status:'none'};
   const eventId='wordshift-rally:'+race.runId,existing=ledger.receipts.find(r=>r.eventId===eventId);
   if(existing)return {status:'awarded',receipt:{...existing},duplicate:true};
-  if(!(stars>=ULTI_MIN_STARS))return {status:'stars',points:0};
+  // First-try accuracy from the race; without task data, 2+ stars implies 75%+.
+  const accuracy=race.tasks?.length&&Number.isFinite(race.correct)?race.correct/race.tasks.length:null;
+  const qualified=ultiMode(race.difficulty)==='relaxed'?(accuracy!=null?accuracy>=ULTI_MIN_RELAXED_ACCURACY-1e-9:stars>=ULTI_MIN_STARS):stars>=ULTI_MIN_STARS;
+  if(!qualified)return {status:'stars',points:0};
   const tier=ultiPointsFor(race.difficulty,race.arenaIndex),left=Math.max(0,ULTI_DAILY_CAP-earnedOn(ledger,now)),points=Math.min(tier,left);
   if(points<=0)return {status:'cap',points:0};
-  const receipt={schemaVersion:2,sourceGame:'wordshift-rally',eventId,runId:race.runId,driverId:ledger.driverId,teamId:race.teamId,points,earnedAt:now,expiresAt:now+ULTI_LIFETIME_MS,grade:race.unit.grade??Number(race.unit.id.match(/^g(\d+)/)?.[1]),unitId:race.unit.id,difficulty:ultiMode(race.difficulty),arenaId:race.arena.id,arenaIndex:race.arenaIndex,stars};
+  const receipt={schemaVersion:2,sourceGame:'wordshift-rally',eventId,runId:race.runId,driverId:ledger.driverId,teamId:race.teamId,points,earnedAt:now,expiresAt:now+ULTI_LIFETIME_MS,grade:race.unit.grade??Number(race.unit.id.match(/^g(\d+)/)?.[1]),unitId:race.unit.id,difficulty:ultiMode(race.difficulty),arenaId:race.arena.id,arenaIndex:race.arenaIndex,stars,...(accuracy!=null?{accuracy:Math.round(accuracy*100)/100}:{})};
   ledger.receipts.push(receipt);return {status:'awarded',receipt:{...receipt},capped:points<tier};
 }
 export function awardUltiWin(saved,race,position,stars,now=Date.now()){

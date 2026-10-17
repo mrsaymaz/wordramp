@@ -299,13 +299,15 @@ Stars reward English accuracy and clean driving, separately from race place.
 Missed items return with a different clue; a short review lap is also offered.
 
 TEAM POINTS
-A first place with 2+ stars (75% of tasks right first time) earns Ulti points
-for your team, valid for 3 days:
+A first place earns Ulti points when enough tasks were right first time
+(Relaxed: 60%; Challenge: 2+ stars, 75%). Points go to your team and are
+valid for 3 days:
                Sunlit   Coastal   Stormcrest
   Relaxed         2        4          6
   Challenge       5        7          9
 Each device earns up to 40 points a day; the cap resets at midnight. A first
-place below 2 stars, or after the cap, earns nothing and the result says why.
+place below that accuracy, or after the cap, earns nothing and the result says
+why.
 Your team is locked for the current run. Changing teams in the garage does
 not move rewards already earned. Second/third place and unfinished races
 award no Ulti points. New wins have their own expiry and do not renew old

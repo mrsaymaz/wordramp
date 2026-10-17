@@ -13,9 +13,10 @@ can export a record. It does not send points to another deployment yet.
 ## Current rules (v2)
 
 - Teams: `slytherin`, `hufflepuff`, `gryffindor`, `ravenclaw`.
-- A completed arena in **first place with 2 or more stars** earns points for
-  the team selected at the start of that race. Two stars means at least 75%
-  of tasks answered right first time.
+- A completed arena in **first place** earns points for the team selected at
+  the start of that race, when enough tasks were answered right first time:
+  **Relaxed: at least 60%** (8 of 12, 9 of 14 or 10 of 16 tasks).
+  **Challenge: 2 or more stars**, which means at least 75%.
 
   | Mode | Sunlit Boulevard | Coastal Overpass | Stormcrest Expressway |
   | --- | ---: | ---: | ---: |
@@ -26,7 +27,7 @@ can export a record. It does not send points to another deployment yet.
   calendar day**. The win that crosses the cap pays only the remainder (for
   example, 4 of 9), and later wins that day pay nothing. The count includes
   rewards that have already expired, and resets at local midnight.
-- Second/third place, wins below 2 stars, unfinished races and review laps
+- Second/third place, wins below that accuracy, unfinished races and review laps
   earn nothing. The result screen says why a first place earned nothing.
 - Each race has a unique `runId`; its `eventId` is `wordshift-rally:<runId>`.
   The saved ledger prevents duplicate awards, including after expiry.
@@ -57,13 +58,13 @@ Payload fields:
 | `driverId` | Anonymous browser profile ID; not a signed student account |
 | `generatedAt` | Export time, milliseconds since Unix epoch |
 | `validityHours` | `72` |
-| `rules` | `points` (table above), `minStars` (2), `dailyCap` (40) and `earnedToday` |
+| `rules` | `points` (table above), `minRelaxedAccuracy` (0.6), `minChallengeStars` (2), `dailyCap` (40) and `earnedToday` |
 | `totals` | Active total per team, calculated at export time |
 | `receipts` | Only rewards with `earnedAt <= now < expiresAt` |
 
 Each receipt contains `schemaVersion`, `sourceGame`, `eventId`, `runId`,
 `driverId`, `teamId`, `points`, `earnedAt`, `expiresAt`, `grade`, `unitId`,
-`difficulty` and `arenaId`. Version 2 receipts add `arenaIndex` (0–2) and `stars`. A
+`difficulty` and `arenaId`. Version 2 receipts add `arenaIndex` (0–2), `stars` and `accuracy` (first-try share, two decimals). A
 receiving service should accept a version 2 receipt only when `points` is a
 whole number from 1 to the table value for its `difficulty` and `arenaIndex`,
 and should apply the daily cap itself rather than trust the browser. All timestamps are UTC epoch milliseconds.

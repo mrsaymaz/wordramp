@@ -48,8 +48,10 @@ Graphics, world and presentation
 Ulti points v2 (follow-up within v0.24.0)
 - Points now rise by arena, and Challenge pays more: Relaxed 2 / 4 / 6 and
   Challenge 5 / 7 / 9 for Sunlit / Coastal / Stormcrest.
-- A first place needs 2+ stars (75% of tasks right first time) to earn
-  points, and each device earns at most 40 points a local day. The win that
+- A first place earns points only with enough tasks right first time:
+  at least 60% on Relaxed, so struggling readers who win still contribute,
+  and 2+ stars (75%) on Challenge. Each device earns at most 40 points a
+  local day. The win that
   crosses the cap pays the remainder.
 - The result screen explains a first place that earned nothing. The
   team-points window shows the table and today's total.
