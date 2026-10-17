@@ -520,6 +520,11 @@
   function yieldsToSweep(s,o,lane){
     return s.obstacles.some(q=>q!==o&&q.type==='traffic'&&!q.dormant&&Math.abs(q.at-o.at)<6&&q.changed&&q.laneProgress<1&&(q.at>o.at||q.at===o.at&&q.id<o.id)&&lane>Math.min(q.lanePos,q.target)-.8&&lane<Math.max(q.lanePos,q.target)+.8);
   }
+  // Pick the task shoulder whose side is free of nearby civilians.
+  function clearShoulder(s,o){
+    const near=s.obstacles.filter(q=>q!==o&&q.type==='traffic'&&!q.dormant&&Math.abs(q.at-o.at)<10),right=near.some(q=>q.lanePos>.4),left=near.some(q=>q.lanePos<-.4);
+    return right&&!left?-1:left&&!right?1:o.id%2?-1:1;
+  }
   function updateTraffic(s,worldDt,prev,physicalLane,focus,realDt=worldDt){
     const crossings=s.tasks.filter(t=>crosswalkOccupied(s,t));
     for(const t of s.tasks)if(t.kind==='pedestrian'&&t.activatedAt!=null&&!crosswalkOccupied(s,t)&&t.clearedAt==null)t.clearedAt=s.elapsed;
@@ -533,7 +538,7 @@
       if(o.route&&o.at>=o.route.end)o.route=null;
       if(zone&&o.clearTask!==zone.id){
         o.roadTarget??=Math.abs(o.lanePos)<=1?o.lanePos:Math.sign(o.lanePos);o.clearTask=zone.id;o.crosswalkRoute=zone.id;
-        o.fromLane=o.lanePos;o.target=(Math.abs(o.lanePos)>.4?Math.sign(o.lanePos):o.shoulderSide||(o.id%2?-1:1))*2.9;o.changed=true;o.laneProgress=0;o.routeChanging=true;o.signalAt=s.elapsed;
+        o.fromLane=o.lanePos;o.target=(Math.abs(o.lanePos)>.4?Math.sign(o.lanePos):o.shoulderSide||clearShoulder(s,o))*2.9;o.changed=true;o.laneProgress=0;o.routeChanging=true;o.signalAt=s.elapsed;
       }else if(!zone&&o.clearTask){
         // Rejoin on the near side; the remembered lane is used only if it is on
         // that side, then forgotten so a later zone cannot reuse a stale one.
@@ -545,6 +550,9 @@
         o.forkTask=zone.id;o.route={...makeRoute(s,zone.task,1,zone.task.correctIndex===1),ratio:1};
         o.fromLane=o.lanePos;o.target=0;o.changed=true;o.laneProgress=0;o.routeChanging=true;o.signalAt=s.elapsed;
       }
+      // A centre car whose chosen shoulder is now occupied beside it swaps
+      // sides rather than parking in the lane the player must use.
+      if(zone&&o.clearTask===zone.id&&Math.abs(o.target)>2&&Math.abs(o.lanePos)<.5&&!laneStepClear(s,o,o.lanePos,o.lanePos+Math.sign(o.target)*.3,physicalLane)&&laneStepClear(s,o,o.lanePos,o.lanePos-Math.sign(o.target)*.3,physicalLane)){o.fromLane=o.lanePos;o.target=-o.target;o.laneProgress=0;o.signalAt=s.elapsed;}
       const crossing=crossings.find(t=>o.at<=t.stopAt+1e-8),space=forwardSpace(s,o,physicalLane);
       const fork=s.tasks.find(t=>t.kind==='junction'&&o.at<=t.at-135+1e-7&&o.at>t.at-240&&(s.distance<t.at+150||s.rivals.some(r=>r.at<t.at+126)));
       // Civilians wait well before a cone sequence while racers pass. Parking
