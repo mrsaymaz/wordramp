@@ -59,6 +59,13 @@ Ulti points v2 (follow-up within v0.24.0)
   accuracy or mode.
 - Receipts are version 2 (adding `arenaIndex` and `stars`). Earlier 10-point
   receipts stay valid until they expire. See ULTI_INTEGRATION.md.
+- Arena difficulty now rises in both modes. Before, a driver who never
+  boosts found Sunlit the hardest arena and Stormcrest the easiest
+  (Challenge: 0, 0 and 8 wins of 12). Rival pace rises by arena, and the
+  later arenas' rivals charge Nitro faster, weave tighter and wait less at
+  crosswalks. A perfect reader without Nitro now wins Relaxed 12 / 9 / 5 and
+  Challenge 5 / 4 / 3 of 12, Sunlit to Stormcrest; with earned Nitro, 36/36
+  in both modes. The rival suite checks this order.
 
 Picture signs (follow-up within v0.24.0)
 - Some vocabulary signs now use Microsoft's Fluent Emoji (3D) pictures:

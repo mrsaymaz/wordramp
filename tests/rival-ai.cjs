@@ -31,6 +31,8 @@ assert(result.challenge.held.meanPlace>result.relaxed.held.meanPlace+.4,'Challen
 // Relaxed is approachable, but first place must be earned even by a clean,
 // accurate driver holding full throttle. Returning players also face a race.
 assert(result.relaxed.held.wins>=result.relaxed.held.total*.3&&result.relaxed.held.wins<=result.relaxed.held.total*.85,'Relaxed must be competitive and winnable without Nitro');
+// Each mode gets steadily harder from Sunlit to Stormcrest for a driver who never boosts.
+for(const difficulty of ['relaxed','challenge']){const w=result[difficulty].held.arenaWins;assert(w[0]>=w[1]&&w[1]>=w[2]&&w[0]>w[2],`${difficulty} arenas must get harder in order: ${w}`);}
 assert(result.relaxed.nitro.wins>result.relaxed.held.wins,'Earned Nitro must improve the easiest mode too');
 const reserves=[];for(const fuel of [0,100]){const races=[];for(let arena=0;arena<3;arena++)for(let seed=1;seed<=3;seed++)races.push(drive('relaxed',arena,seed,false,true,fuel));const wins=races.filter(r=>r.place===1).length;assert(wins>0&&wins<races.length,'Fresh and returning players both face competitive Relaxed rivals');reserves.push({fuel,wins,total:races.length});}
 // Rivals cannot start with more fuel or an unboosted engine advantage.

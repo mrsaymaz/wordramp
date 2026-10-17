@@ -12,16 +12,17 @@
   const FOCUS_ENTRY=.42,FOCUS_RETURN=1.35,FOCUS_FAST_RETURN=.25,CHOICE_FOCUS_DISTANCE=52;
   const DAMAGE_LIMIT=3,COLLISION_GRACE={relaxed:3,challenge:2},BREAKDOWN_DURATION=1.15,IMPACT_RECOVERY=4.25;
   const RIVAL_PROFILES={
-    // Relaxed rivals read a little faster in later arenas, where more tasks,
-    // crossings and hazards would otherwise hand a perfect driver every win.
-    // Arrays are per arena; see createRace. Challenge rivals weave through
-    // civilian traffic (6 m behind a slower car they have passed, not 16 m) and
-    // charge Nitro a little faster than the player (13 per correct answer, not
-    // 10). Without that, traffic groups cost them several seconds a race and
-    // Challenge played almost like Relaxed for a driver who never boosts.
-    relaxed:[{pace:1.53,think:[1.05,.7,.35],readPace:[1.35,1.45,1.53],crossWait:[2.6,1.4,.9],throttle:5.5,accuracy:[.92,.93,.95],lookAhead:3.3,burst:2.8,push:.04,fuel:60},{pace:1.55,think:[.9,.6,.3],readPace:[1.4,1.48,1.54],crossWait:[2.6,1.4,.9],throttle:6,accuracy:[.88,.9,.93],lookAhead:3.1,burst:2.9,push:.04,fuel:60}],
-    challenge:[{pace:1.62,think:.40,readPace:1.50,throttle:7,accuracy:.985,lookAhead:3.7,burst:2.9,push:.06,fuel:60,weave:6,fuelGain:13},{pace:1.66,think:.30,readPace:1.55,throttle:7,accuracy:.95,lookAhead:3.3,burst:2.9,push:.08,fuel:60,weave:6,fuelGain:13}]
+    // Arrays are per arena; see createRace. Both modes get steadily harder
+    // from Sunlit to Stormcrest for a driver who never boosts, and earned
+    // Nitro wins every arena. Rival pace rises by arena; later arenas, with
+    // more crossings and traffic, also need faster Nitro charge (fuelGain,
+    // per correct answer), tighter weaving (6 m behind a slower car, not 16 m)
+    // and shorter crosswalk waits, which otherwise made Stormcrest the easiest
+    // arena. Challenge rivals read faster and charge Nitro faster than Relaxed.
+    relaxed:[{pace:[1.50,1.51,1.55],think:[1.05,.7,.35],readPace:[1.35,1.45,1.53],crossWait:[2.6,1.4,.9],throttle:5.5,accuracy:[.92,.93,.98],lookAhead:3.3,burst:2.8,push:.04,fuel:60,weave:[16,16,6],fuelGain:[10,10,13]},{pace:[1.50,1.51,1.55],think:[.9,.6,.3],readPace:[1.4,1.48,1.54],crossWait:[2.6,1.4,.9],throttle:6,accuracy:[.88,.9,.97],lookAhead:3.1,burst:2.9,push:.04,fuel:60,weave:[16,16,6],fuelGain:[10,10,13]}],
+    challenge:[{pace:[1.52,1.495,1.55],think:.40,readPace:1.50,crossWait:[3,2.8,2.2],throttle:7,accuracy:.985,lookAhead:3.7,burst:[2.9,3.0,3.3],push:.06,fuel:60,weave:6,fuelGain:[11,13,24]},{pace:[1.52,1.495,1.55],think:.30,readPace:1.55,crossWait:[3,2.8,2.2],throttle:7,accuracy:.95,lookAhead:3.3,burst:[2.9,3.0,3.3],push:.08,fuel:60,weave:6,fuelGain:[11,13,24]}]
   };
+
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
   function random(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
   function shuffle(items,rng=Math.random){let a=items.slice();for(let i=a.length-1;i>0;i--){let j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
