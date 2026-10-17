@@ -67,6 +67,14 @@ Traffic and host (follow-up within v0.24.0)
   the cautious rules. Measured on the 36-race benchmark of a perfect driver
   who never boosts: Relaxed 26/36 wins, Challenge 15/36; with earned Nitro
   36/36 in both.
+- Two rival deadlocks found by the full verification with traffic: a rival
+  half into an escape lane beside a rockfall could neither finish the move
+  (the stopped player was 5 m behind) nor drive on, freezing both cars until
+  the clock ran out; and a rival already in a row's escape lane close behind
+  the player could be pushed out by the keep-clear courtesy rule into the
+  blocked lane beside it and park there. A rival may now finish a lane move
+  ahead of a car that is clear behind it and not closing, and keeps an escape
+  lane it already holds.
 - Mr. Saymaz hosts the game: a portrait beside "by Mr. Saymaz", a presenting
   figure beside the showcase car on desktop, and poses in How to play
   (pointing), Pause (thinking), garage (thumbs up), team points and first

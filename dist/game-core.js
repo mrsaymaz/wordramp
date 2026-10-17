@@ -247,6 +247,10 @@
     return actors(s,physicalLane).find(o=>{
       const length=body.id==='player'?(body.halfLength??2.3)+(o.halfLength??2.3)+.1:6;
       if(o===body||o.id==='player'&&body.id==='player'||Math.abs(o.at-body.at)>length)return false;
+      // A rival half into an escape lane may finish its move ahead of a car
+      // that is clear behind it and not closing; that car's own forward guard
+      // keeps the gap. Holding it in place beside a rockfall froze both cars.
+      if(body.id!=='player'&&o.at<body.at&&body.at-o.at>(body.halfLength??2.3)+(o.halfLength??2.3)+.3&&(o.speed||0)<=(body.speed||0)+1)return false;
       const ox=actorX(s,o),otherHalf=o.halfWidth??1.25,fromGap=x0-ox,toGap=x1-ox;
       // A car already inside the extra safety margin may steer away. The
       // complete movement must stay on the same side and increase separation.
@@ -416,7 +420,10 @@
       if(!r.route&&!shoulder){
         const pattern=s.patterns.find(p=>p.at>r.at&&p.at-r.at<Math.max(160,horizon)&&s.obstacles.some(o=>o.patternId===p.id&&o.type!=='traffic'));
         const mergingPeer=pattern&&Math.abs(r.lanePos-pattern.escapeLane)>.3&&s.rivals.find(o=>o!==r&&Math.abs(o.at-r.at)<14&&(Math.abs(o.lanePos-pattern.escapeLane)<.3||(o.lane===pattern.escapeLane||o.plannedLane===pattern.escapeLane)&&o.id<r.id));
-        const escapeLane=pattern&&clear(pattern.escapeLane)&&laneStepClear(s,r,r.lanePos,pattern.escapeLane,physicalLane)?pattern.escapeLane:null;
+        // A rival already in the escape lane keeps it and follows the player
+        // through; courtesy must not push it into the blocked lanes beside it.
+        const holdEscape=pattern&&r.lane===pattern.escapeLane&&Math.abs(r.lanePos-pattern.escapeLane)<.3;
+        const escapeLane=pattern&&(holdEscape||clear(pattern.escapeLane)&&laneStepClear(s,r,r.lanePos,pattern.escapeLane,physicalLane))?pattern.escapeLane:null;
         // Reserve a single-file opening before two cars squeeze into it.
         // One driver eases off and holds their side until the first is clear.
         if(mergingPeer){desired=Math.min(desired,s.arena.speed*.55);r.lane=[-1,0,1].filter(l=>l!==pattern.escapeLane).sort((a,b)=>Math.abs(a-r.lanePos)-Math.abs(b-r.lanePos))[0];r.plannedLane=null;}
