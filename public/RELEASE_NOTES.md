@@ -58,7 +58,12 @@ English League connection (follow-up within v0.24.0)
   settings.
 - `config.js` holds the League URL; set `ultiApi: ''` for a practice-only
   copy with no League UI and no network requests.
-- The local team points are unchanged and kept separately.
+- Browser-only team points are retired: Ulti points now live only in the
+  League. The team-points window, local 40-point daily cap, 72-hour receipts
+  and points export are removed. Garage team cards show the League's live
+  points for the student's grade (hidden in practice-only copies). Old saves
+  drop the local ledger on load; its receipts still count as past first
+  places for arena unlocks.
 
 Ulti points v2 (follow-up within v0.24.0)
 - Points now rise by arena, and Challenge pays more: Relaxed 2 / 4 / 6 and

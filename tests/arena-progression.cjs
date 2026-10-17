@@ -1,5 +1,4 @@
 const assert=require('node:assert/strict'),P=require('./progression-compiled.cjs');
-const {awardUltiWin,ULTI_LIFETIME_MS}=require('./ulti-compiled.cjs');
 const unit={id:'g5u1',grade:5},base={unit,difficulty:'challenge',arenaIndex:0,arena:{id:'boulevard'},status:'finished',teamId:'ravenclaw',runId:'historic-victory'};
 let saved=P.normaliseProgress({progress:{'g5u1:challenge':[3,3,3]},mastery:{g5u1:{tier:3,arenas:7,clean:{},seen:{},total:0,firstTry:0}}});
 assert(P.arenaUnlocked(saved,unit.id,'challenge',0));
@@ -15,9 +14,9 @@ const restored=P.normaliseProgress(JSON.parse(JSON.stringify(saved)));assert(P.a
 assert(!P.arenaUnlocked(restored,unit.id,'challenge',3));assert(!P.arenaUnlocked(restored,unit.id,'challenge',-1));
 // A real old win is retained, even when its team points have long expired.
 const old=P.normaliseProgress({difficulty:'standard',progress:{'g5u1:standard':[3,2,0]},arenaWins:{'g5u1:standard':[false,true,false]}});
-awardUltiWin(old,base,1,3,1000);assert(1000+ULTI_LIFETIME_MS<Date.now());
+old.ulti={schemaVersion:2,receipts:[{sourceGame:'wordshift-rally',runId:'historic-victory',teamId:'ravenclaw',unitId:'g5u1',difficulty:'challenge',arenaId:'boulevard',points:5,earnedAt:1000,expiresAt:2000}]};
 const migrated=P.normaliseProgress(JSON.parse(JSON.stringify(old)));assert(P.arenaUnlocked(migrated,unit.id,'challenge',2));
 assert.deepEqual(migrated.progress['g5u1:challenge'],[3,2,0]);assert(!('g5u1:standard'in migrated.arenaWins));
 const gap=P.normaliseProgress({arenaWins:{'g5u1:challenge':[false,true,false]}});assert(!P.arenaUnlocked(gap,unit.id,'challenge',2),'Winning an old later course does not skip an un-won earlier arena');
 P.recordArenaWin(gap,base,1);assert(P.arenaUnlocked(gap,unit.id,'challenge',2));
-console.log('PASS: first-place-only sequential arena gates, independent stars/mastery, scoped unit/difficulty wins, invalid/review/unfinished rejection, reload idempotence, standard-mode migration and expired historical victory receipts.');
+console.log('PASS: first-place-only sequential arena gates, independent stars/mastery, scoped unit/difficulty wins, invalid/review/unfinished rejection, reload idempotence, standard-mode migration and retired team-point receipts kept as historical victories.');

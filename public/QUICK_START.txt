@@ -1,8 +1,8 @@
 WORDRAMP — by Mr. Saymaz
 v0.24.0 · Grand Prix Polish
 
-Wordramp is the new name of Wordrift. Saved progress, stars, team points and
-Ulti receipts carry over unchanged.
+Wordramp is the new name of Wordrift. Saved progress, stars and arena wins
+carry over unchanged.
 
 PICTURE SIGNS
 Some vocabulary signs show a 3D Fluent Emoji picture: choose the word that
@@ -107,8 +107,8 @@ WHAT CHANGED IN v0.20.1
 WHAT CHANGED IN v0.20.0
 - Finish first to unlock the next arena, separately for every unit and mode.
   Second/third place still keep English stars, fuel and mastery. Review laps
-  and unfinished races do not unlock arenas. Existing recorded Ulti wins
-  count even after the points expire; stars alone do not prove a victory.
+  and unfinished races do not unlock arenas. Existing recorded first-place
+  wins still count; stars alone do not prove a victory.
 - After choosing, hold your car, the speed button or Up to shorten the slow-
   motion return to about 0.25 seconds. A control already held works too.
   Release to keep the remaining gentle fade. Normal acceleration resumes
@@ -120,7 +120,7 @@ WHAT CHANGED IN v0.20.0
 
 WHAT CHANGED IN v0.19.0
 - The opening screen follows the reference layout: three illustrated arena
-  tiles, four team crest cards with their current Ulti points, a lesson card
+  tiles, four team crest cards with their English League points, a lesson card
   beside a vertical Relaxed / Challenge choice, and a wide start button.
 - Tap the lesson card to choose Grade 5–8 and the matching Unit. The complete
   unit title is shown. Apply commits it; Cancel keeps your previous lesson.
@@ -299,29 +299,19 @@ Stars reward English accuracy and clean driving, separately from race place.
 Missed items return with a different clue; a short review lap is also offered.
 
 ENGLISH LEAGUE
-Wins also add Ulti points to your grade's team in Mr. Saymaz's English
+Arena wins add Ulti points to your grade's team in Mr. Saymaz's English
 League. Tap LEAGUE · GRADE n in the garage to see the four teams. The result
 screen shows what your win added. Offline wins are sent later.
 Teachers: config.js holds the League address. Set ultiApi to '' for a
 practice-only copy with no League connection.
 
-TEAM POINTS
-A first place earns Ulti points when enough tasks were right first time
-(Relaxed: 60%; Challenge: 2+ stars, 75%). Points go to your team and are
-valid for 3 days:
-               Sunlit   Coastal   Stormcrest
-  Relaxed         2        4          6
-  Challenge       5        7          9
-Each device earns up to 40 points a day; the cap resets at midnight. A first
-place below that accuracy, or after the cap, earns nothing and the result says
-why.
-Your team is locked for the current run. Changing teams in the garage does
-not move rewards already earned. Second/third place and unfinished races
-award no Ulti points. New wins have their own expiry and do not renew old
-points. The wallet updates as points expire, including after reopening.
-Points are local to this browser for now. Exports contain stable reward IDs,
-team IDs, original award times and expiry times. See ULTI_INTEGRATION.md for
-the JSON contract and what the future Netlify receiver needs to implement.
+Which wins count: a first place with enough tasks right first time
+(Relaxed: 60%; Challenge: 2+ stars, 75%). The League decides the points and
+daily limits. The garage team cards show each team's League points for your
+grade. A first place below that accuracy earns nothing and the result says
+why. Your team is locked for the current run. Ulti points live only in the
+English League; the old browser-only team points are retired. See
+ULTI_INTEGRATION.md.
 
 MASTERY AND SETTINGS
 At 90% first-try accuracy, Explorer requires 6 distinct items and one arena;
@@ -351,7 +341,8 @@ playtesting remain unverified.
 SOURCE AND REBUILD
 app.js: interface and interactions.
 scene.js: 3D scene; road-layout.js: lane signs and strokes.
-teams-ulti.js: teams, reward ledger, expiry and export contract.
+teams-ulti.js: teams and which wins are claimed from the English League.
+league.js: English League connection (pools, start, claim, outbox).
 spectators.js: pooled viewing stands, instanced fans and cloth.
 progression.js: saved mastery, badges and compatibility migration.
 driving-feel.js: steering and car movement.

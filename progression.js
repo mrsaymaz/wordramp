@@ -1,4 +1,4 @@
-import {teamById,normaliseUlti,isFinishEligible} from './teams-ulti.js';
+import {teamById,retireLocalUlti,isFinishEligible} from './teams-ulti.js';
 const ARENA_IDS=['boulevard','coast','storm'];
 const raceDifficulty=value=>value==='standard'?'challenge':value;
 export const PAINTS=[{id:'gold',name:'Sunrise Gold',color:0xf3bc55,tier:0},{id:'lagoon',name:'Lagoon Pearl',color:0x55b9ae,tier:1},{id:'ruby',name:'Ember Ruby',color:0xc76072,tier:2},{id:'midnight',name:'Midnight Violet',color:0x7973b5,tier:3}];
@@ -9,21 +9,23 @@ export function normaliseProgress(saved){
     const target=key.slice(0,-9)+':challenge',old=saved.progress[key],current=saved.progress[target];
     saved.progress[target]=[0,1,2].map(i=>Math.max(0,Math.min(3,Number(old?.[i])||0),Math.min(3,Number(current?.[i])||0)));delete saved.progress[key];
   }
-  normaliseUlti(saved);
+  saved.teamId=teamById(saved.teamId)?.id||null;
   // Stars describe learning; only explicit first-place results open arenas.
-  // Old Ulti receipts retain their win evidence even after the points expire.
+  // Retired browser-only Ulti receipts still prove past first places: carry
+  // them into arena wins, then drop the old ledger (points live in the League).
   const wins={};
   for(const [key,row] of Object.entries(saved.arenaWins||{})){
     const target=key.endsWith(':standard')?key.slice(0,-9)+':challenge':key;
     wins[target]=ARENA_IDS.map((_,i)=>wins[target]?.[i]===true||row?.[i]===true);
   }
-  for(const receipt of saved.ulti.receipts){
+  for(const receipt of Array.isArray(saved.ulti?.receipts)?saved.ulti.receipts:[]){
+    if(!receipt||receipt.sourceGame!=='wordshift-rally'||!teamById(receipt.teamId))continue;
     const arena=ARENA_IDS.indexOf(receipt.arenaId),difficulty=raceDifficulty(receipt.difficulty);
     if(arena<0||!['relaxed','challenge'].includes(difficulty)||typeof receipt.unitId!=='string'||!receipt.unitId)continue;
     const key=receipt.unitId+':'+difficulty;
     (wins[key]||=(ARENA_IDS.map(()=>false)))[arena]=true;
   }
-  saved.arenaWins=wins;
+  saved.arenaWins=wins;retireLocalUlti(saved);
   saved.fuel=Number.isFinite(saved.fuel)?Math.max(0,Math.min(100,saved.fuel)):0;
   saved.mastery=saved.mastery&&typeof saved.mastery==='object'?saved.mastery:{};
   saved.reviewQueue=saved.reviewQueue&&typeof saved.reviewQueue==='object'?saved.reviewQueue:{};

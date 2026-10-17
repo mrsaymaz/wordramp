@@ -1,9 +1,9 @@
 # Wordramp · by Mr. Saymaz
 
 Wordramp is the new name of Wordrift (and, before that, Wordshift Rally).
-Browser saves, Ulti receipts and `window.WORDRIFT` / `window.WORDSHIFT` keep
-working: the save key and receipt identifiers are unchanged, and the old API
-names are aliases of `window.WORDRAMP`.
+Browser saves and `window.WORDRIFT` / `window.WORDSHIFT` keep working: the
+save key is unchanged, and the old API names are aliases of `window.WORDRAMP`.
+Ulti points live only in Mr. Saymaz's English League (`league.js`, `public/config.js`).
 
 ## Deploy on Netlify
 
@@ -42,7 +42,7 @@ The release keeps the project layout intact, includes prebuilt `dist`, and
 excludes dependencies, local hosting identity and compiled test files.
 
 See `dist/QUICK_START.txt` for controls and `dist/ULTI_INTEGRATION.md` for the
-future team-points receiver contract. Version 0.24.0 rebuilds the cars and the three arenas, fixes the phone HUD
+English League connection. Version 0.24.0 rebuilds the cars and the three arenas, fixes the phone HUD
 and several race deadlocks, and rebalances Relaxed rivals. See
 `public/RELEASE_NOTES.md`. Collisions, DNF, touch controls and the language
 bank from earlier versions remain.
