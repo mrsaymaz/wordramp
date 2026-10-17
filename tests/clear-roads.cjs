@@ -23,11 +23,12 @@ for(const diff of Object.keys(C.DIFFICULTIES))for(let arena=0;arena<3;arena++)fo
   }else if(!s.route&&!C.exitAssist(s))avoid(s,m);
   if(seed%2===0)C.activateNitro(s);
   if(!keepHolding(C,s,m.lane)){C.setAccelerating(s,false);C.setNitroHeld(s,false);}const previous=[...s.obstacles,...s.rivals].map(o=>({at:o.at,lane:o.lanePos}));C.tick(s,.05,m.lane);const oldLane=m.lane;updateDrivingFeel(m,s.lane,s.roadTravel,s.arena.speed*s.speedFactor,.05);if(!C.playerLaneClear(s,oldLane,m.lane)){m.lane=oldLane;m.velocity=0;}
-  const bodies=[...s.obstacles,...s.rivals];const player={at:s.distance,lanePos:m.lane,route:s.route,halfLength:2.3,halfWidth:1.25};for(const o of bodies){const along=Math.abs(o.at-player.at),across=Math.abs(C.actorX(s,o)-C.actorX(s,player));assert(along>=(o.halfLength??2.3)+2.3-.03||across>=(o.halfWidth??1.25)+1.25-.03,`Player model overlap ${diff}/${arena}/${seed}/${frame}`);}
+  const bodies=[...s.obstacles,...s.rivals];const player={at:s.distance,lanePos:m.lane,route:s.route,halfLength:2.3,halfWidth:1.25};for(const o of bodies.filter(o=>!o.dormant)){const along=Math.abs(o.at-player.at),across=Math.abs(C.actorX(s,o)-C.actorX(s,player));assert(along>=(o.halfLength??2.3)+2.3-.03||across>=(o.halfWidth??1.25)+1.25-.03,`Player model overlap ${diff}/${arena}/${seed}/${frame}`);}
   for(let i=0;i<bodies.length;i++){
    if(bodies[i].type==='traffic'||s.rivals.includes(bodies[i]))assert(C.vehicleOnRoad(s,bodies[i]),`Vehicle left the asphalt: ${diff}/${arena}/${seed}/${frame} ${JSON.stringify(bodies[i])}`);
    assert(bodies[i].at>=previous[i].at,'No model can be moved backwards to repair spacing');assert(bodies[i].at-previous[i].at<=s.arena.speed*C.MAX_SPEED*.05/Math.min(1,bodies[i].route?.ratio??1)+1e-6,'Each car step stays within its current maximum speed and route');
-   for(let j=i+1;j<bodies.length;j++)if(bodies[i].type==='traffic'||bodies[j].type==='traffic'||s.rivals.includes(bodies[i])||s.rivals.includes(bodies[j])){
+   // A dormant group is an undrawn, non-physical ghost until it wakes on a clear spot.
+   for(let j=i+1;j<bodies.length;j++)if(!bodies[i].dormant&&!bodies[j].dormant)if(bodies[i].type==='traffic'||bodies[j].type==='traffic'||s.rivals.includes(bodies[i])||s.rivals.includes(bodies[j])){
     const a=bodies[i],b=bodies[j],along=Math.abs(a.at-b.at),across=Math.abs(C.actorX(s,a)-C.actorX(s,b));
     assert(along>=(a.halfLength??2.3)+(b.halfLength??2.3)-.03||across>=(a.halfWidth??1.25)+(b.halfWidth??1.25)-.03,`Physical overlap ${diff}/${arena}/${seed}/${frame}: ${JSON.stringify({a:{id:a.id,type:a.type,at:a.at,lane:a.lanePos,route:a.route?.id},b:{id:b.id,type:b.type,at:b.at,lane:b.lanePos,route:b.route?.id},along,across})}`);pairs++;
    }

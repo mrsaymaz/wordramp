@@ -81,7 +81,7 @@ export function raceHudContext(state,{modalOpen=false}={}){
   const next=state.tasks?.[state.taskIndex],ahead=next?.at-state.distance;
   const approaching=driving&&ahead>0&&ahead<(next.kind==='pedestrian'?174:90);
   const route=state.route||(state.mergeAssist&&state.distance<state.mergeAssist.exitEndAt?state.mergeAssist:null);
-  const hazardNear=(state.obstacles||[]).some(o=>!o.passed&&o.at>state.distance-8&&o.at<state.distance+80);
+  const hazardNear=(state.obstacles||[]).some(o=>!o.passed&&!o.dormant&&o.at>state.distance-8&&o.at<state.distance+80);
   const phase=question?'question':approaching?'approaching':route?'route':driving?'driving':'inactive';
   return {phase,question,approaching,next,ahead,route,announcementsAllowed:driving&&!question&&!approaching&&!route&&!hazardNear&&!state.yielding&&!state.followingTraffic&&!modalOpen};
 }

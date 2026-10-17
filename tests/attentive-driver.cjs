@@ -7,7 +7,7 @@ function keepHolding(C,s,lane){
   if(!s||s.status!=='driving'||s.route)return true;
   const speed=s.arena.speed*s.speedFactor,body={id:'player',at:s.distance,lanePos:lane,route:s.route,halfWidth:1.25,halfLength:2.3};
   for(const o of [...s.obstacles,...s.rivals]){
-    const gap=o.at-s.distance;if(gap<=0||gap>120)continue;
+    const gap=o.at-s.distance;if(o.dormant||gap<=0||gap>120)continue;
     const across=Math.abs(C.actorX(s,o)-C.actorX(s,body,lane,o.at));if(across>(o.halfWidth??1.25)+1.25+.35)continue;
     const closing=Math.max(0,speed-(o.speed||0)),room=gap-(o.halfLength??2.3)-2.3-1.2;
     // Never creep from a standstill into a parked body just ahead.

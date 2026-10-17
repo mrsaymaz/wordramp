@@ -231,7 +231,8 @@
   function courseCurve(index,at){const amount=[3,7,9][index]||3;return Math.sin(at/145)*amount+Math.sin(at/320)*amount*.5;}
   function actorX(s,o,lane=o.lanePos??o.lane,at=o.at){return courseCurve(s.arenaIndex,at)+routeOffset(o.route,at)+(o.passingOffset||0)+lane*3.35;}
   function playerBody(s,physicalLane){return {id:'player',at:s.distance,lanePos:physicalLane,route:s.route,speed:s.arena.speed*s.speedFactor*(s.worldTimeScale??1),halfLength:2.3,halfWidth:1.25};}
-  function actors(s,physicalLane){return [...s.obstacles,...s.rivals,playerBody(s,physicalLane)];}
+  // A dormant traffic group is a ghost: not physical and not drawn until it wakes.
+  function actors(s,physicalLane){return [...s.obstacles.filter(o=>!o.dormant),...s.rivals,playerBody(s,physicalLane)];}
   function sameRoadSpace(s,a,b){const width=(a.halfWidth??1.25)+(b.halfWidth??1.25)+.2;return Math.abs(actorX(s,a,a.lanePos??a.lane,b.at)-actorX(s,b))<width;}
   // Held-input impacts use the true body width; braking assists keep a margin.
   function physicallyAligned(s,a,b){return Math.abs(actorX(s,a,a.lanePos??a.lane,b.at)-actorX(s,b))<(a.halfWidth??1.25)+(b.halfWidth??1.25);}
@@ -338,7 +339,7 @@
   // Correct exits also cover the brief acceleration back to open-road pace.
   function learningPaceProtected(s){return !!s&&(!!s.yielding||!!exitAssist(s)||s.status==='task'||focusCruise(s)||s.learningRecovery>0||s.status==='resolving'&&s.task?.answeredRight&&!s.route);}
   function updateRivals(s,worldDt,physicalLane,protectedTravel=null,realDt=worldDt){
-    const traffic=s.obstacles;
+    const traffic=s.obstacles.filter(o=>!o.dormant);
     for(const r of s.rivals){
       // A vehicle already on the stripes clears before visitors can enter.
       const clearing=vehicleClearingCrosswalk(s,r),dt=clearing?realDt:worldDt;
@@ -387,7 +388,9 @@
         return seconds-Math.abs(l-r.lanePos)*.28;
       };
       if(preparingFork)routeLane=r.lane+Math.sign((forkSide>0?1:-1)-r.lane);
-      const shoulder=!r.route&&s.tasks.map(taskZone).find(z=>s.distance>=z.start-(z.task.kind==='pedestrian'?60:35)&&s.distance<=z.end&&r.at>=z.start-70&&r.at<=z.end+25);
+      // Rivals clear to a shoulder well before the player's task begins; the
+      // crosswalk task starts 150 m out, so its rule needs the longer lead.
+      const shoulder=!r.route&&s.tasks.map(taskZone).find(z=>s.distance>=z.start-(z.task.kind==='pedestrian'?130:60)&&s.distance<=z.end&&r.at>=z.start-70&&r.at<=z.end+25);
       if(shoulder){
         const naturalSide=Math.sign(r.lanePos*3.35+(r.passingOffset||0))||(r.id?1:-1);
         let target=(preparingFork&&shoulder.task.kind==='junction'?forkSide:naturalSide)*2.05;
@@ -520,6 +523,7 @@
   function yieldsToSweep(s,o,lane){
     return s.obstacles.some(q=>q!==o&&q.type==='traffic'&&!q.dormant&&Math.abs(q.at-o.at)<6&&q.changed&&q.laneProgress<1&&(q.at>o.at||q.at===o.at&&q.id<o.id)&&lane>Math.min(q.lanePos,q.target)-.8&&lane<Math.max(q.lanePos,q.target)+.8);
   }
+  function wakeClear(s,o){return ![...s.rivals,...s.obstacles.filter(q=>q!==o&&!q.dormant)].some(q=>Math.abs(q.at-o.at)<(q.halfLength??2.3)+2.3+3&&Math.abs(actorX(s,q)-actorX(s,o))<(q.halfWidth??1.25)+1.25+.4);}
   // Pick the task shoulder whose side is free of nearby civilians.
   function clearShoulder(s,o){
     const near=s.obstacles.filter(q=>q!==o&&q.type==='traffic'&&!q.dormant&&Math.abs(q.at-o.at)<10),right=near.some(q=>q.lanePos>.4),left=near.some(q=>q.lanePos<-.4);
@@ -532,7 +536,8 @@
     for(const o of cars){
       // A group waits, parked out of sight in the fog, until the player is
       // about 300 m away, so the student meets it instead of chasing it.
-      if(o.dormant){if(s.distance>=o.wakeAt)o.dormant=false;else{o.speed=0;o.waiting=false;o.braking=false;continue;}}
+      // It wakes only on a clear spot, so it never appears inside another car.
+      if(o.dormant){if(s.distance>=o.wakeAt&&wakeClear(s,o))o.dormant=false;else{o.speed=0;o.waiting=false;o.braking=false;continue;}}
       const dt=vehicleClearingCrosswalk(s,o)?realDt:worldDt;
       const oldSpeed=o.speed,zone=taskRoadZone(s,o.at);
       if(o.route&&o.at>=o.route.end)o.route=null;
@@ -609,7 +614,7 @@
     for(const t of s.tasks)if(t.kind==='pedestrian'){
       if(t.activatedAt==null&&s.distance>=t.at-150)t.activatedAt=s.elapsed;
       // Traffic already on the stripes leaves before visitors step off the curb.
-      if(t.activatedAt!=null&&t.peopleEntryAt==null&&![...s.obstacles.filter(o=>o.type==='traffic'),...s.rivals].some(o=>o.at+2.2>t.at-12&&o.at-2.2<t.at+14))t.peopleEntryAt=s.elapsed;
+      if(t.activatedAt!=null&&t.peopleEntryAt==null&&![...s.obstacles.filter(o=>o.type==='traffic'&&!o.dormant),...s.rivals].some(o=>o.at+2.2>t.at-12&&o.at-2.2<t.at+14))t.peopleEntryAt=s.elapsed;
     }
     const pending=s.tasks[s.taskIndex];
     if(s.status==='driving'&&!s.route&&pending&&s.distance>=pending.at-(pending.kind==='pedestrian'?150:laneChoice(pending)?CHOICE_FOCUS_DISTANCE:70)){s.task=pending;s.status='task';pending.enteredAt=s.elapsed;if(pending.kind==='pedestrian'){pending.people[0].entryAt=s.elapsed;s.lane=0;}}
