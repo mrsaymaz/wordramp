@@ -45,6 +45,21 @@ Graphics, world and presentation
   the world during English focus. Task cues are never ducked. Mute, Pause and
   the browser gesture rule are respected.
 
+English League connection (follow-up within v0.24.0)
+- Arena wins now add Ulti points to the student's grade and team pool in Mr.
+  Saymaz's English League (game id `wordramp`). Each race asks the League for
+  a ticket at the start line; a qualifying first place claims it. The League
+  decides the points, and the game sends no points value and holds no key.
+- The result screen shows "+N Ulti for Grade g Team!", or explains a daily
+  device or team limit, a refusal, or that the win will be sent when online.
+  Offline wins wait in an outbox for up to 47 hours.
+- The garage's LEAGUE · GRADE n button shows the four team pools with live
+  points and Battle Arena strength. Its rules text comes from the League's own
+  settings.
+- `config.js` holds the League URL; set `ultiApi: ''` for a practice-only
+  copy with no League UI and no network requests.
+- The local team points are unchanged and kept separately.
+
 Ulti points v2 (follow-up within v0.24.0)
 - Points now rise by arena, and Challenge pays more: Relaxed 2 / 4 / 6 and
   Challenge 5 / 7 / 9 for Sunlit / Coastal / Stormcrest.

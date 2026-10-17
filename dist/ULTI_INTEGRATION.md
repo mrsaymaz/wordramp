@@ -71,6 +71,48 @@ and should apply the daily cap itself rather than trust the browser. All timesta
 Expired rewards remain in the private browser ledger for deduplication;
 they never appear in the active export or team balances.
 
+## English League connection (live)
+
+Arena wins also count in Mr. Saymaz's English League (the tally system). This
+game's id is **`wordramp`**. `config.js` sets
+`window.WORDRAMP_CONFIG = { ultiApi: 'https://mrsaymaz.netlify.app/api/ulti' }`;
+with `ultiApi: ''` the copy is practice-only: no League panel, no League
+messages and no network requests. If `config.js` is missing, the same URL is
+used.
+
+- **Start:** when a race begins (not a review lap), the game sends
+  `{action:'start', game:'wordramp', grade, team, arena, pace, unit, device}`.
+  `arena` is 0–2 (Sunlit, Coastal, Stormcrest), `pace` is `relaxed` or
+  `challenge`, and `unit` is the lesson id (for example `g5u1`). The ticket is
+  kept with the run in this browser. If the device is offline at the start
+  line, it asks again at each task checkpoint.
+- **Claim:** `{action:'claim', ticket, device}` is sent only after a real
+  first place that meets this game's accuracy rule (Relaxed 60%, Challenge
+  2 stars). The League decides the points; the game never sends a points
+  value and holds no key.
+  - A network failure, a 5xx reply or `retry: true` keeps the ticket in an
+    outbox, which is resent on the next launch or win. Outbox items are
+    dropped after 47 hours.
+  - A 400 refusal (`too-fast`, `expired` or any other) is final.
+- **Panel:** the garage's **LEAGUE · GRADE n** button shows the four team
+  pools for the student's grade: live points from entries within the League's
+  `hours`, out of `capacity`, and strength
+  `1 + (maxStrength − 1) × √(min(points, capacity) / capacity)`. The rules text
+  is built only from the League's settings. If the League has not switched
+  `wordramp` on, the panel says so.
+- **Kept separately:** the local team points described above remain as they
+  were. They are not sent anywhere.
+
+The League line for the Apps Script `games` section:
+
+```
+wordramp: { points: { relaxed: [2, 4, 6], challenge: [5, 7, 9] }, deviceDailyWins: 6, minSeconds: 180 },
+```
+
+Arena order: 0 Sunlit Boulevard, 1 Coastal Overpass, 2 Stormcrest Expressway.
+The fastest honest Sunlit win (perfect answers, constant Nitro) takes about 218
+seconds from the start line, so `minSeconds: 180` leaves a safe margin.
+
 ## Connecting the later Netlify deployment
 
 The receiving service should deduplicate by `eventId`, recompute team totals

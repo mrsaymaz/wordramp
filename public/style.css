@@ -622,3 +622,14 @@ body.reduced-motion .home-host,body.reduced-motion .modal-host img{animation:non
 /* v0.24 · Ulti rules table in the team-points window. */
 .ulti-rules{width:100%;border-collapse:collapse;margin:10px 0 6px;font-size:13px}.ulti-rules th,.ulti-rules td{padding:6px 4px;text-align:center;border-bottom:1px solid #ffffff1f}.ulti-rules thead th{font-size:10px;letter-spacing:.8px;color:#afd5d4;text-transform:uppercase}.ulti-rules tbody th{text-align:left;color:#f9d681}.ulti-rules td{font-weight:900;font-size:16px}
 .ulti-missed p{margin:6px 0 0;font-size:13px;line-height:1.4}
+/* v0.24 · English League (Ulti pools per grade and team). */
+.team-links{display:inline-flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.league-teams{display:grid;gap:8px;margin:12px 0}
+.league-team{display:grid;grid-template-columns:28px minmax(0,1fr) auto;grid-template-areas:"letter name strength" "letter bar points";align-items:center;column-gap:10px;row-gap:4px;padding:8px 10px;border-radius:12px;background:#ffffff0d;border:1px solid #ffffff14}
+.league-team.selected{border-color:var(--team);background:color-mix(in srgb,var(--team) 14%,transparent)}
+.league-team .team-letter{grid-area:letter}.league-name{grid-area:name;font-weight:800;font-size:13px;color:var(--team)}
+.league-bar{grid-area:bar;height:8px;border-radius:99px;background:#ffffff1a;overflow:hidden}.league-bar i{display:block;height:100%;width:var(--share);background:var(--team);border-radius:inherit}
+.league-team strong{grid-area:points;font-size:12px;white-space:nowrap}.league-team small{grid-area:strength;font-weight:900;color:#f9d681;font-size:13px}
+.league-help{margin:6px 0;font-size:13px;line-height:1.45}
+.league-result{margin:10px 0 0;padding:9px 12px;border-radius:10px;background:#ffffff10;font-size:13px;line-height:1.4}.league-result.good{background:#5fd39a26;color:#c9f5dd;font-weight:800}.league-result.pending{opacity:.75}
+@media(max-width:400px){.team-links button{font-size:9px;padding:5px 7px}}

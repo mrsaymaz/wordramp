@@ -298,6 +298,13 @@ and cannot start with more fuel than the player. Their boosts cost fuel.
 Stars reward English accuracy and clean driving, separately from race place.
 Missed items return with a different clue; a short review lap is also offered.
 
+ENGLISH LEAGUE
+Wins also add Ulti points to your grade's team in Mr. Saymaz's English
+League. Tap LEAGUE · GRADE n in the garage to see the four teams. The result
+screen shows what your win added. Offline wins are sent later.
+Teachers: config.js holds the League address. Set ultiApi to '' for a
+practice-only copy with no League connection.
+
 TEAM POINTS
 A first place earns Ulti points when enough tasks were right first time
 (Relaxed: 60%; Challenge: 2+ stars, 75%). Points go to your team and are

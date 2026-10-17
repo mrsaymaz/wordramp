@@ -37,7 +37,9 @@ global.innerWidth=390;global.innerHeight=844;global.navigator={};let storage=JSO
 global.localStorage={getItem:()=>storage,setItem:(k,v)=>storage=v};global.window={visualViewport:{width:390,height:672,scale:1,listeners:{},addEventListener(n,f){(this.listeners[n]||=[]).push(f);}},listeners:{},matchMedia:()=>({matches:false,addEventListener(){}}),addEventListener(n,f){(this.listeners[n]||=[]).push(f);}};
 let selectedRanges=1,selectionClears=0;window.getSelection=()=>({get rangeCount(){return selectedRanges;},removeAllRanges(){selectedRanges=0;selectionClears++;}});
 for(const file of ['language-bank','repair-bank','match-bank','emoji-bank','game-core'])require('../dist/'+file+'.js');
-Object.assign(global,require('./presentation-compiled.cjs'),require('./progression-compiled.cjs'),require('./layout-compiled.cjs'),require('./ulti-compiled.cjs'));
+Object.assign(global,require('./presentation-compiled.cjs'),require('./progression-compiled.cjs'),require('./layout-compiled.cjs'),require('./ulti-compiled.cjs'),require('./league-compiled.cjs'));
+// Practice-only copy: config.js ultiApi '' means no League UI and no requests.
+let leagueRequests=0;global.fetch=async()=>{leagueRequests++;throw new Error('No network in UI tests');};window.WORDRAMP_CONFIG={ultiApi:''};
 global.Sound=class{unlock(){}tone(){}update(){}};
 global.RallyScene=class{constructor(){this.currentLane=0;}resize(){}setup(){}clearGate(){}setCosmetics(look){this.look=look;}setPreferences(p){this.preferences=p;}samplePerformance(){}update(){}rivalProjection(){return [];}isCarHit(x,y){return y>500;}pedestrianProjection(){return Array.from({length:4},()=>({x:195,y:300,visible:true}));}roadProjection(){return {prompt:{x:195,y:200},answers:[{x:80,y:320},{x:195,y:320},{x:310,y:320}]};}};
 let nextFrame;global.requestAnimationFrame=cb=>nextFrame=cb;global.setTimeout=fn=>fn();
@@ -76,7 +78,7 @@ el('lesson-picker').click();document.querySelectorAll('[data-grade]').find(b=>b.
 el('lesson-picker').click();document.querySelectorAll('[data-grade]').find(b=>b.dataset.grade==='5').click();el('unit').children.find(b=>b.dataset.unit==='g5u1').click();el('lesson-apply').click();
 console.log(`PASS: ${lessonSelections} grade/unit selections from the compact lesson card; Lessons heading, four grade/level options, bold numbered titles and 44 unit descriptions; stable keyboard focus, draft selection, Apply/Cancel/Close/Escape and unchanged setup ordering.`);
 for(const t of TEAMS){document.querySelectorAll('[data-team]').find(b=>b.dataset.team===t.id).click();assert.equal(window.WORDSHIFT.settings.teamId,t.id);assert.equal(window.WORDSHIFT.scene.look.color,t.color);}
-assert(!el('start').disabled);el('ulti-button').click();assert(el('ulti-expiry').textContent.includes('Finish first'));el('ulti-done').click();
+assert(!el('start').disabled);el('ulti-button').click();assert(el('ulti-expiry').textContent.includes('Win a race'));el('ulti-done').click();
 el('start').click();let race=window.WORDSHIFT.race;assert.equal(race.teamId,'ravenclaw');assert(race.runId);assert.equal(race.status,'countdown');race.status='driving';
 assert.equal(selectedRanges,0,'Starting a race removes an old browser selection');assert.equal(selectionClears,1);
 function nativeGesture(type,target){let blocked=false;el('app').dispatch(type,{target,preventDefault(){blocked=true;}});return blocked;}
@@ -286,4 +288,5 @@ console.log(`PASS: touch-mode control removal, compact HUD status, retained capt
 
 // Running out of time while leading is also DNF, with no finishing position.
 race.status='driving';race.tasks=[];race.obstacles=[];race.distance=500;race.rivals.forEach((r,i)=>r.at=300-i*30);race.time=.001;C.tick(race,.01,race.lane);assert.equal(race.status,'failed');result();updateUI(now+220);assert.equal(el('modal-title').textContent,'Time ran out.');assert.equal(el('race-place').textContent,'DNF');assert(el('modal').querySelector('.result-dnf'));assert(el('modal').classList.contains('dnf-result'));assert(!el('modal').querySelector('.podium'));assert(!el('next-arena'));assert(!lastResult.finished);
+assert(el('league-button').hidden,'No League button when ultiApi is empty');assert(!el('modal').textContent.includes('English League'));assert.equal(leagueRequests,0,'ultiApi "" makes no network requests');
 console.log('PASS: failed leaders and stale first-place/finished metadata never show a podium or finishing place; breakdown and timeout are DNF with no win rewards.');
