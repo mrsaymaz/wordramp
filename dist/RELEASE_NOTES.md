@@ -46,14 +46,27 @@ Traffic and host (follow-up within v0.24.0)
   three lanes, each open lane is reachable from the one before it, and rows
   are spaced for a lane change at maximum Nitro closing speed. Groups wait
   parked in the fog until the player is about 300 m away, so they are met,
-  not chased. Static obstacle rows make room for them; total hazards still
+  not chased. Until a group wakes it is not on the road at all: it is not
+  drawn and rivals far ahead of the player drive straight through its spot
+  instead of queuing behind parked cars. A group wakes only when its place
+  is clear of rivals and other traffic. Static obstacle rows make room for them; total hazards still
   escalate by arena.
 - Traffic AI fixes exposed by the denser traffic: a stale remembered lane
   could send a car from one shoulder across the whole road; a car leaving a
   shoulder could start a three-lane gap move; two civilians could merge into
   each other in the same instant; and two bunched cars could choose the same
   shoulder, parking one in the lane the crosswalk exit assist keeps the
-  player in. Each is fixed in the core.
+  player in. Each is fixed in the core. Rivals also move to a crosswalk's
+  side lane 130 m ahead (60 m for other tasks), so they never sit in the
+  player's approach lane.
+- Challenge rivals now weave through traffic groups (they need 6 m behind a
+  slower car they have passed rather than 16 m, and plan across the centre
+  lane when the only open lane is two over) and charge Nitro at 13 per
+  correct answer instead of 10. Without this, traffic cost them several
+  seconds a race and Challenge felt almost like Relaxed. Relaxed rivals keep
+  the cautious rules. Measured on the 36-race benchmark of a perfect driver
+  who never boosts: Relaxed 26/36 wins, Challenge 15/36; with earned Nitro
+  36/36 in both.
 - Mr. Saymaz hosts the game: a portrait beside "by Mr. Saymaz", a presenting
   figure beside the showcase car on desktop, and poses in How to play
   (pointing), Pause (thinking), garage (thumbs up), team points and first

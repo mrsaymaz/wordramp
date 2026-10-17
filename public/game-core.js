@@ -14,9 +14,13 @@
   const RIVAL_PROFILES={
     // Relaxed rivals read a little faster in later arenas, where more tasks,
     // crossings and hazards would otherwise hand a perfect driver every win.
-    // Arrays are per arena; see createRace. Challenge is unchanged.
+    // Arrays are per arena; see createRace. Challenge rivals weave through
+    // civilian traffic (6 m behind a slower car they have passed, not 16 m) and
+    // charge Nitro a little faster than the player (13 per correct answer, not
+    // 10). Without that, traffic groups cost them several seconds a race and
+    // Challenge played almost like Relaxed for a driver who never boosts.
     relaxed:[{pace:1.53,think:[1.05,.7,.35],readPace:[1.35,1.45,1.53],crossWait:[2.6,1.4,.9],throttle:5.5,accuracy:[.92,.93,.95],lookAhead:3.3,burst:2.8,push:.04,fuel:60},{pace:1.55,think:[.9,.6,.3],readPace:[1.4,1.48,1.54],crossWait:[2.6,1.4,.9],throttle:6,accuracy:[.88,.9,.93],lookAhead:3.1,burst:2.9,push:.04,fuel:60}],
-    challenge:[{pace:1.62,think:.40,readPace:1.50,throttle:7,accuracy:.985,lookAhead:3.7,burst:2.9,push:.06,fuel:60},{pace:1.66,think:.30,readPace:1.55,throttle:7,accuracy:.95,lookAhead:3.3,burst:2.9,push:.08,fuel:60}]
+    challenge:[{pace:1.62,think:.40,readPace:1.50,throttle:7,accuracy:.985,lookAhead:3.7,burst:2.9,push:.06,fuel:60,weave:6,fuelGain:13},{pace:1.66,think:.30,readPace:1.55,throttle:7,accuracy:.95,lookAhead:3.3,burst:2.9,push:.08,fuel:60,weave:6,fuelGain:13}]
   };
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
   function random(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
@@ -366,7 +370,7 @@
             if(q.kind==='junction'&&!laneStepClear(s,r,r.lanePos,index-1,physicalLane)){
               index=Math.abs(r.lanePos)>.2?Math.sign(r.lanePos)+1:1;right=index===q.correctIndex;
             }
-            if(right){const count=q.kind==='pedestrian'?4:1;for(let j=0;j<count;j++){r.streak++;r.fuel=Math.min(100,r.fuel+10+(r.streak%3===0?5:0));}}else r.streak=0;
+            if(right){const count=q.kind==='pedestrian'?4:1;for(let j=0;j<count;j++){r.streak++;r.fuel=Math.min(100,r.fuel+(profile.fuelGain??10)+(r.streak%3===0?5:0));}}else r.streak=0;
             if(q.kind==='junction'){r.route=makeRoute(s,q,index,right);r.lane=r.route.lane;r.plannedLane=null;}
             r.nextTask++;r.reading=null;
           }
@@ -377,7 +381,10 @@
       const bodies=[...traffic,...s.rivals.filter(q=>q!==r)];
       const playerNear=Math.abs(r.at-s.distance)<32;
       const footprint=(o,l)=>Math.abs((o.lanePos??o.lane)-l)<.9||o.changed&&o.laneProgress<1&&Math.abs(o.target-l)<.9;
-      const clear=l=>bodies.every(o=>Math.abs(o.at-r.at)>16||!footprint(o,l))&&(!playerNear||s.distance-r.at>18||Math.abs(l-physicalLane)>.9&&Math.abs(l-s.lane)>.9);
+      // Skilled drivers weave: a slower car already passed needs less room
+      // behind than one ahead. Relaxed keeps the cautious 16 m both ways.
+      const room=o=>o.at<r.at&&(o.speed||0)<r.speed-2?profile.weave??16:16;
+      const clear=l=>bodies.every(o=>Math.abs(o.at-r.at)>room(o)||!footprint(o,l))&&(!playerNear||s.distance-r.at>18||Math.abs(l-physicalLane)>.9&&Math.abs(l-s.lane)>.9);
       // Evaluate the road ahead and relative closing speeds, rather than waiting
       // until a slow car is immediately in front. Preserve a clear player lane.
       const forecastSpeed=Math.max(r.speed,s.arena.speed*(r.fuel>=NITRO_COST||r.nitro>0?profile.burst:pace));
@@ -413,8 +420,11 @@
         // Reserve a single-file opening before two cars squeeze into it.
         // One driver eases off and holds their side until the first is clear.
         if(mergingPeer){desired=Math.min(desired,s.arena.speed*.55);r.lane=[-1,0,1].filter(l=>l!==pattern.escapeLane).sort((a,b)=>Math.abs(a-r.lanePos)-Math.abs(b-r.lanePos))[0];r.plannedLane=null;}
-        const options=[-1,0,1].filter(l=>Math.abs(l-r.lane)<=1&&clear(l)).sort((a,b)=>score(b)-score(a)),best=mergingPeer?r.lane:escapeLane??(routeLane!=null&&Math.abs(routeLane-r.lane)<=1&&clear(routeLane)?routeLane:options[0]);
-        if(best!=null&&best!==r.lane&&(escapeLane!=null||routeLane!=null||!clear(r.lane)||score(best)>score(r.lane)+.45)&&s.elapsed>=r.nextLaneChangeAt&&Math.abs(r.lane-r.lanePos)<.1){
+        const options=[-1,0,1].filter(l=>Math.abs(l-r.lane)<=1&&clear(l)).sort((a,b)=>score(b)-score(a));let best=mergingPeer?r.lane:escapeLane??(routeLane!=null&&Math.abs(routeLane-r.lane)<=1&&clear(routeLane)?routeLane:options[0]);
+        // A weaving driver plans across the centre when the only open lane
+        // is two away, instead of closing up behind a two-car row.
+        const through=profile.weave!=null&&!mergingPeer&&escapeLane==null&&routeLane==null&&Math.abs(r.lane)===1&&clear(0)&&clear(-r.lane)&&score(-r.lane)>Math.max(score(r.lane),score(0))+.9;if(through)best=0;
+        if(best!=null&&best!==r.lane&&(through||escapeLane!=null||routeLane!=null||!clear(r.lane)||score(best)>score(r.lane)+.45)&&s.elapsed>=r.nextLaneChangeAt&&Math.abs(r.lane-r.lanePos)<.1){
           if(r.plannedLane!==best){r.plannedLane=best;r.signalAt=s.elapsed;}
           if(s.elapsed-r.signalAt>=(s.difficulty==='challenge'?.25:.4)&&clear(best)){r.lane=best;r.plannedLane=null;r.nextLaneChangeAt=s.elapsed+(s.difficulty==='challenge'?.45:1.1);r.laneChanges++;}
         }else if(r.plannedLane!=null&&(best===r.lane||best==null||!clear(r.plannedLane)))r.plannedLane=null;
