@@ -39,6 +39,25 @@ Graphics, world and presentation
   the world during English focus. Task cues are never ducked. Mute, Pause and
   the browser gesture rule are respected.
 
+Language expansion, second batch (follow-up within v0.24.0)
+- Four more grade files (grade5-2 to grade8-2) are imported after the first
+  batch, adding only what is not already in the game. That adds 648 playable
+  signs (252 definition clues, 136 translations, 128 reviewed Q&A signs and
+  132 grammar choices), 164 three-block repairs and 26 crossing category
+  pairs. All 44 lessons, their IDs and saved progress are unchanged.
+- Extra topics join the closest lesson in the same grade as sub-themes. Grade
+  5 Jobs and Workplaces, Grade 7 Food and Cooking and Grade 7 Travel and
+  Holidays gain imported material for the first time.
+- Everything playable was reviewed before import:
+  - Q&A signs use only questions with one right answer, with reviewed wrong
+    answers and review prompts.
+  - 22 definition clues were reworded and 10 gained review prompts.
+  - Only topic-specific sentences become repairs; templated ones are skipped.
+  - A category pair is added only when it brings a new category.
+  - The live Grade 6 sign "English for “eş”: partner" now reads "çalışma
+    arkadaşı"; "eş" means spouse.
+  - Details are in reference/language-expansion-2026b/README.md.
+
 Traffic and host (follow-up within v0.24.0)
 - Civilian traffic now arrives in short groups of 2-3 cars from the first
   stretch: Relaxed 6 / 12 / 18 and Challenge 10 / 18 / 26 cars across Sunlit

@@ -2,7 +2,9 @@
 
 Run from any directory. Original runtime items and saved-progress unit IDs are
 preserved. Imported items carry provenance and are replaced on a repeat run.
-The unmodified source files and human-reviewed question choices live in reference/.
+The unmodified source files and human-reviewed question choices live in
+reference/. Batches import in order; each later batch only adds what the
+earlier ones do not already cover, so earlier task IDs never change.
 """
 from pathlib import Path
 from collections import Counter
@@ -11,6 +13,9 @@ import copy, hashlib, json, re, unicodedata
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / 'reference/language-expansion-2026'
 TAG = 'grade-files-2026-10'
+SOURCE2 = ROOT / 'reference/language-expansion-2026b'
+TAG2 = 'grade-files-2026-10b'
+TAGS = {TAG, TAG2}
 
 def norm(text):
     return re.sub(r'[^\w]+', ' ', unicodedata.normalize('NFC', text).casefold()).strip()
@@ -26,29 +31,22 @@ def write_bank(name, variable, data):
 bank, matches, repairs = read_bank('language-bank'), read_bank('match-bank'), read_bank('repair-bank')
 for grade in bank:
     for unit in list(grade['units']):
-        if unit.get('importTag') == TAG:
+        if unit.get('importTag') in TAGS:
             grade['units'].remove(unit)
             matches.pop(unit['id'], None)
             repairs.pop(unit['id'], None)
             continue
         for key in ['categories', 'descriptions', 'pictures', 'questions', 'completions', 'sentences', 'translations']:
-            unit[key] = [x for x in unit[key] if x.get('importTag') != TAG]
+            unit[key] = [x for x in unit[key] if x.get('importTag') not in TAGS]
         for key in ['categoryPairs', 'additionalTargets', 'subthemes']:
             unit.pop(key, None)
-        matches[unit['id']] = [x for x in matches[unit['id']] if x.get('importTag') != TAG]
-        repairs[unit['id']] = [x for x in repairs[unit['id']] if x.get('importTag') != TAG]
+        matches[unit['id']] = [x for x in matches[unit['id']] if x.get('importTag') not in TAGS]
+        repairs[unit['id']] = [x for x in repairs[unit['id']] if x.get('importTag') not in TAGS]
 
-before = {g['grade']: {'units': len(g['units']), 'matches': sum(len(matches[u['id']]) for u in g['units']),
-                         'repairs': sum(len(repairs[u['id']]) for u in g['units'])} for g in bank}
-
-# IDs in the uploads are local to those files, not interchangeable with the
-# existing game IDs. Connect the extra topics as sub-themes of the closest
-# existing unit in the same grade, preserving the familiar lesson selection.
 REMAPPED = {'g5u9': 'g5u3', 'g5u10': 'g5u10', 'g7u11': 'g7u5',
             'g7u12': 'g7u8', 'g8u11': 'g8u2', 'g8u12': 'g8u2'}
 TITLE_ALIASES = {'g5u5': 'Neighbourhood / City Life', 'g5u8': 'Universe & Future',
                  'g6u9': 'Food Shopping and Prices', 'g6u10': 'Healthy Habits'}
-questions = json.loads((SOURCE / 'reviewed-questions.json').read_text())
 
 # These source options allowed another reasonable answer, or lacked enough
 # context. Retain the source verbatim in reference/, use these reviewed cards.
@@ -168,172 +166,267 @@ def tr_senses(text):
 def compatible_translation(a, b):
     return not equivalent(a['en'], b['en']) and not (tr_senses(a['tr']) & tr_senses(b['tr']))
 
-report = {'importTag': TAG, 'mappings': [], 'grades': {}, 'skipped': Counter(),
-          'descriptionEdits': DESCRIPTION_EDITS, 'repairAdaptations': [], 'sources': []}
-base_counts = {k: sum(len(u[k]) for g in bank for u in g['units']) for k in ['questions','translations','sentences','descriptions','categories','pictures','completions']}
+def run_batch(B):
+    forms, past_forms = {**FORMS, **B['forms']}, {**PAST_FORMS, **B['past_forms']}
+    before = {g['grade']: {'units': len(g['units']), 'matches': sum(len(matches[u['id']]) for u in g['units']),
+                             'repairs': sum(len(repairs[u['id']]) for u in g['units'])} for g in bank}
 
-for grade in bank:
-    file = SOURCE / ('grade' + str(grade['grade']) + '.json')
-    data = json.loads(file.read_text())
-    assert data['grade'] == grade['grade']
-    report['sources'].append({'file': file.name, 'sha256': hashlib.sha256(file.read_bytes()).hexdigest(), 'grade': data['grade'], 'cefr': data['cefr']})
-    for incoming in data['units']:
-        source_id = incoming['id']
-        target_id = REMAPPED.get(source_id, source_id)
-        unit = next((u for u in grade['units'] if u['id'] == target_id), None)
-        is_new = unit is None
-        if unit and source_id not in REMAPPED:
-            assert norm(incoming['title']) in [norm(unit['title']), norm(TITLE_ALIASES.get(source_id, ''))], (source_id, incoming['title'], unit['title'])
-        elif not unit:
-            unit = {key: copy.deepcopy(incoming[key]) for key in ['title','source','targetLanguage']}
-            unit.update(id=target_id, importTag=TAG)
-            for key in ['categories','descriptions','pictures','questions','completions','sentences','translations']:
-                unit[key] = []
-            grade['units'].append(unit)
-            matches[target_id], repairs[target_id] = [], []
-        report['mappings'].append({'grade': grade['grade'], 'sourceId': source_id, 'sourceTitle': incoming['title'], 'targetId': target_id, 'targetTitle': unit['title'], 'newLesson': is_new, 'connectedSubtheme': source_id in REMAPPED})
-        targets = unit.setdefault('additionalTargets', [])
-        for value in incoming['targetLanguage']:
-            if norm(value) not in {norm(y) for y in unit['targetLanguage'] + targets}: targets.append(value)
+    # IDs in the uploads are local to those files, not interchangeable with the
+    # existing game IDs. Connect the extra topics as sub-themes of the closest
+    # existing unit in the same grade, preserving the familiar lesson selection.
+    report = {'importTag': B['tag'], 'mappings': [], 'grades': {}, 'skipped': Counter(),
+              'descriptionEdits': B['desc_edits'], 'repairAdaptations': [], 'sources': []}
+    base_counts = {k: sum(len(u[k]) for g in bank for u in g['units']) for k in ['questions','translations','sentences','descriptions','categories','pictures','completions']}
 
-        def mark(item, collection):
-            result = copy.deepcopy(item)
-            result['id'] = target_id + '-ext26-' + source_id + '-' + item['id'][len(source_id):]
-            result['importTag'] = TAG
-            result['origin'] = {'file': file.name, 'unitId': source_id, 'itemId': item['id'], 'collection': collection}
-            return result
+    for grade in bank:
+        file = B['source'] / B['file'].format(grade['grade'])
+        data = json.loads(file.read_text())
+        assert data['grade'] == grade['grade']
+        report['sources'].append({'file': file.name, 'sha256': hashlib.sha256(file.read_bytes()).hexdigest(), 'grade': data['grade'], 'cefr': data['cefr']})
+        for incoming in data['units']:
+            source_id = incoming['id']
+            target_id = B['remap'].get(source_id, source_id)
+            unit = next((u for u in grade['units'] if u['id'] == target_id), None)
+            is_new = unit is None
+            if unit and source_id not in B['remap']:
+                assert norm(incoming['title']) in [norm(unit['title']), norm(B['aliases'].get(source_id, ''))], (source_id, incoming['title'], unit['title'])
+            elif not unit:
+                unit = {key: copy.deepcopy(incoming[key]) for key in ['title','source','targetLanguage']}
+                unit.update(id=target_id, importTag=B['tag'])
+                for key in ['categories','descriptions','pictures','questions','completions','sentences','translations']:
+                    unit[key] = []
+                grade['units'].append(unit)
+                matches[target_id], repairs[target_id] = [], []
+            report['mappings'].append({'grade': grade['grade'], 'sourceId': source_id, 'sourceTitle': incoming['title'], 'targetId': target_id, 'targetTitle': unit['title'], 'newLesson': is_new, 'connectedSubtheme': source_id in B['remap']})
+            targets = unit.setdefault('additionalTargets', [])
+            for value in incoming['targetLanguage']:
+                if norm(value) not in {norm(y) for y in unit['targetLanguage'] + targets}: targets.append(value)
 
-        source_items = {}
-        for key in ['descriptions','pictures','questions','completions','sentences','translations']:
-            def signature(x):
-                if key == 'descriptions': return (norm(x['clue']), norm(x['answer']))
-                if key == 'pictures': return norm(x['word'])
-                if key == 'questions': return norm(x['q'])
-                if key == 'completions': return (norm(x['start']), norm(x['end']))
-                if key == 'sentences': return norm(' '.join(x['blocks']))
-                return norm(x['en'])
-            seen = {signature(x): x for x in unit[key]}
-            for original in incoming[key]:
-                candidate = mark(original, key)
-                if key == 'completions':
-                    candidate['wrongEndings'] = [target_id + '-ext26-' + source_id + '-' + x[len(source_id):] for x in original['wrongEndings']]
-                prior = seen.get(signature(candidate))
-                if prior:
-                    report['skipped'][key] += 1
-                    source_items[original['id']] = prior
-                else:
-                    unit[key].append(candidate)
-                    seen[signature(candidate)] = candidate
-                    source_items[original['id']] = candidate
-        # Store source completions, but do not activate unreviewed endings.
-        # Every playable fork below has explicit incorrect grammatical forms.
-        completion_ids = {x['id'] for x in unit['completions']}
-        for entry in unit['completions']:
-            if entry.get('importTag') == TAG and entry['origin']['unitId'] == source_id:
-                entry['wrongEndings'] = [source_items[x]['id'] for x in incoming['completions'][int(entry['origin']['itemId'].split('h')[-1])-1]['wrongEndings']]
-                assert all(x in completion_ids for x in entry['wrongEndings'])
+            def mark(item, collection):
+                result = copy.deepcopy(item)
+                result['id'] = target_id + '-' + B['idpart'] + '-' + source_id + '-' + item['id'][len(source_id):]
+                result['importTag'] = B['tag']
+                result['origin'] = {'file': file.name, 'unitId': source_id, 'itemId': item['id'], 'collection': collection}
+                return result
 
-        existing_pair = [c['id'] for c in unit['categories'][:2]]
-        new_categories = [mark(c, 'categories') for c in incoming['categories']]
-        # Bare club names can also be subjects (art/science). Compare only the
-        # two categories in this pair, rather than unrelated pairs in the bank.
-        overlap = {norm(x) for x in new_categories[0]['yes']} & {norm(x) for x in new_categories[1]['yes']}
-        for category in new_categories:
-            category['yes'] = list(dict.fromkeys(x for x in category['yes'] if norm(x) not in overlap))
-        for i, category in enumerate(new_categories):
-            category['no'] = new_categories[1-i]['yes'].copy()
-            assert len(category['yes']) >= 4
-        same_pair = len(unit['categories']) == 2 and all(
-            norm(a['title']) == norm(b['title']) and {norm(w) for w in a['yes']} == {norm(w) for w in b['yes']}
-            for a,b in zip(unit['categories'],new_categories))
-        if not same_pair:
-            unit['categories'].extend(new_categories)
-        unit.setdefault('categoryPairs', [existing_pair] if len(existing_pair) == 2 else [])
-        if not same_pair: unit['categoryPairs'].append([c['id'] for c in new_categories])
-        subthemes = unit.setdefault('subthemes', [])
-        titles = [incoming['title']] if source_id in REMAPPED else [c['title'].title() for c in incoming['categories']]
-        for title in titles:
-            if norm(title) not in {norm(x['title']) for x in subthemes}:
-                subthemes.append({'title': title, 'sourceUnitId': source_id, 'categoryIds': [c['id'] for c in new_categories] if not same_pair else existing_pair})
+            source_items = {}
+            for key in ['descriptions','pictures','questions','completions','sentences','translations']:
+                def signature(x):
+                    if key == 'descriptions': return (norm(x['clue']), norm(x['answer']))
+                    if key == 'pictures': return norm(x['word'])
+                    if key == 'questions': return norm(x['q'])
+                    if key == 'completions': return (norm(x['start']), norm(x['end']))
+                    if key == 'sentences': return norm(' '.join(x['blocks']))
+                    return norm(x['en'])
+                seen = {signature(x): x for x in unit[key]}
+                for original in incoming[key]:
+                    if key == 'translations' and original['id'] in B['skip_translations']: continue
+                    candidate = mark(original, key)
+                    if key == 'translations': candidate.update(B['translation_edits'].get(original['id'], {}))
+                    if key == 'completions':
+                        candidate['wrongEndings'] = [target_id + '-' + B['idpart'] + '-' + source_id + '-' + x[len(source_id):] for x in original['wrongEndings']]
+                    prior = seen.get(signature(candidate))
+                    if prior:
+                        report['skipped'][key] += 1
+                        source_items[original['id']] = prior
+                    else:
+                        unit[key].append(candidate)
+                        seen[signature(candidate)] = candidate
+                        source_items[original['id']] = candidate
+            # Store source completions, but do not activate unreviewed endings.
+            # Every playable fork below has explicit incorrect grammatical forms.
+            completion_ids = {x['id'] for x in unit['completions']}
+            for entry in unit['completions']:
+                if entry.get('importTag') == B['tag'] and entry['origin']['unitId'] == source_id:
+                    entry['wrongEndings'] = [source_items[x]['id'] for x in incoming['completions'][int(entry['origin']['itemId'].split('h')[-1])-1]['wrongEndings']]
+                    assert all(x in completion_ids for x in entry['wrongEndings'])
 
-        for original in incoming['descriptions']:
-            item = mark(original, 'descriptions')
-            item.update(DESCRIPTION_EDITS.get(original['id'], {}))
-            if any(x['type'] == 'description' and norm(x['prompt']) == norm(item['clue']) and norm(x['answer']) == norm(item['answer']) for x in matches[target_id]):
-                continue
-            translation = next((x['tr'] for x in unit['translations'] if norm(x['en']) == norm(item['answer'])), '')
-            card = {**item, 'type': 'description', 'prompt': item.pop('clue'), 'tr': translation, 'sourceId': source_items[original['id']]['id']}
-            if original['id'] in DESCRIPTION_REVIEWS: card['reviewPrompt'] = DESCRIPTION_REVIEWS[original['id']]
-            matches[target_id].append(card)
+            existing_pair = [c['id'] for c in unit['categories'][:2]]
+            new_categories = [mark(c, 'categories') for c in incoming['categories']]
+            # Bare club names can also be subjects (art/science). Compare only the
+            # two categories in this pair, rather than unrelated pairs in the bank.
+            overlap = {norm(x) for x in new_categories[0]['yes']} & {norm(x) for x in new_categories[1]['yes']}
+            for category in new_categories:
+                category['yes'] = list(dict.fromkeys(x for x in category['yes'] if norm(x) not in overlap))
+            for i, category in enumerate(new_categories):
+                category['no'] = new_categories[1-i]['yes'].copy()
+                assert len(category['yes']) >= 4
+            same_pair = len(unit['categories']) == 2 and all(
+                norm(a['title']) == norm(b['title']) and {norm(w) for w in a['yes']} == {norm(w) for w in b['yes']}
+                for a,b in zip(unit['categories'],new_categories))
+            if B['novel_pairs']:
+                # A later batch adds a pair only when one of its categories is new,
+                # not a near copy (six or more shared words) of one already played.
+                shared = lambda c: max(len({norm(w) for w in c['yes']} & {norm(w) for w in e['yes']}) for e in unit['categories'])
+                same_pair = min(map(shared, new_categories)) > 5
+            if not same_pair:
+                unit['categories'].extend(new_categories)
+            unit.setdefault('categoryPairs', [existing_pair] if len(existing_pair) == 2 else [])
+            if not same_pair: unit['categoryPairs'].append([c['id'] for c in new_categories])
+            subthemes = unit.setdefault('subthemes', [])
+            titles = [incoming['title']] if source_id in B['remap'] else [c['title'].title() for c in incoming['categories']]
+            for title in titles:
+                if norm(title) not in {norm(x['title']) for x in subthemes}:
+                    subthemes.append({'title': title, 'sourceUnitId': source_id, 'categoryIds': [c['id'] for c in new_categories] if not same_pair else existing_pair})
 
-        for index, answer, wrong1, wrong2, review_prompt in questions[source_id]:
-            original = incoming['questions'][index-1]
-            assert len({norm(answer), norm(wrong1), norm(wrong2)}) == 3
-            item = mark(original, 'questions')
-            matches[target_id].append({**item, 'type': 'question', 'prompt': original['q'], 'answer': answer,
-                                      'options': [answer, wrong1, wrong2], 'reviewPrompt': review_prompt,
-                                      'tr': next((x['tr'] for x in unit['translations'] if norm(x['en']) == norm(answer)), ''),
-                                      'sourceId': source_items[original['id']]['id']})
+            for original in incoming['descriptions']:
+                item = mark(original, 'descriptions')
+                item.update(B['desc_edits'].get(original['id'], {}))
+                if any(x['type'] == 'description' and norm(x['prompt']) == norm(item['clue']) and norm(x['answer']) == norm(item['answer']) for x in matches[target_id]):
+                    continue
+                translation = next((x['tr'] for x in unit['translations'] if norm(x['en']) == norm(item['answer'])), '')
+                card = {**item, 'type': 'description', 'prompt': item.pop('clue'), 'tr': translation, 'sourceId': source_items[original['id']]['id']}
+                if original['id'] in B['desc_reviews']: card['reviewPrompt'] = B['desc_reviews'][original['id']]
+                matches[target_id].append(card)
 
-        for original in incoming['sentences']:
-            item = mark(original, 'sentences')
-            blocks, tr = item['blocks'][:2] + [' '.join(item['blocks'][2:])], item['tr']
-            if original['id'] in REPAIR_EDITS:
-                blocks, tr = REPAIR_EDITS[original['id']]
-            assert len(blocks) == 3 and max(map(len,blocks)) <= 34 and len(' '.join(blocks)) <= 80, original['id']
-            if any(norm(' '.join(x['blocks'])) == norm(' '.join(blocks)) for x in repairs[target_id]):
-                report['skipped']['repairs'] += 1
-                continue
-            adapted = blocks != original['blocks']
-            repairs[target_id].append({**item, 'blocks': blocks, 'tr': tr, 'sourceId': source_items[original['id']]['id'], 'adapted': adapted})
-            if adapted: report['repairAdaptations'].append({'source': original['id'], 'id': item['id'], 'blocks': blocks, 'tr': tr})
+            for index, answer, wrong1, wrong2, review_prompt in B['questions'].get(source_id, []):
+                original = incoming['questions'][index-1]
+                if B['dedupe'] and any(x['type'] == 'question' and norm(x['prompt']) == norm(original['q']) for x in matches[target_id]):
+                    report['skipped']['questionSigns'] += 1
+                    continue
+                assert len({norm(answer), norm(wrong1), norm(wrong2)}) == 3
+                item = mark(original, 'questions')
+                matches[target_id].append({**item, 'type': 'question', 'prompt': original['q'], 'answer': answer,
+                                          'options': [answer, wrong1, wrong2], 'reviewPrompt': review_prompt,
+                                          'tr': next((x['tr'] for x in unit['translations'] if norm(x['en']) == norm(answer)), ''),
+                                          'sourceId': source_items[original['id']]['id']})
 
-        grammar_count = 0
-        for original in incoming['sentences']:
-            blocks = original['blocks'][:2] + [' '.join(original['blocks'][2:])]
-            if original['id'] in REPAIR_EDITS: blocks = REPAIR_EDITS[original['id']][0]
-            verb = blocks[1]
-            decoys = FORMS.get(verb) or PAST_FORMS.get(verb)
-            if not decoys: continue
-            label = 'PAST TENSE' if verb in PAST_FORMS else 'GRAMMAR'
-            prompt = label + ': ' + blocks[0] + ' ___ ' + blocks[2]
-            item = mark(original, 'sentences')
-            matches[target_id].append({**item, 'id': item['id'] + '-grammar', 'type': 'grammar',
-                                      'prompt': prompt, 'answer': verb, 'options': [verb, *decoys],
-                                      'tr': REPAIR_EDITS.get(original['id'], (None, original['tr']))[1],
-                                      'sourceId': source_items[original['id']]['id']})
-            grammar_count += 1
-            if grammar_count == 3: break
-        assert grammar_count == 3, (source_id, grammar_count)
+            for position, original in enumerate(incoming['sentences']):
+                # Later source sentences repeat the same frames in every unit; a
+                # repair limit keeps the topic-specific ones as road repairs.
+                if B['repair_limit'] and position >= B['repair_limit']: continue
+                item = mark(original, 'sentences')
+                blocks, tr = item['blocks'][:2] + [' '.join(item['blocks'][2:])], item['tr']
+                if original['id'] in B['repair_edits']:
+                    blocks, tr = B['repair_edits'][original['id']]
+                assert len(blocks) == 3 and max(map(len,blocks)) <= 34 and len(' '.join(blocks)) <= 80, original['id']
+                if any(norm(' '.join(x['blocks'])) == norm(' '.join(blocks)) for x in repairs[target_id]):
+                    report['skipped']['repairs'] += 1
+                    continue
+                adapted = blocks != original['blocks']
+                repairs[target_id].append({**item, 'blocks': blocks, 'tr': tr, 'sourceId': source_items[original['id']]['id'], 'adapted': adapted})
+                if adapted: report['repairAdaptations'].append({'source': original['id'], 'id': item['id'], 'blocks': blocks, 'tr': tr})
 
-        # All imported meanings are playable, with both duplicate English
-        # labels and Turkish equivalents excluded from the decoy pool.
-        for original in incoming['translations']:
-            canonical = source_items[original['id']]
-            if any(x['type'] == 'translation' and norm(x['answer']) == norm(canonical['en']) for x in matches[target_id]): continue
-            decoys = list(dict.fromkeys(x['en'] for x in unit['translations'] if compatible_translation(canonical,x)))
-            assert len(decoys) >= 2
-            item = mark(original, 'translations')
-            matches[target_id].append({**item, 'type': 'translation', 'prompt': 'English for “' + canonical['tr'] + '”: ',
-                                      'answer': canonical['en'], 'decoys': decoys, 'tr': canonical['tr'], 'sourceId': canonical['id']})
+            grammar_count = 0
+            for original in incoming['sentences']:
+                blocks = original['blocks'][:2] + [' '.join(original['blocks'][2:])]
+                if original['id'] in B['repair_edits']: blocks = B['repair_edits'][original['id']][0]
+                verb = blocks[1]
+                decoys = forms.get(verb) or past_forms.get(verb)
+                if not decoys: continue
+                label = 'PAST TENSE' if verb in past_forms else 'GRAMMAR'
+                prompt = label + ': ' + blocks[0] + ' ___ ' + blocks[2]
+                if B['dedupe'] and any(x['type'] == 'grammar' and norm(x['prompt']) == norm(prompt) for x in matches[target_id]): continue
+                item = mark(original, 'sentences')
+                matches[target_id].append({**item, 'id': item['id'] + '-grammar', 'type': 'grammar',
+                                          'prompt': prompt, 'answer': verb, 'options': [verb, *decoys],
+                                          'tr': B['repair_edits'].get(original['id'], (None, original['tr']))[1],
+                                          'sourceId': source_items[original['id']]['id']})
+                grammar_count += 1
+                if grammar_count == 3: break
+            assert grammar_count == 3, (source_id, grammar_count)
 
-for grade in bank:
-    g = grade['grade']
-    counts = Counter(x['type'] for u in grade['units'] for x in matches[u['id']])
-    report['grades'][str(g)] = {'unitsBefore': before[g]['units'], 'unitsAfter': len(grade['units']),
-        'newPlayableMatches': sum(counts.values()) - before[g]['matches'],
-        'newRepairs': sum(len(repairs[u['id']]) for u in grade['units']) - before[g]['repairs'],
-        'playableByType': dict(counts)}
-report['addedSourceItems'] = {k: sum(len(u[k]) for g in bank for u in g['units']) - base_counts[k] for k in base_counts}
-report['skipped'] = dict(report['skipped'])
-report['notes'] = ['Six extra source topics are connected as sub-themes; all 44 existing unit IDs and titles are preserved.',
- 'All supplied content is retained verbatim in reference/language-expansion-2026/grade*.json.',
- 'Three reviewed question signs per supplied unit are playable; other source Q&As remain available for future curation.',
- 'Unreviewed source sentence completions are retained as source material, never used as answer options.',
- 'Every playable road repair has exactly three blocks. Longer source blocks are regrouped; selected items are shortened.',
- 'Imported category pairs use disjoint words and rotate with the existing pair during a race.']
+            # All imported meanings are playable, with both duplicate English
+            # labels and Turkish equivalents excluded from the decoy pool.
+            for original in incoming['translations']:
+                if original['id'] in B['skip_translations']: continue
+                canonical = source_items[original['id']]
+                if any(x['type'] == 'translation' and norm(x['answer']) == norm(canonical['en']) for x in matches[target_id]): continue
+                decoys = list(dict.fromkeys(x['en'] for x in unit['translations'] if compatible_translation(canonical,x)))
+                assert len(decoys) >= 2
+                item = mark(original, 'translations')
+                matches[target_id].append({**item, 'type': 'translation', 'prompt': 'English for “' + canonical['tr'] + '”: ',
+                                          'answer': canonical['en'], 'decoys': decoys, 'tr': canonical['tr'], 'sourceId': canonical['id']})
+
+    for grade in bank:
+        g = grade['grade']
+        counts = Counter(x['type'] for u in grade['units'] for x in matches[u['id']])
+        report['grades'][str(g)] = {'unitsBefore': before[g]['units'], 'unitsAfter': len(grade['units']),
+            'newPlayableMatches': sum(counts.values()) - before[g]['matches'],
+            'newRepairs': sum(len(repairs[u['id']]) for u in grade['units']) - before[g]['repairs'],
+            'playableByType': dict(counts)}
+    report['addedSourceItems'] = {k: sum(len(u[k]) for g in bank for u in g['units']) - base_counts[k] for k in base_counts}
+    report['skipped'] = dict(report['skipped'])
+    report['notes'] = B['notes'] or ['Six extra source topics are connected as sub-themes; all 44 existing unit IDs and titles are preserved.',
+     'All supplied content is retained verbatim in reference/language-expansion-2026/grade*.json.',
+     'Three reviewed question signs per supplied unit are playable; other source Q&As remain available for future curation.',
+     'Unreviewed source sentence completions are retained as source material, never used as answer options.',
+     'Every playable road repair has exactly three blocks. Longer source blocks are regrouped; selected items are shortened.',
+     'Imported category pairs use disjoint words and rotate with the existing pair during a race.']
+    (B['source'] / 'import-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
+    print(json.dumps({'batch': B['tag'], 'grades': report['grades'], 'addedSourceItems': report['addedSourceItems'], 'duplicatesSkipped': report['skipped']}, ensure_ascii=False, indent=2))
+
+BATCH1 = {'tag': TAG, 'idpart': 'ext26', 'source': SOURCE, 'file': 'grade{}.json', 'remap': REMAPPED, 'aliases': TITLE_ALIASES,
+          'questions': json.loads((SOURCE / 'reviewed-questions.json').read_text()),
+          'desc_edits': DESCRIPTION_EDITS, 'desc_reviews': DESCRIPTION_REVIEWS, 'repair_edits': REPAIR_EDITS,
+          'forms': {}, 'past_forms': {}, 'skip_translations': set(), 'repair_limit': None, 'novel_pairs': False, 'dedupe': False, 'notes': None,
+          # “eş” reads as “spouse”; a classroom partner is a study partner.
+          'translation_edits': {'g6u2t5': {'tr': 'çalışma arkadaşı'}}}
+
+# Second batch (grade*-2.json). Its unit numbers are again local to the files:
+# Feelings and Well-being joins Personal Life, Everyday Jobs fills Jobs and
+# Workplaces, Health and First Aid and Sports and Fitness join Health and
+# Well-being, Travel and Transport fills Travel and Holidays, and School Clubs
+# and Learning and Health and Well-being join Teen Life, as in the first batch.
+BATCH2 = {'tag': TAG2, 'idpart': 'ext26b', 'source': SOURCE2, 'file': 'grade{}-2.json',
+          'remap': {'g5u9': 'g5u3', 'g5u10': 'g5u9', 'g6u9': 'g6u10', 'g6u10': 'g6u10', 'g7u12': 'g7u12', 'g8u11': 'g8u2', 'g8u12': 'g8u2'},
+          'aliases': {'g5u5': 'Neighborhood / City Life', 'g5u8': 'Universe & Future'},
+          'questions': json.loads((SOURCE2 / 'reviewed-questions.json').read_text()),
+          # Activity answers get activity clues, chore verbs get a blank, and a
+          # few clues allowed another reading.
+          'desc_edits': {
+           'g5u4d6': {'clue': 'I am a girl, and we have the same parents.'},
+           'g7u11d2': {'clue': 'I turn a block of cheese into small, thin strips.'},
+           'g8u2d1': {'clue': 'The activity of moving across ice on special boots.'},
+           'g8u2d2': {'clue': 'The activity of making pictures with pencils or paints.'},
+           'g8u2d3': {'clue': 'The activity of enjoying books and long stories.'},
+           'g8u2d4': {'clue': 'The activity of making music with your voice.'},
+           'g8u2d5': {'clue': 'The activity of sleeping in a tent outside.'},
+           'g8u2d6': {'clue': 'The activity of following a route on foot in the countryside.'},
+           'g8u6d1': {'clue': 'The sport of exploring caves with a helmet and a light.'},
+           'g8u6d2': {'clue': 'The sport of going down a river in an inflatable boat.'},
+           'g8u6d3': {'clue': 'The sport of riding waves while standing on a board.'},
+           'g8u6d4': {'clue': 'The sport of going up rocks with a rope and a harness.'},
+           'g8u6d5': {'clue': 'The sport of swimming underwater with breathing equipment.'},
+           'g8u6d6': {'clue': 'The activity of walking along paths in the countryside.'},
+           'g8u7d3': {'clue': 'The broken remains of very old buildings.'},
+           'g8u8d1': {'clue': 'I clean the floor with a broom. I ___ it.'},
+           'g8u8d2': {'clue': 'I clean the floor with a wet mop. I ___ it.'},
+           'g8u8d3': {'clue': 'I remove dust from furniture with a cloth. I ___ it.'},
+           'g8u8d4': {'clue': 'I make wrinkled clothes smooth with heat. I ___ them.'},
+           'g8u8d5': {'clue': 'I clean the plates and cups after a meal. I ___.'},
+           'g8u8d6': {'clue': 'A machine sucks dirt from the carpet. I ___ it.'},
+           'g8u9d3': {'clue': 'We use these to measure how heavy a sample is.'}},
+          'desc_reviews': {
+           'g5u3d4': 'You wear this on your head on a cold day: a ___.',
+           'g5u5d5': 'You catch a train at the railway ___.',
+           'g7u3d4': 'An artist who paints pictures is a ___.',
+           'g7u3d6': 'A person who travels to discover new places is an ___.',
+           'g7u2d3': 'A person watching the match from the stands is a ___.',
+           'g7u2d4': 'The official who blows the whistle in a match is the ___.',
+           'g7u9d6': 'Smoke from cars and factories makes the air dirty. This is ___.',
+           'g8u5d1': 'Keep this secret code private to protect your account: your ___.',
+           'g8u5d2': 'The account name you type to log in is your ___.',
+           'g8u5d4': 'A file you add to an email is an ___.'},
+          'repair_edits': {
+           'g5u3s3': (['These gloves', 'are', 'warm.'], 'Bu eldivenler sıcak.'),
+           'g8u3s1': (['Please', 'peel', 'the large potatoes.'], 'Lütfen büyük patatesleri soy.')},
+          'forms': {}, 'past_forms': {},
+          'translation_edits': {'g6u2t4': {'tr': 'çalışma arkadaşı'}, 'g7u12t6': {'tr': 'kalkış'}, 'g8u11t3': {'tr': 'tekrar etmek'}},
+          # Identical in both languages, so a sign would test nothing.
+          'skip_translations': {'g5u10t6', 'g7u6t6'},
+          'repair_limit': 4, 'novel_pairs': True, 'dedupe': True,
+          'notes': ['Seven extra source topics connect as sub-themes of existing lessons in the same grade; all 44 unit IDs and titles are preserved.',
+           'All supplied content is retained verbatim in reference/language-expansion-2026b/grade*-2.json.',
+           'Up to three reviewed question signs per supplied unit are playable; personal questions without one right answer stay source material.',
+           'The first four sentences per unit become road repairs; the remaining six repeat shared frames and stay source material.',
+           'A category pair is added only when at least one of its categories is new to the lesson.',
+           'Nothing from the first batch is replaced; repeated items are skipped.']}
+
+BATCHES = [BATCH1, BATCH2]
+for B in BATCHES:
+    run_batch(B)
+
 write_bank('language-bank', 'LANGUAGE_BANK', bank)
 write_bank('match-bank', 'MATCH_BANK', matches)
 write_bank('repair-bank', 'REPAIR_BANK', repairs)
-(SOURCE / 'import-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
-print(json.dumps({'grades': report['grades'], 'addedSourceItems': report['addedSourceItems'], 'duplicatesSkipped': report['skipped']}, ensure_ascii=False, indent=2))

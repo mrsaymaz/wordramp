@@ -1,0 +1,1013 @@
+{
+  "importTag": "grade-files-2026-10b",
+  "mappings": [
+    {
+      "grade": 5,
+      "sourceId": "g5u1",
+      "sourceTitle": "School Life",
+      "targetId": "g5u1",
+      "targetTitle": "School Life",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 5,
+      "sourceId": "g5u2",
+      "sourceTitle": "Classroom Life",
+      "targetId": "g5u2",
+      "targetTitle": "Classroom Life",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 5,
+      "sourceId": "g5u3",
+      "sourceTitle": "Personal Life",
+      "targetId": "g5u3",
+      "targetTitle": "Personal Life",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 5,
+      "sourceId": "g5u4",
+      "sourceTitle": "Family Life",
+      "targetId": "g5u4",
+      "targetTitle": "Family Life",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 5,
+      "sourceId": "g5u5",
+      "sourceTitle": "Neighborhood / City Life",
+      "targetId": "g5u5",
+      "targetTitle": "Life in the Neighbourhood & City",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 5,
+      "sourceId": "g5u6",
+      "sourceTitle": "Life In The World",
+      "targetId": "g5u6",
+      "targetTitle": "Life in the World",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 5,
+      "sourceId": "g5u7",
+      "sourceTitle": "Life In Nature",
+      "targetId": "g5u7",
+      "targetTitle": "Life in Nature",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 5,
+      "sourceId": "g5u8",
+      "sourceTitle": "Universe & Future",
+      "targetId": "g5u8",
+      "targetTitle": "Life in the Universe & Future",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 5,
+      "sourceId": "g5u9",
+      "sourceTitle": "Feelings and Well-being",
+      "targetId": "g5u3",
+      "targetTitle": "Personal Life",
+      "newLesson": false,
+      "connectedSubtheme": true
+    },
+    {
+      "grade": 5,
+      "sourceId": "g5u10",
+      "sourceTitle": "Everyday Jobs",
+      "targetId": "g5u9",
+      "targetTitle": "Jobs and Workplaces",
+      "newLesson": false,
+      "connectedSubtheme": true
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u1",
+      "sourceTitle": "School Life",
+      "targetId": "g6u1",
+      "targetTitle": "School Life",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u2",
+      "sourceTitle": "Classroom Life",
+      "targetId": "g6u2",
+      "targetTitle": "Classroom Life",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u3",
+      "sourceTitle": "Personal Life",
+      "targetId": "g6u3",
+      "targetTitle": "Personal Life",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u4",
+      "sourceTitle": "Family Life",
+      "targetId": "g6u4",
+      "targetTitle": "Family Life",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u5",
+      "sourceTitle": "Life in the Neighbourhood & City",
+      "targetId": "g6u5",
+      "targetTitle": "Life in the Neighbourhood & City",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u6",
+      "sourceTitle": "Life in the World & Culture",
+      "targetId": "g6u6",
+      "targetTitle": "Life in the World & Culture",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u7",
+      "sourceTitle": "Life in Nature & Global Problems",
+      "targetId": "g6u7",
+      "targetTitle": "Life in Nature & Global Problems",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u8",
+      "sourceTitle": "Life in the Universe & Future",
+      "targetId": "g6u8",
+      "targetTitle": "Life in the Universe & Future",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u9",
+      "sourceTitle": "Health and First Aid",
+      "targetId": "g6u10",
+      "targetTitle": "Health and Well-being",
+      "newLesson": false,
+      "connectedSubtheme": true
+    },
+    {
+      "grade": 6,
+      "sourceId": "g6u10",
+      "sourceTitle": "Sports and Fitness",
+      "targetId": "g6u10",
+      "targetTitle": "Health and Well-being",
+      "newLesson": false,
+      "connectedSubtheme": true
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u1",
+      "sourceTitle": "Appearance and Personality",
+      "targetId": "g7u1",
+      "targetTitle": "Appearance and Personality",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u2",
+      "sourceTitle": "Sports",
+      "targetId": "g7u2",
+      "targetTitle": "Sports",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u3",
+      "sourceTitle": "Biographies",
+      "targetId": "g7u3",
+      "targetTitle": "Biographies",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u4",
+      "sourceTitle": "Wild Animals",
+      "targetId": "g7u4",
+      "targetTitle": "Wild Animals",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u5",
+      "sourceTitle": "Television",
+      "targetId": "g7u5",
+      "targetTitle": "Television",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u6",
+      "sourceTitle": "Celebrations",
+      "targetId": "g7u6",
+      "targetTitle": "Celebrations",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u7",
+      "sourceTitle": "Dreams",
+      "targetId": "g7u7",
+      "targetTitle": "Dreams",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u8",
+      "sourceTitle": "Public Buildings",
+      "targetId": "g7u8",
+      "targetTitle": "Public Buildings",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u9",
+      "sourceTitle": "Environment",
+      "targetId": "g7u9",
+      "targetTitle": "Environment",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u10",
+      "sourceTitle": "Planets",
+      "targetId": "g7u10",
+      "targetTitle": "Planets",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u11",
+      "sourceTitle": "Food and Cooking",
+      "targetId": "g7u11",
+      "targetTitle": "Food and Cooking",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 7,
+      "sourceId": "g7u12",
+      "sourceTitle": "Travel and Transport",
+      "targetId": "g7u12",
+      "targetTitle": "Travel and Holidays",
+      "newLesson": false,
+      "connectedSubtheme": true
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u1",
+      "sourceTitle": "Friendship",
+      "targetId": "g8u1",
+      "targetTitle": "Friendship",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u2",
+      "sourceTitle": "Teen Life",
+      "targetId": "g8u2",
+      "targetTitle": "Teen Life",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u3",
+      "sourceTitle": "In the Kitchen",
+      "targetId": "g8u3",
+      "targetTitle": "In the Kitchen",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u4",
+      "sourceTitle": "On the Phone",
+      "targetId": "g8u4",
+      "targetTitle": "On the Phone",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u5",
+      "sourceTitle": "The Internet",
+      "targetId": "g8u5",
+      "targetTitle": "The Internet",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u6",
+      "sourceTitle": "Adventures",
+      "targetId": "g8u6",
+      "targetTitle": "Adventures",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u7",
+      "sourceTitle": "Tourism",
+      "targetId": "g8u7",
+      "targetTitle": "Tourism",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u8",
+      "sourceTitle": "Chores",
+      "targetId": "g8u8",
+      "targetTitle": "Chores",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u9",
+      "sourceTitle": "Science",
+      "targetId": "g8u9",
+      "targetTitle": "Science",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u10",
+      "sourceTitle": "Natural Forces",
+      "targetId": "g8u10",
+      "targetTitle": "Natural Forces",
+      "newLesson": false,
+      "connectedSubtheme": false
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u11",
+      "sourceTitle": "School Clubs and Learning",
+      "targetId": "g8u2",
+      "targetTitle": "Teen Life",
+      "newLesson": false,
+      "connectedSubtheme": true
+    },
+    {
+      "grade": 8,
+      "sourceId": "g8u12",
+      "sourceTitle": "Health and Well-being",
+      "targetId": "g8u2",
+      "targetTitle": "Teen Life",
+      "newLesson": false,
+      "connectedSubtheme": true
+    }
+  ],
+  "grades": {
+    "5": {
+      "unitsBefore": 10,
+      "unitsAfter": 10,
+      "newPlayableMatches": 164,
+      "newRepairs": 36,
+      "playableByType": {
+        "description": 177,
+        "translation": 207,
+        "grammar": 90,
+        "question": 57
+      }
+    },
+    "6": {
+      "unitsBefore": 10,
+      "unitsAfter": 10,
+      "newPlayableMatches": 145,
+      "newRepairs": 38,
+      "playableByType": {
+        "description": 175,
+        "translation": 197,
+        "grammar": 90,
+        "question": 60
+      }
+    },
+    "7": {
+      "unitsBefore": 12,
+      "unitsAfter": 12,
+      "newPlayableMatches": 172,
+      "newRepairs": 46,
+      "playableByType": {
+        "description": 212,
+        "translation": 234,
+        "grammar": 108,
+        "question": 71
+      }
+    },
+    "8": {
+      "unitsBefore": 12,
+      "unitsAfter": 12,
+      "newPlayableMatches": 167,
+      "newRepairs": 44,
+      "playableByType": {
+        "description": 216,
+        "translation": 235,
+        "grammar": 108,
+        "question": 72
+      }
+    }
+  },
+  "skipped": {
+    "pictures": 257,
+    "questions": 35,
+    "completions": 3,
+    "translations": 258,
+    "sentences": 13,
+    "repairs": 12,
+    "descriptions": 12
+  },
+  "descriptionEdits": {
+    "g5u4d6": {
+      "clue": "I am a girl, and we have the same parents."
+    },
+    "g7u11d2": {
+      "clue": "I turn a block of cheese into small, thin strips."
+    },
+    "g8u2d1": {
+      "clue": "The activity of moving across ice on special boots."
+    },
+    "g8u2d2": {
+      "clue": "The activity of making pictures with pencils or paints."
+    },
+    "g8u2d3": {
+      "clue": "The activity of enjoying books and long stories."
+    },
+    "g8u2d4": {
+      "clue": "The activity of making music with your voice."
+    },
+    "g8u2d5": {
+      "clue": "The activity of sleeping in a tent outside."
+    },
+    "g8u2d6": {
+      "clue": "The activity of following a route on foot in the countryside."
+    },
+    "g8u6d1": {
+      "clue": "The sport of exploring caves with a helmet and a light."
+    },
+    "g8u6d2": {
+      "clue": "The sport of going down a river in an inflatable boat."
+    },
+    "g8u6d3": {
+      "clue": "The sport of riding waves while standing on a board."
+    },
+    "g8u6d4": {
+      "clue": "The sport of going up rocks with a rope and a harness."
+    },
+    "g8u6d5": {
+      "clue": "The sport of swimming underwater with breathing equipment."
+    },
+    "g8u6d6": {
+      "clue": "The activity of walking along paths in the countryside."
+    },
+    "g8u7d3": {
+      "clue": "The broken remains of very old buildings."
+    },
+    "g8u8d1": {
+      "clue": "I clean the floor with a broom. I ___ it."
+    },
+    "g8u8d2": {
+      "clue": "I clean the floor with a wet mop. I ___ it."
+    },
+    "g8u8d3": {
+      "clue": "I remove dust from furniture with a cloth. I ___ it."
+    },
+    "g8u8d4": {
+      "clue": "I make wrinkled clothes smooth with heat. I ___ them."
+    },
+    "g8u8d5": {
+      "clue": "I clean the plates and cups after a meal. I ___."
+    },
+    "g8u8d6": {
+      "clue": "A machine sucks dirt from the carpet. I ___ it."
+    },
+    "g8u9d3": {
+      "clue": "We use these to measure how heavy a sample is."
+    }
+  },
+  "repairAdaptations": [
+    {
+      "source": "g5u1s4",
+      "id": "g5u1-ext26b-g5u1-s4",
+      "blocks": [
+        "Our coach",
+        "gives",
+        "us a ball."
+      ],
+      "tr": "Antrenörümüz bize bir top verir."
+    },
+    {
+      "source": "g5u2s4",
+      "id": "g5u2-ext26b-g5u2-s4",
+      "blocks": [
+        "Our teacher",
+        "gives",
+        "us a worksheet."
+      ],
+      "tr": "Öğretmenimiz bize bir çalışma kâğıdı verir."
+    },
+    {
+      "source": "g5u3s4",
+      "id": "g5u3-ext26b-g5u3-s4",
+      "blocks": [
+        "This",
+        "is",
+        "my new raincoat."
+      ],
+      "tr": "Bu benim yeni yağmurluğum."
+    },
+    {
+      "source": "g5u4s4",
+      "id": "g5u4-ext26b-g5u4-s4",
+      "blocks": [
+        "My uncle",
+        "teaches",
+        "me a song."
+      ],
+      "tr": "Amcam bana bir şarkı öğretir."
+    },
+    {
+      "source": "g5u5s4",
+      "id": "g5u5-ext26b-g5u5-s4",
+      "blocks": [
+        "Our town",
+        "has got",
+        "a new hospital."
+      ],
+      "tr": "Kasabamızda yeni bir hastane var."
+    },
+    {
+      "source": "g5u6s4",
+      "id": "g5u6-ext26b-g5u6-s4",
+      "blocks": [
+        "The waiter",
+        "gives",
+        "us the menu."
+      ],
+      "tr": "Garson bize menüyü verir."
+    },
+    {
+      "source": "g5u7s4",
+      "id": "g5u7-ext26b-g5u7-s4",
+      "blocks": [
+        "This",
+        "is",
+        "a very tall giraffe."
+      ],
+      "tr": "Bu çok uzun bir zürafa."
+    },
+    {
+      "source": "g5u9s4",
+      "id": "g5u3-ext26b-g5u9-s4",
+      "blocks": [
+        "This",
+        "is",
+        "a clean towel."
+      ],
+      "tr": "Bu temiz bir havlu."
+    },
+    {
+      "source": "g5u10s4",
+      "id": "g5u9-ext26b-g5u10-s4",
+      "blocks": [
+        "The vet",
+        "gives",
+        "the dog some water."
+      ],
+      "tr": "Veteriner köpeğe biraz su verir."
+    },
+    {
+      "source": "g6u1s4",
+      "id": "g6u1-ext26b-g6u1-s4",
+      "blocks": [
+        "Our teacher",
+        "gives",
+        "us a task list."
+      ],
+      "tr": "Öğretmenimiz bize bir görev listesi verir."
+    },
+    {
+      "source": "g6u2s4",
+      "id": "g6u2-ext26b-g6u2-s4",
+      "blocks": [
+        "The teacher",
+        "shows",
+        "us an example."
+      ],
+      "tr": "Öğretmen bize bir örnek gösterir."
+    },
+    {
+      "source": "g6u3s4",
+      "id": "g6u3-ext26b-g6u3-s4",
+      "blocks": [
+        "My friend",
+        "tells",
+        "us funny stories."
+      ],
+      "tr": "Arkadaşım bize komik hikâyeler anlatır."
+    },
+    {
+      "source": "g6u4s4",
+      "id": "g6u4-ext26b-g6u4-s4",
+      "blocks": [
+        "Our home",
+        "has got",
+        "a small balcony."
+      ],
+      "tr": "Evimizin küçük bir balkonu var."
+    },
+    {
+      "source": "g6u5s4",
+      "id": "g6u5-ext26b-g6u5-s4",
+      "blocks": [
+        "The driver",
+        "gave",
+        "us our tickets."
+      ],
+      "tr": "Şoför bize biletlerimizi verdi."
+    },
+    {
+      "source": "g6u6s4",
+      "id": "g6u6-ext26b-g6u6-s4",
+      "blocks": [
+        "The cook",
+        "showed",
+        "us her recipe."
+      ],
+      "tr": "Aşçı bize tarifini gösterdi."
+    },
+    {
+      "source": "g6u7s4",
+      "id": "g6u7-ext26b-g6u7-s4",
+      "blocks": [
+        "The teacher",
+        "gave",
+        "us reusable bags."
+      ],
+      "tr": "Öğretmen bize yeniden kullanılabilir çantalar verdi."
+    },
+    {
+      "source": "g6u8s4",
+      "id": "g6u8-ext26b-g6u8-s4",
+      "blocks": [
+        "Our teacher",
+        "shows",
+        "us a comet."
+      ],
+      "tr": "Öğretmenimiz bize bir kuyruklu yıldız gösterir."
+    },
+    {
+      "source": "g6u9s4",
+      "id": "g6u10-ext26b-g6u9-s4",
+      "blocks": [
+        "The nurse",
+        "gives",
+        "me a thermometer."
+      ],
+      "tr": "Hemşire bana bir termometre verir."
+    },
+    {
+      "source": "g6u10s4",
+      "id": "g6u10-ext26b-g6u10-s4",
+      "blocks": [
+        "Our coach",
+        "gives",
+        "us a football."
+      ],
+      "tr": "Antrenörümüz bize bir futbol topu verir."
+    },
+    {
+      "source": "g7u1s4",
+      "id": "g7u1-ext26b-g7u1-s4",
+      "blocks": [
+        "My neighbour",
+        "tells",
+        "us funny stories."
+      ],
+      "tr": "Komşum bize komik hikâyeler anlatır."
+    },
+    {
+      "source": "g7u2s4",
+      "id": "g7u2-ext26b-g7u2-s4",
+      "blocks": [
+        "The referee",
+        "shows",
+        "the players a yellow card."
+      ],
+      "tr": "Hakem oyunculara sarı kart gösterir."
+    },
+    {
+      "source": "g7u3s4",
+      "id": "g7u3-ext26b-g7u3-s4",
+      "blocks": [
+        "Her grandmother",
+        "taught",
+        "her a new song."
+      ],
+      "tr": "Büyükannesi ona yeni bir şarkı öğretti."
+    },
+    {
+      "source": "g7u4s4",
+      "id": "g7u4-ext26b-g7u4-s4",
+      "blocks": [
+        "The ranger",
+        "showed",
+        "us a polar bear."
+      ],
+      "tr": "Park görevlisi bize bir kutup ayısı gösterdi."
+    },
+    {
+      "source": "g7u5s4",
+      "id": "g7u5-ext26b-g7u5-s4",
+      "blocks": [
+        "The presenter",
+        "asks",
+        "the players a question."
+      ],
+      "tr": "Sunucu yarışmacılara bir soru sorar."
+    },
+    {
+      "source": "g7u6s4",
+      "id": "g7u6-ext26b-g7u6-s4",
+      "blocks": [
+        "Mert",
+        "offers",
+        "us some lemonade."
+      ],
+      "tr": "Mert bize biraz limonata ikram eder."
+    },
+    {
+      "source": "g7u7s4",
+      "id": "g7u7-ext26b-g7u7-s4",
+      "blocks": [
+        "Our teacher",
+        "gives",
+        "us useful advice."
+      ],
+      "tr": "Öğretmenimiz bize faydalı tavsiyeler verir."
+    },
+    {
+      "source": "g7u8s4",
+      "id": "g7u8-ext26b-g7u8-s4",
+      "blocks": [
+        "The librarian",
+        "gives",
+        "me a library card."
+      ],
+      "tr": "Kütüphaneci bana bir kütüphane kartı verir."
+    },
+    {
+      "source": "g7u9s4",
+      "id": "g7u9-ext26b-g7u9-s4",
+      "blocks": [
+        "The volunteer",
+        "gives",
+        "us cloth bags."
+      ],
+      "tr": "Gönüllü bize bez çantalar verir."
+    },
+    {
+      "source": "g7u10s4",
+      "id": "g7u10-ext26b-g7u10-s4",
+      "blocks": [
+        "Our teacher",
+        "shows",
+        "us a planet model."
+      ],
+      "tr": "Öğretmenimiz bize bir gezegen modeli gösterir."
+    },
+    {
+      "source": "g7u11s4",
+      "id": "g7u11-ext26b-g7u11-s4",
+      "blocks": [
+        "The cook",
+        "gives",
+        "me a clean apron."
+      ],
+      "tr": "Aşçı bana temiz bir önlük verir."
+    },
+    {
+      "source": "g7u12s4",
+      "id": "g7u12-ext26b-g7u12-s4",
+      "blocks": [
+        "The driver",
+        "gives",
+        "me a bus ticket."
+      ],
+      "tr": "Şoför bana bir otobüs bileti verir."
+    },
+    {
+      "source": "g8u1s4",
+      "id": "g8u1-ext26b-g8u1-s4",
+      "blocks": [
+        "Deniz",
+        "offers",
+        "us some help."
+      ],
+      "tr": "Deniz bize yardım teklif eder."
+    },
+    {
+      "source": "g8u2s4",
+      "id": "g8u2-ext26b-g8u2-s4",
+      "blocks": [
+        "My sister",
+        "teaches",
+        "me a guitar tune."
+      ],
+      "tr": "Kız kardeşim bana gitarda bir ezgi öğretir."
+    },
+    {
+      "source": "g8u3s1",
+      "id": "g8u3-ext26b-g8u3-s1",
+      "blocks": [
+        "Please",
+        "peel",
+        "the large potatoes."
+      ],
+      "tr": "Lütfen büyük patatesleri soy."
+    },
+    {
+      "source": "g8u3s4",
+      "id": "g8u3-ext26b-g8u3-s4",
+      "blocks": [
+        "My uncle",
+        "shows",
+        "me his pasta recipe."
+      ],
+      "tr": "Amcam bana makarna tarifini gösterir."
+    },
+    {
+      "source": "g8u4s4",
+      "id": "g8u4-ext26b-g8u4-s4",
+      "blocks": [
+        "The caller",
+        "leaves",
+        "Ece a message."
+      ],
+      "tr": "Arayan kişi Ece'ye bir mesaj bırakır."
+    },
+    {
+      "source": "g8u5s4",
+      "id": "g8u5-ext26b-g8u5-s4",
+      "blocks": [
+        "My friend",
+        "sends",
+        "me a useful link."
+      ],
+      "tr": "Arkadaşım bana faydalı bir bağlantı gönderir."
+    },
+    {
+      "source": "g8u6s4",
+      "id": "g8u6-ext26b-g8u6-s4",
+      "blocks": [
+        "The instructor",
+        "gives",
+        "us a safety guide."
+      ],
+      "tr": "Eğitmen bize bir güvenlik rehberi verir."
+    },
+    {
+      "source": "g8u7s4",
+      "id": "g8u7-ext26b-g8u7-s4",
+      "blocks": [
+        "Our guide",
+        "tells",
+        "us local stories."
+      ],
+      "tr": "Rehberimiz bize yöresel hikâyeler anlatır."
+    },
+    {
+      "source": "g8u8s4",
+      "id": "g8u8-ext26b-g8u8-s4",
+      "blocks": [
+        "My father",
+        "gives",
+        "me a clean cloth."
+      ],
+      "tr": "Babam bana temiz bir bez verir."
+    },
+    {
+      "source": "g8u9s4",
+      "id": "g8u9-ext26b-g8u9-s4",
+      "blocks": [
+        "Our teacher",
+        "gives",
+        "us safety goggles."
+      ],
+      "tr": "Öğretmenimiz bize koruyucu gözlük verir."
+    },
+    {
+      "source": "g8u10s4",
+      "id": "g8u10-ext26b-g8u10-s4",
+      "blocks": [
+        "The teacher",
+        "gives",
+        "us a clear warning."
+      ],
+      "tr": "Öğretmen bize açık bir uyarı verir."
+    },
+    {
+      "source": "g8u11s4",
+      "id": "g8u2-ext26b-g8u11-s4",
+      "blocks": [
+        "Our teacher",
+        "gives",
+        "us project feedback."
+      ],
+      "tr": "Öğretmenimiz bize proje hakkında geri bildirim verir."
+    },
+    {
+      "source": "g8u12s4",
+      "id": "g8u2-ext26b-g8u12-s4",
+      "blocks": [
+        "The nurse",
+        "gives",
+        "me a clean plaster."
+      ],
+      "tr": "Hemşire bana temiz bir yara bandı verir."
+    }
+  ],
+  "sources": [
+    {
+      "file": "grade5-2.json",
+      "sha256": "3a2f45ba4cba496b1357b4e1fa4670333b6c13859d81b56fd2d62bf9afeb9794",
+      "grade": 5,
+      "cefr": "A1"
+    },
+    {
+      "file": "grade6-2.json",
+      "sha256": "49e2a0345e732284aded95d441550484722845015b63a1ec4423cb8f6a15cf1c",
+      "grade": 6,
+      "cefr": "A1+"
+    },
+    {
+      "file": "grade7-2.json",
+      "sha256": "d8568dbe43ed3ef56e91f9b78b6287bdfc8733d7108da4dc1f528d6ec279ae3a",
+      "grade": 7,
+      "cefr": "A2"
+    },
+    {
+      "file": "grade8-2.json",
+      "sha256": "e246793be3fd8560db0103f78d8612f823198bccbf01cce37b87dfe1b7250145",
+      "grade": 8,
+      "cefr": "A2+"
+    }
+  ],
+  "addedSourceItems": {
+    "questions": 361,
+    "translations": 136,
+    "sentences": 427,
+    "descriptions": 252,
+    "categories": 52,
+    "pictures": 139,
+    "completions": 393
+  },
+  "notes": [
+    "Seven extra source topics connect as sub-themes of existing lessons in the same grade; all 44 unit IDs and titles are preserved.",
+    "All supplied content is retained verbatim in reference/language-expansion-2026b/grade*-2.json.",
+    "Up to three reviewed question signs per supplied unit are playable; personal questions without one right answer stay source material.",
+    "The first four sentences per unit become road repairs; the remaining six repeat shared frames and stay source material.",
+    "A category pair is added only when at least one of its categories is new to the lesson.",
+    "Nothing from the first batch is replaced; repeated items are skipped."
+  ]
+}
