@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path'),{execFileSync}=require('node:child_process');
-const root=path.resolve(__dirname,'..'),fresh=fs.mkdtempSync(path.join(os.tmpdir(),'wordrift-build-'));
+const root=path.resolve(__dirname,'..'),fresh=fs.mkdtempSync(path.join(os.tmpdir(),'wordramp-build-'));
 try{
  for(const name of ['public','scripts'])fs.cpSync(path.join(root,name),path.join(fresh,name),{recursive:true});
  for(const name of ['package.json','package-lock.json','netlify.toml',...fs.readdirSync(root).filter(n=>n.endsWith('.js'))])fs.copyFileSync(path.join(root,name),path.join(fresh,name));

@@ -1,4 +1,4 @@
-/* Wordrift v0.24.0 — deterministic gameplay and question adapter. */
+/* Wordramp v0.24.0 — deterministic gameplay and question adapter. */
 (function(root){
   'use strict';
   const ARENAS=[

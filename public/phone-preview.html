@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0b1828">
-  <title>Wordrift · Phone preview</title>
+  <title>Wordramp · Phone preview</title>
   <link rel="icon" href="icon.svg">
   <style>
     :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#e7eff4;background:#0b1828;color-scheme:dark}
@@ -32,7 +32,7 @@
 </head>
 <body>
   <header>
-    <div class="title"><p>WORDRIFT</p><h1>Live phone preview</h1><small>The actual game, with space reserved for browser controls.</small></div>
+    <div class="title"><p>WORDRAMP</p><h1>Live phone preview</h1><small>The actual game, with space reserved for browser controls.</small></div>
     <div class="tools">
       <label class="device-label" for="device-size">SCREEN SIZE<select id="device-size"><option value="390x844">Phone · 390 × 844</option><option value="320x568">Small phone · 320 × 568</option><option value="430x932">Large phone · 430 × 932</option><option value="768x1024">Tablet · 768 × 1024</option></select></label>
       <label class="device-label" for="browser-bars">BROWSER CONTROLS<select id="browser-bars"><option value="bottom">Bottom address bar</option><option value="top">Top address bar</option><option value="collapsed">Collapsed bars</option><option value="none">No browser bars</option></select></label>
@@ -42,7 +42,7 @@
     </div>
   </header>
   <main class="preview-area" id="preview-area" aria-label="Interactive game preview">
-    <div class="device-stage" id="device-stage"><div class="device" id="device"><div class="screen" id="screen" data-bars="bottom"><div id="browser-top" class="browser-top" aria-hidden="true"></div><iframe id="game-preview" title="Wordrift phone browser viewport" src="index.html?touch=1" width="390" height="672" allow="autoplay; fullscreen"></iframe><div id="browser-bottom" class="browser-bottom" aria-hidden="true"></div></div></div></div>
+    <div class="device-stage" id="device-stage"><div class="device" id="device"><div class="screen" id="screen" data-bars="bottom"><div id="browser-top" class="browser-top" aria-hidden="true"></div><iframe id="game-preview" title="Wordramp phone browser viewport" src="index.html?touch=1" width="390" height="672" allow="autoplay; fullscreen"></iframe><div id="browser-bottom" class="browser-bottom" aria-hidden="true"></div></div></div></div>
   </main>
   <footer><output id="viewport-size" aria-live="polite">390 × 844 screen · 390 × 672 game area</output>Browser bars are illustrative; sizes vary by browser and device. Try changing the bars during a race. Touch input, notches and phone performance still need real-device testing.</footer>
   <script>

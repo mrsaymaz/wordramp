@@ -11,7 +11,7 @@ function evade(s,m){
   const options=[-1,0,1].filter(l=>row.every(o=>Math.abs(l-o.lanePos)>.8));
   const clear=options.filter(l=>C.playerLaneClear(s,m.lane,l));if(clear.length)s.lane=clear.sort((a,b)=>Math.abs(a-m.lane)-Math.abs(b-m.lane))[0];
 }
-const requestedSeeds=Number(process.env.WORDRIFT_TEST_SEEDS),seedCount=Number.isInteger(requestedSeeds)&&requestedSeeds>0?Math.min(24,requestedSeeds):24;
+const requestedSeeds=Number(process.env.WORDRAMP_TEST_SEEDS??process.env.WORDRIFT_TEST_SEEDS),seedCount=Number.isInteger(requestedSeeds)&&requestedSeeds>0?Math.min(24,requestedSeeds):24;
 let races=0,vehicles=0;
 for(const difficulty of Object.keys(C.DIFFICULTIES))for(let arena=0;arena<3;arena++)for(let seed=1;seed<=seedCount;seed++)for(const accelerating of [false,true])for(const tasks of [false,true])for(const useNitro of [false,true]){
   const s=C.createRace(u,difficulty,arena,seed,{fuel:30}),m=createDrivingFeel();s.status='driving';if(!tasks)s.tasks=[];

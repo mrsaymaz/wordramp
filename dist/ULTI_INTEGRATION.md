@@ -1,8 +1,10 @@
-# Wordrift · Ulti points contract v1
+# Wordramp · Ulti points contract v1
 
-Wordrift was previously named Wordshift Rally. The existing browser save key,
+Wordramp was previously named Wordrift and, before that, Wordshift Rally. The
+existing browser save key,
 `sourceGame` and receipt IDs remain stable so the rename preserves earned points
-and deduplication. `window.WORDSHIFT` remains an alias of `window.WORDRIFT`.
+and deduplication. `window.WORDRIFT` and `window.WORDSHIFT` remain aliases of
+`window.WORDRAMP`.
 
 The receiving game will be a separate Netlify deployment. Its address and API
 will be supplied later. This version stores rewards in the current browser and
@@ -27,8 +29,8 @@ can export a record. It does not send points to another deployment yet.
 Open **Team points → Export points record** in the garage, or use:
 
 ```js
-const snapshot = window.WORDRIFT.ulti.snapshot(); // detached object
-const json = window.WORDRIFT.ulti.export();       // JSON string
+const snapshot = window.WORDRAMP.ulti.snapshot(); // detached object
+const json = window.WORDRAMP.ulti.export();       // JSON string
 ```
 
 Payload fields:

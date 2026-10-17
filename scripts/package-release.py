@@ -5,7 +5,7 @@ import argparse,json,zipfile
 root=Path(__file__).resolve().parent.parent
 version=json.loads((root/'package.json').read_text())['version']
 parser=argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--output',type=Path,default=root/f'Wordrift-v{version}-Netlify.zip')
+parser.add_argument('--output',type=Path,default=root/f'Wordramp-v{version}-Netlify.zip')
 args=parser.parse_args()
 output=args.output.resolve();output.parent.mkdir(parents=True,exist_ok=True)
 files=[root/name for name in ['package.json','package-lock.json','netlify.toml','README.md']]

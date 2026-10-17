@@ -9,9 +9,9 @@ function roadThreats(C,s,range){
   const speed=s.arena.speed*Math.max(s.speedFactor,s.accelerating?C.REGULAR_MAX_SPEED:1);
   return [...s.obstacles,...s.rivals].filter(o=>o.at>s.distance&&o.at-s.distance<range&&((o.speed||0)<.1||(o.at-s.distance-5)/Math.max(.01,speed-(o.speed||0))<1.65));
 }
-const requestedSeeds=Number(process.env.WORDRIFT_TEST_SEEDS),seedCount=Number.isInteger(requestedSeeds)&&requestedSeeds>0?Math.min(6,requestedSeeds):6;
+const requestedSeeds=Number(process.env.WORDRAMP_TEST_SEEDS??process.env.WORDRIFT_TEST_SEEDS),seedCount=Number.isInteger(requestedSeeds)&&requestedSeeds>0?Math.min(6,requestedSeeds):6;
 // Optional sharding for parallel local runs; the default covers every grade.
-const onlyGrade=Number(process.env.WORDRIFT_TEST_GRADE)||null;
+const onlyGrade=Number(process.env.WORDRAMP_TEST_GRADE??process.env.WORDRIFT_TEST_GRADE)||null;
 let cases=0,totalRows=0,minTime=Infinity;
 for(const grade of bank)if(!onlyGrade||grade.grade===onlyGrade)for(const unit of grade.units)for(const difficulty of Object.keys(C.DIFFICULTIES))for(let arena=0;arena<3;arena++)for(let seed=1;seed<=seedCount;seed++){
   let s=C.createRace(unit,difficulty,arena,seed),physical=0,readingId='',started=0;cases++;

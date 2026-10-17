@@ -1,5 +1,11 @@
 # v0.24.0 · Grand Prix Polish
 
+Name
+- Wordrift is now Wordramp: the title, wordmark, help and pause screens,
+  phone preview, car livery and Ulti export file name. Saved progress, stars,
+  team points and Ulti receipt/source identifiers are unchanged, and
+  `window.WORDRIFT` / `window.WORDSHIFT` remain aliases of `window.WORDRAMP`.
+
 Graphics, world and presentation
 - New vehicles built from sculpted cross sections: a striped player coupe in
   team paint, two winged rival GTs (Cobalt 02, Ember 03) and muted civilian

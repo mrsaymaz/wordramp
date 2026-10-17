@@ -1,4 +1,9 @@
-# Wordrift · by Mr. Saymaz
+# Wordramp · by Mr. Saymaz
+
+Wordramp is the new name of Wordrift (and, before that, Wordshift Rally).
+Browser saves, Ulti receipts and `window.WORDRIFT` / `window.WORDSHIFT` keep
+working: the save key and receipt identifiers are unchanged, and the old API
+names are aliases of `window.WORDRAMP`.
 
 ## Deploy on Netlify
 
@@ -80,7 +85,7 @@ checks the geometry with a mocked renderer; it does not measure frame rate,
 so test on real phones before relying on performance.
 
 Run the full gameplay matrix faster in four shards with
-`WORDRIFT_TEST_GRADE=5 node tests/gameplay.cjs` (and 6, 7, 8).
+`WORDRAMP_TEST_GRADE=5 node tests/gameplay.cjs` (and 6, 7, 8).
 
 ## Mr. Saymaz host images
 

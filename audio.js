@@ -27,7 +27,7 @@ export class Sound {
       this.ambience=loop(this.noiseBuffer,'lowpass',260,.5);this.ambienceSwell=c.createOscillator();this.ambienceDepth=c.createGain();this.ambienceDepth.gain.value=0;this.ambienceSwell.frequency.value=.12;this.ambienceSwell.connect(this.ambienceDepth);this.ambienceDepth.connect(this.ambience.gain.gain);this.ambienceSwell.start();
       const crowdBuffer=c.createBuffer(1,c.sampleRate*3,c.sampleRate),crowdData=crowdBuffer.getChannelData(0);let murmur=0;for(let i=0;i<crowdData.length;i++){murmur=(murmur+(Math.random()*2-1)*.12)/1.12;crowdData[i]=murmur*(.65+.35*Math.sin(i/c.sampleRate*3.7));}
       this.crowdBuffer=crowdBuffer;this.crowd=loop(crowdBuffer,'bandpass',850,.45);this.crowdGain=this.crowd.gain;
-    }catch(error){console.warn('Wordrift audio unavailable',error);}
+    }catch(error){console.warn('Wordramp audio unavailable',error);}
   }
   // Ambience character per arena: city hum, sea swell, rain on the road.
   setArena(index){

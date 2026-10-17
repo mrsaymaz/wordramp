@@ -1,5 +1,8 @@
-WORDRIFT — by Mr. Saymaz
+WORDRAMP — by Mr. Saymaz
 v0.24.0 · Grand Prix Polish
+
+Wordramp is the new name of Wordrift. Saved progress, stars, team points and
+Ulti receipts carry over unchanged.
 
 NETLIFY DEPLOYMENT
 For a build-based deployment, use the whole extracted project. The included

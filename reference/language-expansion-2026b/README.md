@@ -1,4 +1,4 @@
-# Grade-file expansion, second batch · Wordrift 0.24.0
+# Grade-file expansion, second batch · Wordramp 0.24.0
 
 `grade5-2.json` through `grade8-2.json` are unmodified copies of the supplied
 files. Their SHA-256 hashes are recorded in `import-report.json`. The import

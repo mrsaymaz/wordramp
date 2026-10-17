@@ -8,7 +8,7 @@ function avoid(s,m){
  if(!near.length)return;const at=Math.min(...near.map(o=>o.at)),row=near.filter(o=>o.at-at<16),safe=[-1,0,1].filter(l=>row.every(o=>Math.abs(l-(o.lanePos+(o.passingOffset||0)/3.35+C.routeOffset(o.route,o.at)/3.35))>.82));
  if(safe.length)s.lane=safe.sort((a,b)=>Math.abs(a-m.lane)-Math.abs(b-m.lane))[0];
 }
-const requestedSeeds=Number(process.env.WORDRIFT_TEST_SEEDS),seedCount=Number.isInteger(requestedSeeds)&&requestedSeeds>0?Math.min(4,requestedSeeds):4;
+const requestedSeeds=Number(process.env.WORDRAMP_TEST_SEEDS??process.env.WORDRIFT_TEST_SEEDS),seedCount=Number.isInteger(requestedSeeds)&&requestedSeeds>0?Math.min(4,requestedSeeds):4;
 for(const diff of Object.keys(C.DIFFICULTIES))for(let arena=0;arena<3;arena++)for(let seed=1;seed<=seedCount;seed++){
  const s=C.createRace(u,diff,arena,seed,{fuel:60}),m=createDrivingFeel();s.status='driving';C.setAccelerating(s,seed%2===0);let entered='',readingAt=0;
  for(const o of s.obstacles){types.add(o.type);if(o.type!=='traffic')assert(s.tasks.every(t=>o.at+o.halfLength<C.taskZone(t).start||o.at-o.halfLength>C.taskZone(t).end),'Static obstacles must be outside every task buffer');}

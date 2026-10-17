@@ -25,7 +25,7 @@ def read_bank(name):
     return json.loads(text[text.index('=') + 1:].strip().rstrip(';'))
 
 def write_bank(name, variable, data):
-    text = '/* Wordrift: reviewed grade/unit language material. */\nwindow.' + variable + ' = '
+    text = '/* Wordramp: reviewed grade/unit language material. */\nwindow.' + variable + ' = '
     (ROOT / 'public' / (name + '.js')).write_text(text + json.dumps(data, ensure_ascii=False, separators=(',', ':')) + ';\n')
 
 bank, matches, repairs = read_bank('language-bank'), read_bank('match-bank'), read_bank('repair-bank')

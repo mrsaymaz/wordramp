@@ -101,11 +101,11 @@ assert(!M.g7u2.find(x=>x.id==='g7u2-ext26-g7u2-d4').options.includes('teammate')
 assert(/no rotating funnel/.test(M.g6u8.find(x=>x.id==='g6u8-ext26-g6u8-d4').prompt),'Distinguish storms from tornadoes');
 assert(Object.values(R).flat().some(x=>x.origin?.itemId==='g8u3s1'&&x.blocks.join(' ')==='We peel the potatoes.'));
 // Re-running an import must preserve task IDs, progress keys and exact output.
-const outputs=['public/language-bank.js','public/match-bank.js','public/repair-bank.js','reference/language-expansion-2026/import-report.json','reference/language-expansion-2026b/import-report.json'];
+const outputs=['public/language-bank.js','public/match-bank.js','public/repair-bank.js','reference/language-expansion-2026/import-report.json','reference/language-expansion-2026b/import-report.json',...[5,6,7,8].map(g=>`reference/merged-grades/grade${g}.json`)];
 const hash=f=>createHash('sha256').update(fs.readFileSync(path.join(root,f))).digest('hex');
 const before=outputs.map(hash);
-execFileSync('python3',[path.join(root,'scripts/expand-language-bank.py')],{stdio:'pipe'});
-assert.deepEqual(outputs.map(hash),before,'A repeat import must be byte-for-byte stable');
+execFileSync('python3',[path.join(root,'scripts/expand-language-bank.py')],{stdio:'pipe'});execFileSync('python3',[path.join(root,'scripts/export-grade-files.py')],{stdio:'pipe'});
+assert.deepEqual(outputs.map(hash),before,'A repeat import must be byte-for-byte stable, and the merged grade files must match the bank');
 console.log(`PASS: both batches of grade files (eight files) mapped within their grades; 44 existing lessons preserved; ${sourceChecks} source/provenance checks, ${matches} playable signs, ${repairs} three-block repairs, ${questionSigns} reviewed Q&A signs and ${categoryPairs} disjoint category pairs. 8,448 generated courses verify item reachability; repeat import is stable.`);
 // v0.24: a random distractor never contains the answer as a whole word (or
 // the reverse), e.g. “kapı” → gate is never paired with “school gate”.

@@ -18,7 +18,7 @@ function drive(difficulty,arena,seed,nitro,traffic=true,fuel=30){
  assert.equal(s.status,'finished',`${difficulty}/${arena}/${seed}/${nitro} ${JSON.stringify({distance:s.distance,lane:s.lane,route:s.route,following:s.followingTraffic,obstacles:s.obstacles.filter(o=>Math.abs(o.at-s.distance)<80),rivals:s.rivals})}`);assert.equal(s.correct,s.tasks.length);assert.equal(s.collisions,0,`Attentive driver: ${difficulty}/${arena}/${seed}/${nitro} ${JSON.stringify(firstBump)}`);assert.equal(C.stars(s),3);
  return {gap:Math.min(...s.rivals.map(r=>s.distance-r.at)),place:C.raceOrder(s).findIndex(r=>r.id==='player')+1,boosts:s.rivals.reduce((n,r)=>n+r.nitroUses,0),lanes:s.rivals.reduce((n,r)=>n+r.laneChanges,0)};
 }
-const requestedSeeds=Number(process.env.WORDRIFT_TEST_SEEDS),seedCount=Number.isInteger(requestedSeeds)&&requestedSeeds>0?Math.max(4,Math.min(12,requestedSeeds)):12;
+const requestedSeeds=Number(process.env.WORDRAMP_TEST_SEEDS??process.env.WORDRIFT_TEST_SEEDS),seedCount=Number.isInteger(requestedSeeds)&&requestedSeeds>0?Math.max(4,Math.min(12,requestedSeeds)):12;
 const result={};let cases=0;
 for(const difficulty of Object.keys(C.DIFFICULTIES)){
  result[difficulty]={};for(const nitro of [false,true]){
