@@ -15,10 +15,12 @@ try{
  for(const name of files)assert.deepEqual(fs.readFileSync(path.join(output,name)),fs.readFileSync(path.join(root,'public',name)),name);
  assert(fs.statSync(path.join(output,'game.bundle.js')).size>100000);
  for(const name of ['index.html','style.css','game-core.js','language-bank.js','repair-bank.js','match-bank.js','emoji-bank.js','config.js','icon.svg','phone-preview.html'])assert(fs.existsSync(path.join(output,name)),name);
+ // Browser translation must never turn the English answers into Turkish.
+ for(const name of ['index.html','phone-preview.html']){const html=fs.readFileSync(path.join(output,name),'utf8');assert.match(html,/<html[^>]*translate="no"[^>]*class="notranslate"/,name);assert.match(html,/<body[^>]*translate="no"[^>]*class="notranslate"/,name);assert.match(html,/<head>[\s\S]*<meta name="google" content="notranslate">[\s\S]*<\/head>/,name);}
  assert(!fs.existsSync(path.join(output,'package.json')));assert(!fs.existsSync(path.join(output,'app.js')));
  // A second build replaces stale output instead of accidentally publishing it.
  fs.writeFileSync(path.join(output,'stale-file.txt'),'old build');
  execFileSync(process.execPath,['scripts/build.mjs'],{cwd:fresh,stdio:'pipe'});
  assert(!fs.existsSync(path.join(output,'stale-file.txt')));
- console.log('PASS: empty-dist build and repeat build create the complete Netlify publish directory; HTML, CSS, language banks, icon and preview copy correctly, and stale output is removed.');
+ console.log('PASS: empty-dist build and repeat build create the complete Netlify publish directory; HTML, CSS, language banks, icon and preview copy correctly, stale output is removed, and both pages opt out of browser translation.');
 }finally{fs.rmSync(fresh,{recursive:true,force:true});}
