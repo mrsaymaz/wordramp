@@ -1,3 +1,28 @@
+# v0.25.0 · Sky Coaster
+
+Sky Coaster (Sunlit Boulevard)
+- Each Sunlit route choice hides a Sky Coaster behind the correct sign. After
+  the answer is judged, a twin-track coaster rises out of the ground ahead:
+  a 13.6 m lift hill, a first drop beside the park, two airtime hills and a
+  banked swerve, then a landing back in the lane. The ride is 300 m.
+- The track stays hidden while the sign is read, and buildings step back on
+  both sides of the road, so neither the track nor the cleared side gives the
+  answer away. A rival riding it first is drawn on the ordinary shortcut branch
+  until your own answer reveals the track, which then carries the rival up.
+- Speed follows the drop: about 0.8x up the lift and 1.2x at the bottoms. The
+  ride gains exactly 18 m, the same reward as a shortcut, so race balance and
+  the English League timing are unchanged.
+- Cars on the raised track and cars on the road never meet; the landing
+  stretch after a coaster has no obstacles or waiting traffic. Rivals who
+  answer right ride the passing track beside you. Traffic never rides.
+- Camera rides along slightly wider, looks down the drops and widens the view
+  on the way down; speed lines on drops; chain-lift clicks, rushing air and a
+  landing thud. The HUD shows SKY COASTER, and the approach warning says the
+  right answer rides it.
+- Reduced motion keeps the ride with drops flattened above 4 m, no banking,
+  no camera dive and no speed lines.
+- Coastal Overpass and Stormcrest Expressway are unchanged.
+
 # v0.24.0 · Grand Prix Polish
 
 Name

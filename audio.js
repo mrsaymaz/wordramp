@@ -72,7 +72,16 @@ export class Sound {
     this.engine.frequency.setTargetAtTime(rpm,time,.1);this.sub.frequency.setTargetAtTime(rpm*.5,time,.1);this.harmonic.frequency.setTargetAtTime(rpm*2.01,time,.12);
     this.engineFilter.frequency.setTargetAtTime(260+speed*520*load,time,.15);
     this.engineGain.gain.setTargetAtTime(moving?(.016+speed*.006)*load:0,time,.1);this.subGain.gain.setTargetAtTime(moving?.02+speed*.004:0,time,.1);this.harmonicGain.gain.setTargetAtTime(moving?.004+speed*.002:0,time,.12);
-    this.windGain.gain.setTargetAtTime(moving?.008*speed*speed:0,time,.16);this.filter.frequency.setTargetAtTime(300+speed*650,time,.2);
+    // Sky Coaster: chain-lift clicks on the climb, rushing air down the drops
+    // and a soft thud as the car touches down on the road again.
+    const C=globalThis.RallyCore,ride=moving&&C&&state.route?.coaster?state.route:null;let rush=0;
+    if(ride){const h=C.coasterHeight(ride,state.distance),climb=C.coasterHeight(ride,state.distance+2)-h;
+      if(climb>.25&&time>=(this.nextClack||0)){this.voice('square',1700,time,.03,.01);this.nextClack=time+.12;}
+      rush=Math.min(.05,Math.max(0,-climb)*.025);
+      if(this.rideHeight>.4&&h<.05){this.voice('sine',92,time,.3,.11,this.master,46);this.burst(time,.14,.07,'lowpass',850);}
+      this.rideHeight=h;
+    }else this.rideHeight=0;
+    this.windGain.gain.setTargetAtTime(moving?.008*speed*speed+rush:0,time,.16);this.filter.frequency.setTargetAtTime(300+speed*650,time,.2);
     const nitro=moving&&state.nitroActive?Math.max(1,state.nitroLevel||1):0;
     this.nitroLayer.gain.gain.setTargetAtTime(nitro?.018+nitro*.008:0,time,nitro?.05:.2);this.nitroLayer.filter.frequency.setTargetAtTime(1300+nitro*450,time,.1);
     this.whine.frequency.setTargetAtTime(900+speed*260,time,.1);this.whineGain.gain.setTargetAtTime(nitro?.006+nitro*.003:0,time,nitro?.05:.2);

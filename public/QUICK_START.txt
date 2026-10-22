@@ -1,8 +1,19 @@
 WORDRAMP — by Mr. Saymaz
-v0.24.0 · Grand Prix Polish
+v0.25.0 · Sky Coaster
 
 Wordramp is the new name of Wordrift. Saved progress, stars and arena wins
 carry over unchanged.
+
+SKY COASTER (SUNLIT BOULEVARD)
+A billboard before each route choice promises the Sky Coaster. Steer into
+the right answer and a coaster track rises out of the ground ahead: your car
+climbs the lift hill, drops beside the park, flies over two airtime hills and
+a banked swerve, then lands back in its lane. The track stays hidden until
+your answer is judged, so it never gives the answer away. The ride gains
+the same 18 m as an ordinary shortcut and can never cost a hit. Rivals who
+answer right ride the passing track beside you; a wrong answer takes the
+detour under the coaster. Reduced motion keeps the ride with lower drops and
+no banking.
 
 PICTURE SIGNS
 Some vocabulary signs show a 3D Fluent Emoji picture: choose the word that

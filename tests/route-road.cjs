@@ -21,9 +21,13 @@ for(const intervals of [
 ]){const s=surfaceUnion([{at:0,intervals:intervals[0]},{at:10,intervals:intervals[1]}]);for(let i=0;i<100;i++)crossSections(s,i*.1+.031);}
 for(let arena=0;arena<3;arena++)for(let correct=0;correct<3;correct++){
  const s=C.createRace(window.LANGUAGE_BANK[0].units[0],'challenge',arena,31),task=s.tasks.find(t=>t.kind==='junction');task.correctIndex=correct;
- const routes=[0,1,2].map(i=>C.makeRoute(s,task,i,i===correct)),curve=at=>C.courseCurve(arena,at),surface=forkSurface(routes,curve,C.routeOffset,task.at);
+ // Sunlit's correct branch is a Sky Coaster lifting off above the ordinary
+ // shortcut asphalt: the road branches are unchanged, and the ride joins smoothly.
+ if(task.coaster)task.coaster.side=correct===1?1:correct-1;assert.equal(!!task.coaster,arena===0);
+ const all=[0,1,2].map(i=>C.makeRoute(s,task,i,i===correct)),routes=C.groundRoutes(s,task),curve=at=>C.courseCurve(arena,at),surface=forkSurface(routes,curve,C.routeOffset,task.at);
+ assert.equal(all.filter(r=>r.coaster).length,arena===0?1:0);assert(routes.every(r=>!r.coaster));
  assert(surface.positions.every(Number.isFinite));assert(surface.uvs.every(Number.isFinite));
- for(const route of routes)for(const edge of [route.start,route.end]){
+ for(const route of [...routes,...all])for(const edge of [route.start,route.end]){
   const h=.01,f=at=>C.routeOffset(route,at),first=(f(edge+h)-f(edge-h))/(2*h),second=(f(edge+h)-2*f(edge)+f(edge-h))/(h*h);
   assert(Math.abs(f(edge))<1e-10);assert(Math.abs(first)<1e-5,'Route joins have zero lateral velocity');assert(Math.abs(second)<.001,'Route joins have no acceleration step');
  }

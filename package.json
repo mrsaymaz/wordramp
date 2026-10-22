@@ -1,6 +1,6 @@
 {
   "name": "wordramp",
-  "version": "0.24.0",
+  "version": "0.25.0",
   "private": true,
   "dependencies": {
     "three": "0.180.0"
@@ -44,6 +44,7 @@
     "test:damage": "node tests/car-condition.cjs",
     "test:impacts": "esbuild driving-feel.js --bundle --platform=node --format=cjs --outfile=tests/driving-feel-compiled.cjs && node tests/impact-recovery.cjs",
     "test:pictures": "node tests/picture-signs.cjs",
-    "test:league": "esbuild league.js --bundle --platform=node --format=cjs --outfile=tests/league-compiled.cjs && node tests/league.cjs"
+    "test:league": "esbuild league.js --bundle --platform=node --format=cjs --outfile=tests/league-compiled.cjs && node tests/league.cjs",
+    "test:coaster": "esbuild driving-feel.js --bundle --platform=node --format=cjs --outfile=tests/driving-feel-compiled.cjs && node tests/sky-coaster.cjs"
   }
 }

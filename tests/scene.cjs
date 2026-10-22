@@ -65,7 +65,8 @@ drive.status='driving';drive.speedFactor=1;const npc=scene.traffic.find(n=>n.use
 scene.setCosmetics({color:0x7973b5,badge:3,trail:true});let painted=0;scene.player.traverse(m=>{if(m.userData.paint){painted++;assert.equal(m.material.color.getHex(),0x7973b5);}});assert(painted>0);assert(scene.hoodBadge.visible&&scene.badgeStar.visible);assert(scene.badgeStar.geometry.attributes.position.array.every(Number.isFinite));
 let routing=C.createRace(window.LANGUAGE_BANK[0].units[0],'challenge',0,11);routing.status='driving';routing.taskIndex=3;const junction=routing.tasks[2];junction.completed=true;junction.completedAt=0;junction.chosenIndex=junction.correctIndex;scene.clearGate();
 for(let lane=-1;lane<=1;lane++){
- const route=C.makeRoute(routing,junction,lane+1,lane+1===junction.correctIndex);routing.route=route;routing.lane=lane;routing.distance=route.start;for(let i=0;i<60;i++)scene.update(1/60,routing,'race');
+ // The asphalt branches (a Sky Coaster ride is checked separately below).
+ const route=C.makeRoute(routing,junction,lane+1,lane+1===junction.correctIndex,true);routing.route=route;routing.lane=lane;routing.distance=route.start;for(let i=0;i<60;i++)scene.update(1/60,routing,'race');
  routing.distance=(route.start+route.end)/2;routing.roadTravel+=20;scene.update(.05,routing,'race');const g=scene.gates.get(junction.id),paths=g.userData.routePaths;assert.equal(paths.length,3);const path=paths[lane+1],a=path.left.geometry.attributes.position.array,b=path.right.geometry.attributes.position.array,offset=24*18,center=(a[offset]+a[offset+3]+b[offset]+b[offset+3])/4+g.position.x;assert(Math.abs(center-lane*3.35)<1e-5,'The chosen branch stays under the car as the world follows the route');assert(Math.abs(a[offset+2]+g.position.z-4)<1e-5,'Route course coordinates meet the player at the same longitudinal origin');assert.equal(g.userData.forkSurface.position.y,.02,'Fork and main road have the same asphalt height');const bounds=scene.carScreenBounds();assert(bounds&&Number.isFinite(bounds.left)&&Number.isFinite(bounds.bottom));
 }
 assert.equal(scene.rivalCars.length,2);const identities=scene.rivalCars.slice();routing.distance+=1;routing.rivals.forEach(r=>r.at+=1);scene.update(.05,routing,'race');assert.deepEqual(scene.rivalCars,identities,'Racing cars retain their models as they move');assert.equal(scene.rivalProjection().length,2);
@@ -99,7 +100,7 @@ for(let arena=0;arena<3;arena++){
  scene.clearGate();scene.update(.016,s,'race');assert.equal(scene.gates.size,s.tasks.length+1,'Starting lights prepare every checkpoint before driving');
  const identities=new Map(scene.gates);
  for(const task of s.tasks.filter(t=>t.kind==='junction')){
-  const route=C.makeRoute(s,task,task.correctIndex,true);s.distance=route.start+45;s.status='driving';scene.update(.016,s,'race');
+  const route=C.makeRoute(s,task,task.correctIndex,true,true);s.distance=route.start+45;s.status='driving';scene.update(.016,s,'race');
   assert.equal(scene.gates.get(task.id),identities.get(task.id),'A fork model is reused when approached');
   for(const g of scene.segments){
    const at=g.userData.courseIndex*20+10;
@@ -176,3 +177,29 @@ assert.equal(sideSwipe.collisions,1,'The real steering adapter must report a sid
 for(let i=0;i<60;i++)scene.update(.05,sideSwipe,'race');
 assert.equal(sideSwipe.collisions,1,'Repeated steering into the same actor remains a single scrape after grace expires');assert(C.playerLaneClear(sideSwipe,scene.currentLane,-1),'A damaged player can still steer into the clear escape lane');
 console.log('PASS: real scene steering reports an identified side collision once, keeps bodies separated and leaves the escape lane available.');
+// Sky Coaster: hidden until the player's own answer is judged (a rival riding
+// it first must not reveal the lane), then it rises piece by piece and carries
+// the cars; reduced motion flattens the drops and removes the bank.
+{
+ scene.setup(0);scene.preferences.reduced=false;const s=C.createRace(window.LANGUAGE_BANK[0].units[0],'relaxed',0,35),task=s.tasks.find(t=>t.coaster);
+ assert(task,'Sunlit route choices carry a Sky Coaster');
+ s.status='task';s.task=task;s.taskIndex=s.tasks.indexOf(task);s.distance=task.at-40;scene.update(.05,s,'race');
+ const ride=()=>scene.gates.get(task.id).userData.coaster;assert(ride().pieces.length>=6);assert(ride().pieces.every(p=>!p.mesh.visible),'The track stays hidden while the sign is read');
+ const rival=s.rivals[0];rival.route=C.makeRoute(s,task,task.correctIndex,true);rival.at=task.at+60;rival.passingOffset=rival.route.side*3.2;
+ for(let i=0;i<20;i++)scene.update(.05,s,'race');
+ assert(ride().pieces.every(p=>!p.mesh.visible),'A rival riding first never reveals the correct lane');
+ const early=scene.rivalCars.find(m=>m.userData.rival===rival);assert(Math.abs(early.position.y)<1e-9,'Before the reveal a rival is drawn on the ordinary shortcut branch');
+ task.completed=true;task.answeredRight=true;s.status='resolving';s.route=C.makeRoute(s,task,task.correctIndex,true);s.distance=task.at+2;
+ scene.update(.05,s,'race');assert(ride().revealedAt!=null,"The answer reveals the track");
+ for(let i=0;i<30;i++)scene.update(.05,s,'race');
+ assert(ride().pieces.every(p=>p.mesh.visible&&Math.abs(p.mesh.scale.y-1)<1e-9),'After the answer the whole track rises within 1.5 s');
+ const lifted=scene.rivalCars.find(m=>m.userData.rival===rival);assert(lifted.position.y>9,'The risen track carries a rival into the air');
+ s.distance=task.at+86;scene.update(.05,s,'race');assert(scene.player.position.y>13,'The player rides the crest of the lift hill');
+ const pose=scene.ridePose(s.route,task.at+205,0);assert(Math.abs(pose.bank)>.1,'The swerve is banked');
+ scene.preferences.reduced=true;scene.update(.05,s,'race');const calm=scene.ridePose(s.route,task.at+205,0);assert.equal(calm.bank,0);assert(scene.player.position.y<9,'Reduced motion flattens the lift hill');
+ assert(scene.gates.get(task.id).userData.coaster.reduced,'The track is rebuilt for reduced motion');
+ scene.preferences.reduced=false;
+ let vertices=0;ride().group.traverse(m=>{if(m.isMesh)for(const n of m.geometry.attributes.position.array){vertices++;assert(Number.isFinite(n));}});assert(vertices>1000);
+ assert(scene.coasterRanges.length===s.tasks.filter(t=>t.coaster).length);assert(scene.sceneryEdge(task.at+150,1)>=27&&scene.sceneryEdge(task.at+150,-1)>=27,'Buildings step back on both sides, so the cleared side gives nothing away');
+ console.log('PASS: Sky Coaster hidden while reading and when a rival rides first, rises after the answer, carries rivals and player, banks the swerve, flattens for reduced motion and clears scenery on both sides.');
+}

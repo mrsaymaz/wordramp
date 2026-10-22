@@ -42,8 +42,11 @@ The release keeps the project layout intact, includes prebuilt `dist`, and
 excludes dependencies, local hosting identity and compiled test files.
 
 See `dist/QUICK_START.txt` for controls and `dist/ULTI_INTEGRATION.md` for the
-English League connection. Version 0.24.0 rebuilds the cars and the three arenas, fixes the phone HUD
-and several race deadlocks, and rebalances Relaxed rivals. See
+English League connection. Version 0.25.0 adds the Sky Coaster: in Sunlit
+Boulevard the right answer at a route choice rides a raised coaster track
+(`coaster-track.js` builds it; the ride itself lives in `public/game-core.js`).
+Version 0.24.0 rebuilt the cars and the three arenas, fixed the phone HUD
+and several race deadlocks, and rebalanced Relaxed rivals. See
 `public/RELEASE_NOTES.md`. Collisions, DNF, touch controls and the language
 bank from earlier versions remain.
 

@@ -4,6 +4,7 @@ import {createPerformanceBudget,samplePerformance} from './presentation.js';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {createDrivingFeel,updateDrivingFeel} from './driving-feel.js';
 import {forkBounds,forkSurface} from './route-road.js';
+import {rideFrames,sweep,supportPlan,visualHeight,bankAt,bankLift,DECK_SECTION,railSection,TRACK_PASS,TRACK_HALF} from './coaster-track.js';
 import {vehicleParts,TRAFFIC_KINDS} from './vehicle-geometry.js';
 import {PartSet} from './parts.js';
 import {LOOKS,createKit,chunkPlan,planTunnels,skyDome,backdrop,landmarkPlan,landmarkGeometry,rotorGeometry} from './world.js';
@@ -83,7 +84,7 @@ export class RallyScene{
     if(!this.contactMaterial){this.contactMaterial=this.shadow.material.clone();this.contactMaterial.opacity=.52;}
     const shadow=new THREE.Mesh(geo.contact,this.contactMaterial);shadow.rotation.x=-Math.PI/2;shadow.scale.set(3.0,5.4,1);shadow.position.y=.055;this.scene.add(shadow);car.userData.contactShadow=shadow;
   }
-  placeContactShadow(car){const shadow=car.userData.contactShadow;if(shadow){shadow.visible=car.visible;shadow.position.set(car.position.x,.055,car.position.z);shadow.rotation.z=-car.rotation.y;}}
+  placeContactShadow(car){const shadow=car.userData.contactShadow;if(shadow){shadow.visible=car.visible;shadow.position.set(car.position.x,car.position.y+.055,car.position.z);shadow.rotation.z=-car.rotation.y;}}
   syncRivals(state){
     if(this.rivalState===state)return;for(const m of this.rivalCars){if(m.userData.contactShadow)this.scene.remove(m.userData.contactShadow);this.scene.remove(m);m.traverse(n=>{if(n.isMesh&&n.userData.ownGeometry)n.geometry.dispose();});}this.rivalCars=[];this.rivalState=state;
     for(const r of state?.rivals||[]){const m=this.makeCar(r.color,false,'gt'),a=m.userData.anchors;m.userData.rival=r;const plate=new THREE.Mesh(new THREE.PlaneGeometry(.62,.8).rotateX(-Math.PI/2),liveryPlate('rival'+r.id,String(r.id+2).padStart(2,'0'),r.color));plate.userData.ownGeometry=true;plate.position.set(0,a.roofY+.004,a.roofZ);m.add(plate);const exhaust=new THREE.Group();for(const side of [-1,1]){const flame=mesh(exhaust,'cone',r.id?0xffc697:0x93e5ff,side*a.exhaust[0],a.exhaust[1],a.exhaust[2]+.5,.11,.85,.11,.2,0,r.id?0xff9658:0x45b8ef);flame.rotation.x=-Math.PI/2;flame.material=r.id?rivalFlameB:rivalFlameA;}exhaust.visible=false;m.add(exhaust);m.userData.nitroExhaust=exhaust;this.scene.add(m);this.addContactShadow(m);this.rivalCars.push(m);}
@@ -167,7 +168,7 @@ export class RallyScene{
     const plan=chunkPlan(this.index,n,{tunnels:this.tunnels});g.userData.plan=plan;
     for(const [i,road]of g.userData.roadSurfaces.entries()){road.geometry.dispose();road.geometry=this.mainRoadGeometry(at,i===1);road.userData.flatPositions=road.geometry.attributes.position.array.slice();road.userData.flatNormals=road.geometry.attributes.normal.array.slice();}
     for(const m of g.userData.roadside){const [name,v]=plan.roadside[m.userData.side],list=this.kit.roadside[name],src=list[v%list.length][m.userData.side];m.geometry.dispose();m.geometry=src.clone();m.userData.flatPositions=src.attributes.position.array;m.userData.flatNormals=src.attributes.normal.array;m.castShadow=!!plan.tunnel;}
-    const edgeMax={'-1':5.4,'1':5.4};for(let z=-10;z<=10;z+=2.5)for(const s of [-1,1])edgeMax[s]=Math.max(edgeMax[s],this.edge(at-z,s));
+    const edgeMax={'-1':5.4,'1':5.4};for(let z=-10;z<=10;z+=2.5)for(const s of [-1,1])edgeMax[s]=Math.max(edgeMax[s],this.sceneryEdge(at-z,s));
     for(const sc of g.userData.scenery){const v=plan.scenery[sc.side];sc.mesh.geometry=v<0?this.kit.empty:this.kit.scenery[sc.side][v];sc.mesh.position.x=sc.side*(edgeMax[sc.side]+5.6);}
     const angle=g.rotation.y,c=Math.cos(angle),sn=Math.sin(angle);
     for(const m of g.userData.flexSurfaces){
@@ -176,15 +177,20 @@ export class RallyScene{
       attr.needsUpdate=true;normal.needsUpdate=true;m.geometry.computeBoundingSphere();
     }
   }
+  // Buildings and landmarks keep clear of a coaster track on either side.
+  sceneryEdge(at,side){return Math.max(this.edge(at,side),(this.coasterRanges||[]).some(r=>at>r.start&&at<r.end)?27:0);}
   curve(at){return window.RallyCore.courseCurve(this.index,at);}
   heading(at,route){const C=window.RallyCore;return -Math.atan((this.curve(at+1)+C.routeOffset(route,at+1)-this.curve(at-1)-C.routeOffset(route,at-1))/2);}
   prepareCourse(state){
     if(this.courseState===state&&this.courseRevision===state?.taskRevision)return;
     this.courseState=state;this.courseRevision=state?.taskRevision;this.roadReservations=[];this.forkRanges=[];this.apronRanges=[];
-    for(const t of state?.tasks||[]){const zone=window.RallyCore.taskZone(t);this.roadReservations.push({start:zone.start-80,end:zone.end+80});this.apronRanges.push({start:zone.start-70,fullStart:zone.start-30,fullEnd:zone.end+25,end:zone.end+80});if(t.kind==='junction')this.forkRanges.push(forkBounds(window.RallyCore.makeRoute(state,t,0,true)));}
-    const C=window.RallyCore;this.forkRoutes=(state?.tasks||[]).filter(t=>t.kind==='junction').map(t=>{const routes=[0,1,2].map(i=>C.makeRoute(state,t,i,i===t.correctIndex));return {routes,bounds:forkBounds(routes[0])};});
+    for(const t of state?.tasks||[]){const zone=window.RallyCore.taskZone(t);this.roadReservations.push({start:zone.start-80,end:zone.end+80});this.apronRanges.push({start:zone.start-70,fullStart:zone.start-30,fullEnd:zone.end+25,end:zone.end+80});if(t.kind==='junction')this.forkRanges.push(forkBounds(window.RallyCore.makeRoute(state,t,0,true,true)));}
+    const C=window.RallyCore;this.forkRoutes=(state?.tasks||[]).filter(t=>t.kind==='junction').map(t=>{const routes=C.groundRoutes(state,t);return {routes,bounds:forkBounds(routes[0])};});
+    // Buildings step back on both sides of a Sky Coaster, so neither the track
+    // nor the cleared side hints at the answer before it is judged.
+    this.coasterRanges=(state?.tasks||[]).filter(t=>t.coaster).map(t=>({start:t.at-40,end:t.at+t.coaster.span+30}));
     // Tunnels avoid every task zone, spectator stand and the finish straight.
-    const zones=(state?.tasks||[]).map(t=>C.taskZone(t)),blocked=zones.map(z=>({start:z.start-80,end:z.end+80}));
+    const zones=(state?.tasks||[]).map(t=>C.taskZone(t)),blocked=zones.map(z=>({start:z.start-80,end:z.reach+80}));
     const length=state?.arena?.length??C.ARENAS[this.index].length;blocked.push({start:length-260,end:length+200});
     this.tunnels=planTunnels(this.index,length,state?blocked:[]);this.spectators.blocked=this.tunnels;
     for(const g of this.segments)g.userData.curveIndex=undefined;
@@ -214,6 +220,63 @@ export class RallyScene{
     const tex=canvasTexture((c,w,h)=>{c.fillStyle='#f4e9d0';c.fillRect(0,0,w,h);c.strokeStyle='#44696b';c.lineWidth=12;c.strokeRect(7,7,w-14,h-14);c.textAlign='center';c.fillStyle='#20394c';c.font='bold '+(word.length>16?36:50)+'px sans-serif';c.fillText(word,w/2,145,w-40);},512,256);g.userData.textures.push(tex);
     const material=new THREE.MeshBasicMaterial({map:tex});g.userData.ownMaterials.push(material);const board=new THREE.Mesh(new THREE.PlaneGeometry(1.45,.72),material);board.position.set(0,1.22,.31);p.add(board);p.userData.personIndex=index;p.userData.signPoint=new THREE.Vector3(0,1.22,.34);return p;
   }
+  // Sky Coaster: twin banked tracks on white supports, in 40 m pieces that
+  // rise out of the ground once the route choice is judged. One vertex-coloured
+  // mesh per piece keeps the draw calls low.
+  buildCoaster(g,task,state){
+    const C=window.RallyCore,route=C.makeRoute(state,task,task.correctIndex,true),reduced=!!this.preferences.reduced,old=g.userData.coaster;
+    if(old){g.remove(old.group);old.group.traverse(m=>{if(m.isMesh)m.geometry.dispose();});}
+    const frames=rideFrames({route,curve:at=>this.curve(at),offset:C.routeOffset,height:C.coasterHeight,origin:task.at,reduced});
+    const centre=at=>this.curve(at)-this.curve(task.at),supports=supportPlan(frames,centre,(at,side)=>this.edge(at,side));
+    const group=new THREE.Group(),pieces=[],colour=new THREE.Color(),piece=40;
+    for(let start=route.start;start<route.end-1;start+=piece){
+      const slice=frames.filter(f=>f.at>=start-1e-6&&f.at<=start+piece+2.01&&f.y>.12),parts=[];
+      const add=(geometry,hex)=>{const count=geometry.positions.length/3,colours=new Float32Array(count*3);colour.setHex(hex);for(let i=0;i<count;i++)colours.set([colour.r,colour.g,colour.b],i*3);parts.push({...geometry,colours});};
+      if(slice.length>1)for(const track of [0,route.side*TRACK_PASS]){
+        add(sweep(slice,DECK_SECTION,track),0x3d4f63);
+        for(const rail of [-TRACK_HALF+.12,TRACK_HALF-.12])add(sweep(slice,railSection(rail),track),0xe8574a);
+      }
+      const box=(x0,x1,y0,y1,z,depth)=>{const xs=[x0,x1],ys=[y0,y1],zs=[z-depth/2,z+depth/2],positions=[];for(const x of xs)for(const y of ys)for(const zz of zs)positions.push(x,y,zz);
+        return {positions,indices:[0,1,3,0,3,2,4,6,7,4,7,5,0,4,5,0,5,1,2,3,7,2,7,6,0,2,6,0,6,4,1,5,7,1,7,3]};};
+      for(const p of supports.filter(p=>p.at>=start&&p.at<start+piece)){
+        if(p.kind==='column')add(box(p.x-.32,p.x+.32,0,p.top,p.z,.64),0xf1efe8);
+        else{for(const x of [p.left,p.right])add(box(x-.3,x+.3,0,p.top,p.z,.6),0xf1efe8);add(box(p.left-.3,p.right+.3,p.top-.55,p.top,p.z,.7),0xf1efe8);}
+      }
+      if(!parts.length)continue;
+      const positions=[],colours=[],indices=[];for(const part of parts){const offset=positions.length/3;positions.push(...part.positions);colours.push(...part.colours);for(const i of part.indices)indices.push(i+offset);}
+      const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(colours,3));geometry.setIndex(indices);geometry.computeVertexNormals();
+      const m=new THREE.Mesh(geometry,this.coasterMaterial||=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.48,metalness:.2,side:THREE.DoubleSide,flatShading:true}));m.castShadow=this.preferences.graphics!=='battery';m.visible=false;m.scale.y=.001;
+      group.add(m);pieces.push({mesh:m,start,end:start+piece,delay:(start-route.start)/(route.end-route.start)*.7,rise:0});
+    }
+    // A billboard before the fork promises the ride without showing the lane.
+    if(!old){const board=new THREE.Group();for(const x of [-1.4,1.4])mesh(board,'cylinder',0x58707f,x,3.2,0,.12,6.4,.12);
+      const tex=signTexture('SKY COASTER','#ffd976','THE RIGHT ANSWER RIDES IT');g.userData.textures.push(tex);const material=new THREE.MeshBasicMaterial({map:tex});g.userData.ownMaterials.push(material);
+      const face=new THREE.Mesh(new THREE.PlaneGeometry(5.4,2.7),material);face.position.set(0,5.4,.15);board.add(face);
+      const at=task.at-130;board.position.set(this.curve(at)-this.curve(task.at)+this.edge(at,1)+3.2,0,130);board.rotation.y=-.35;g.add(board);}
+    g.add(group);g.userData.coaster={group,pieces,route,reduced,revealedAt:old?.revealedAt??null};
+  }
+  updateCoaster(g,t,state){
+    const ride=g.userData.coaster;if(!ride)return;
+    if(ride.reduced!==!!this.preferences.reduced)this.buildCoaster(g,t,state);
+    const live=g.userData.coaster;
+    // Revealed only once the player's own answer is judged: before that the
+    // track (and so the correct lane) stays hidden, even if a rival rides it.
+    if(live.revealedAt==null&&t.completed)live.revealedAt=this.clock;
+    if(live.revealedAt==null)return;
+    const age=this.clock-live.revealedAt;
+    for(const p of live.pieces){const k=THREE.MathUtils.clamp((age-p.delay)/.32,0,1);p.rise=this.preferences.reduced?1:k*k*(3-2*k);p.mesh.visible=p.rise>0;p.mesh.scale.y=Math.max(.001,p.rise);}
+  }
+  // How far the track under a ride position has risen (0 hidden, 1 built).
+  rideRise(route,at){const ride=this.gates.get(route.taskId)?.userData.coaster;if(!ride||ride.revealedAt==null)return 0;const p=ride.pieces.find(p=>at>=p.start&&at<p.end);return p?p.rise:1;}
+  // Height, pitch and roll of a car riding a Sky Coaster at a lateral offset,
+  // scaled by how far its track has risen. dx moves a car that rode before
+  // the reveal from the ordinary shortcut branch onto the rising track.
+  ridePose(route,at,offset=0,state=null){
+    if(!route?.coaster)return null;const C=window.RallyCore,reduced=!!this.preferences.reduced,rise=this.rideRise(route,at);
+    const h=a=>visualHeight(C.coasterHeight(route,a),reduced)*rise,lateral=a=>this.curve(a)+route.lane*3.35+C.routeOffset(route,a),bank=bankAt(lateral,at,reduced)*rise;
+    let dx=0;if(rise<1&&state){const task=state.tasks.find(t=>t.id===route.taskId);if(task)dx=(C.routeOffset(C.makeRoute(state,task,task.correctIndex,true,true),at)-C.routeOffset(route,at))*(1-rise);}
+    return {y:h(at)+bankLift(bank,offset-route.side*TRACK_PASS/2),pitch:Math.atan((h(at+1)-h(at-1))/2),bank,slope:(h(at+1)-h(at-1))/2,dx};
+  }
   makeGate(task,state){
     const g=new THREE.Group();g.userData={task,textures:[],ownMaterials:[],barriers:[],repairSlabs:[]};
     if(task.kind==='finish'){
@@ -233,7 +296,7 @@ export class RallyScene{
       for(let j=0;j<task.blocks.length;j++){let slab=mesh(g,'box',0x536b7f,0,-1.5,-8-j*16,10.45,.12,15.85);g.userData.repairSlabs.push(slab);}
       for(let side of[-1,1]){g.userData.barriers.push(mesh(g,'box',0xec9252,side*3,1.3,-2,4,.25,.12));for(let j=0;j<3;j++)g.userData.barriers.push(mesh(g,'cone',0xf19657,side*(3.2+j*.75),.5,1,.27,1,.27));}
     }else{
-      const C=window.RallyCore,routes=[0,1,2].map(index=>C.makeRoute(state,task,index,index===task.correctIndex));
+      const C=window.RallyCore,routes=C.groundRoutes(state,task);
       const surface=forkSurface(routes,at=>this.curve(at),C.routeOffset,task.at),geometry=new THREE.BufferGeometry();
       geometry.setAttribute('position',new THREE.Float32BufferAttribute(surface.positions,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(surface.uvs,2));geometry.setIndex(surface.indices);geometry.computeVertexNormals();
       const asphalt=new THREE.Mesh(geometry,this.asphaltMaterial);asphalt.position.y=.02;asphalt.receiveShadow=true;g.add(asphalt);g.userData.forkSurface=asphalt;g.userData.forkRows=surface.rows;
@@ -253,6 +316,7 @@ export class RallyScene{
         const chevrons=new THREE.Group();for(let at=route.start+8;at<route.end-5;at+=12){const x=this.curve(at)-this.curve(task.at)+route.lane*3.35+C.routeOffset(route,at),heading=this.heading(at,route);for(const side of [-1,1]){const mark=mesh(chevrons,'box',0xb4b5d4,x+side*.28,.055,task.at-at,.09,.015,.8,.6);mark.rotation.y=heading+side*.7;}}g.add(chevrons);
         g.userData.routePaths.push({left,right,index,route,points,chevrons});
       }
+      if(task.coaster)this.buildCoaster(g,task,state);
     }
     this.scene.add(g);this.gates.set(task.id,g);return g;
   }
@@ -269,6 +333,7 @@ export class RallyScene{
     }
     for(const t of tasks){const ahead=t.at-d,keep=t.kind==='finish'?80:window.RallyCore.taskZone(t).end-t.at+120;const g=this.gates.get(t.id);if(!g)continue;g.visible=ahead<=window.RallyCore.TASK_VIEW_DISTANCE&&ahead>=-keep;if(!g.visible)continue;g.position.set(this.curve(t.at)-base,0,-ahead+4);
       if(t.kind==='junction'&&t.completed&&g.userData.chosenIndex!==t.chosenIndex){g.userData.chosenIndex=t.chosenIndex;for(const path of g.userData.routePaths||[]){const chosen=path.index===t.chosenIndex,paint=mat(chosen?(t.success?0xa9eccb:0xf1c187):0x748895,.55,0,chosen?(t.success?0x28674b:0x6b4c29):0);path.left.material=path.right.material=paint;path.chevrons.traverse(m=>{if(m.isMesh)m.material=paint;});}}
+      if(t.kind==='junction')this.updateCoaster(g,t,state);
       if(t.kind==='junction')g.userData.mergeGuide.visible=!!state.mergeAssist&&state.mergeAssist.taskId===t.id&&window.RallyCore.exitAssist(state)===state.mergeAssist;
       if(t.kind==='light'&&t.success)g.traverse(m=>{if(m.userData.bulb===0)m.material=mat(0x5b3439);if(m.userData.bulb===2)m.material=mat(0x69f3b7,.3,0,0x3ceb91);});
       if(t.kind==='repair'){g.userData.repairSlabs.forEach((m,j)=>{const filled=j<(t.chosen?.length||0);m.position.y=t.solved?.12:THREE.MathUtils.damp(m.position.y,filled?.12:-1.5,12,dt);});g.userData.barriers.forEach(m=>m.visible=!t.solved);}
@@ -356,7 +421,7 @@ export class RallyScene{
     const reduced=this.preferences.reduced,battery=this.preferences.graphics==='battery';
     for(const item of this.landmarks||[]){
       const ahead=item.at-d,visible=ahead>-90&&ahead<620;item.group.visible=visible;if(!visible)continue;
-      const x=item.overRoad?0:item.side*(this.edge(item.at,item.side)+item.offset);item.group.position.set(this.curve(item.at)-base+x,0,-ahead+4);item.group.rotation.y=item.overRoad?-Math.atan((this.curve(item.at+1)-this.curve(item.at-1))/2):item.side*.35;
+      const x=item.overRoad?0:item.side*(this.sceneryEdge(item.at,item.side)+item.offset);item.group.position.set(this.curve(item.at)-base+x,0,-ahead+4);item.group.rotation.y=item.overRoad?-Math.atan((this.curve(item.at+1)-this.curve(item.at-1))/2):item.side*.35;
       if(!frozen&&!reduced)for(const [i,rotor]of item.rotors.entries())rotor.rotation.z+=worldDt*(.9+i*.15);
     }
     if(!frozen)for(const cloud of this.clouds||[]){cloud.position.x+=worldDt*cloud.userData.drift;if(cloud.position.x>340)cloud.position.x=-340;}
@@ -368,7 +433,7 @@ export class RallyScene{
     }
   }
   update(dt,state,mode='home'){
-    const worldDt=dt*(state?.worldTimeScale??1);
+    const worldDt=dt*(state?.worldTimeScale??1);this.clock=(this.clock||0)+dt;
     if(!state||!['paused','finished','failed','countdown'].includes(state.status))this.elapsed+=worldDt;this.syncTraffic(state);this.syncRivals(state);
     this.prepareCourse(state);
     const playing=!!state,d=playing?state.distance:(this.showcaseDistance+=dt*6),base=this.curve(d)+window.RallyCore.routeOffset(state?.route,d);
@@ -379,7 +444,7 @@ export class RallyScene{
     const frozen=state&&['paused','finished','failed','countdown'].includes(state.status);
     this.updateAtmosphere(dt,worldDt,d,base,frozen);
     this.spectators.update(worldDt,state,this.index,d,base,at=>this.curve(at),this.preferences,frozen);
-    for(const m of this.rivalCars){const r=m.userData.rival,ahead=r.at-d;m.visible=ahead>-60&&ahead<330;m.position.set(this.curve(r.at)+window.RallyCore.routeOffset(r.route,r.at)-base+r.lanePos*3.35+(r.passingOffset||0),0,-ahead+4);m.rotation.y=this.heading(r.at,r.route)-THREE.MathUtils.clamp((r.lane-r.lanePos)*.16,-.16,.16);if(!frozen){m.userData.wheelAngle=((m.userData.wheelAngle||0)+Math.max(0,r.at-(m.userData.previousAt??r.at))/.43)%(Math.PI*2);m.userData.previousAt=r.at;}this.animateCar(m,m.userData.wheelAngle||0,-(r.lane-r.lanePos)*.28,r.braking);m.userData.nitroExhaust.visible=!!r.nitroActive&&!frozen;this.placeContactShadow(m);const direction=Math.sign((r.plannedLane??r.lane)-r.lanePos);for(const lamp of m.userData.indicators||[])lamp.visible=direction!==0&&(r.plannedLane!=null||Math.abs(r.lane-r.lanePos)>.05)&&lamp.userData.indicator===direction&&Math.floor((state.elapsed||0)*3)%2===0;}
+    for(const m of this.rivalCars){const r=m.userData.rival,ahead=r.at-d;m.visible=ahead>-60&&ahead<330;m.position.set(this.curve(r.at)+window.RallyCore.routeOffset(r.route,r.at)-base+r.lanePos*3.35+(r.passingOffset||0),0,-ahead+4);m.rotation.y=this.heading(r.at,r.route)-THREE.MathUtils.clamp((r.lane-r.lanePos)*.16,-.16,.16);const ride=this.ridePose(r.route,r.at,r.passingOffset||0,state);m.position.x+=ride?.dx??0;m.position.y=ride?.y??0;m.rotation.x=ride?.pitch??0;m.rotation.z=ride?.bank??0;if(!frozen){m.userData.wheelAngle=((m.userData.wheelAngle||0)+Math.max(0,r.at-(m.userData.previousAt??r.at))/.43)%(Math.PI*2);m.userData.previousAt=r.at;}this.animateCar(m,m.userData.wheelAngle||0,-(r.lane-r.lanePos)*.28,r.braking);m.userData.nitroExhaust.visible=!!r.nitroActive&&!frozen;this.placeContactShadow(m);const direction=Math.sign((r.plannedLane??r.lane)-r.lanePos);for(const lamp of m.userData.indicators||[])lamp.visible=direction!==0&&(r.plannedLane!=null||Math.abs(r.lane-r.lanePos)>.05)&&lamp.userData.indicator===direction&&Math.floor((state.elapsed||0)*3)%2===0;}
     for(let m of this.traffic){const o=m.userData.obstacle,ahead=o.at-d;m.visible=!o.dormant&&ahead>-50&&ahead<360;m.position.set(window.RallyCore.actorX(state,o)-base,0,-ahead+4);const turning=o.changed&&o.laneProgress<1,steer=turning?THREE.MathUtils.clamp(-(o.target-o.fromLane)*Math.sin(o.laneProgress*Math.PI)*.12,-.16,.16):0;m.rotation.y=this.heading(o.at,o.route)+steer;(m.userData.indicators||[]).forEach(n=>{n.visible=(o.moving||o.routeChanging)&&turning&&n.userData.indicator===Math.sign(o.target-o.fromLane)&&Math.floor((state?.elapsed||0)*3)%2===0;});m.rotation.z=o.hit&&state.elapsed-(o.hitAt??0)<.45?Math.sin(state.elapsed*18)*.08:0;if(!frozen){m.userData.wheelAngle=((m.userData.wheelAngle||0)+Math.max(0,o.at-(m.userData.previousAt??o.at))/.43)%(Math.PI*2);m.userData.previousAt=o.at;}this.animateCar(m,m.userData.wheelAngle||0,steer,o.braking||o.waiting);this.placeContactShadow(m);}
     this.updateGates(state,d,base,worldDt);
     if(this.motionState!==state){this.motionState=state;this.motion=createDrivingFeel(this.currentLane,state?.roadTravel??d);}
@@ -387,20 +452,22 @@ export class RallyScene{
     // Time dilation changes the animation clock, rather than applying brakes.
     if(state?.focusAuto)this.motion.lastSpeed=speed;
     const oldLane=this.motion.lane;updateDrivingFeel(this.motion,state?.lane||0,state?.roadTravel||d,speed,state?.focusAuto&&['light','junction'].includes(state.task?.kind)?dt:worldDt,frozen);if(state&&!frozen&&!window.RallyCore.playerLaneClear(state,oldLane,this.motion.lane)){const blocker=window.RallyCore.playerLaneBlocker(state,oldLane,this.motion.lane);this.motion.lane=oldLane;this.motion.velocity=0;this.motion.steer=0;window.RallyCore.contactBump(state,blocker);}this.currentLane=this.motion.lane;
-    let x=this.currentLane*3.35;const playerZ=mode==='home'&&this.viewport.width<760&&this.viewport.height>this.viewport.width?-9:4;this.player.position.set(x,.04+(this.preferences.reduced?0:this.motion.bob),playerZ);this.player.rotation.set(this.preferences.reduced?0:this.motion.pitch,this.heading(d,state?.route)+this.motion.steer*.22,this.preferences.reduced?0:this.motion.roll);this.animateCar(this.player,this.motion.wheelAngle,this.motion.steer,this.motion.braking||!!state?.yielding&&speed<.5);this.player.visible=true;this.shadow.position.set(x,.07,playerZ);this.shadow.rotation.z=-this.player.rotation.y;this.nitroReadyGlow.position.set(x,.08,playerZ);this.nitroReadyGlow.rotation.z=-this.player.rotation.y;this.nitroReadyGlow.visible=!frozen&&!state?.nitroActive&&window.RallyCore.canEngageNitro(state);this.nitroReadyGlow.scale.setScalar(this.preferences.reduced?1:1+Math.sin(this.elapsed*3)*.025);
+    let x=this.currentLane*3.35;const playerZ=mode==='home'&&this.viewport.width<760&&this.viewport.height>this.viewport.width?-9:4,ride=this.ridePose(state?.route,d,0),rideY=ride?.y??0;this.player.position.set(x,.04+rideY+(this.preferences.reduced?0:this.motion.bob),playerZ);this.player.rotation.set((this.preferences.reduced?0:this.motion.pitch)+(ride?.pitch??0),this.heading(d,state?.route)+this.motion.steer*.22,(this.preferences.reduced?0:this.motion.roll)+(ride?.bank??0));this.animateCar(this.player,this.motion.wheelAngle,this.motion.steer,this.motion.braking||!!state?.yielding&&speed<.5);this.player.visible=true;this.shadow.position.set(x,.07+rideY,playerZ);this.shadow.rotation.z=-this.player.rotation.y;this.nitroReadyGlow.position.set(x,.08+rideY,playerZ);this.nitroReadyGlow.rotation.z=-this.player.rotation.y;this.nitroReadyGlow.visible=!frozen&&!state?.nitroActive&&window.RallyCore.canEngageNitro(state);this.nitroReadyGlow.scale.setScalar(this.preferences.reduced?1:1+Math.sin(this.elapsed*3)*.025);
     this.damageFx.update(dt,state,this.preferences,frozen);
-    this.boostFx.update(worldDt,state,this.preferences,frozen);if(this.waterNormal&&!frozen&&!this.preferences.reduced)this.waterNormal.offset.set(this.elapsed*.009,this.elapsed*.005);this.trail.children.forEach((p,i)=>{p.visible=!!state&&!frozen&&!this.preferences.reduced&&this.preferences.graphics!=='battery'&&(this.lookConfig.trail||state.nitroActive)&&speed>2;p.position.set(x+(i%2?1:-1)*.64,.08,playerZ+3+i*.45);p.material=mat(state?.nitroActive?0x89ddff:0x80cbb8,.5,0,state?.nitroActive?0x2698c9:0x367c67);p.scale.z=1-i/16;});
+    this.boostFx.update(worldDt,state,this.preferences,frozen);if(this.waterNormal&&!frozen&&!this.preferences.reduced)this.waterNormal.offset.set(this.elapsed*.009,this.elapsed*.005);this.trail.children.forEach((p,i)=>{p.visible=!!state&&!frozen&&!this.preferences.reduced&&this.preferences.graphics!=='battery'&&(this.lookConfig.trail||state.nitroActive)&&speed>2;p.position.set(x+(i%2?1:-1)*.64,.08+rideY,playerZ+3+i*.45);p.material=mat(state?.nitroActive?0x89ddff:0x80cbb8,.5,0,state?.nitroActive?0x2698c9:0x367c67);p.scale.z=1-i/16;});
     const cameraFrozen=state&&['paused','finished','failed'].includes(state.status);
     const isPortrait=this.viewport.width<760&&this.viewport.height>this.viewport.width,home=mode==='home';let cx=home?(isPortrait?2:-5):state?.status==='task'?x*.7:x*.35,cy=home?(isPortrait?9:4.4):state?.status==='task'?7.2:6.2,cz=home?(isPortrait?16:20):state?.status==='task'?17:16;
     // A small speed pullback conveys acceleration without shaking the signs.
     if(!home&&!this.preferences.reduced&&state?.status!=='task')cz+=Math.min(2.4,Math.max(0,state.speedFactor-1)*.9);
+    // Sky Coaster: the chase camera rides along, slightly wider and higher.
+    this.rideLift=THREE.MathUtils.damp(this.rideLift||0,rideY,9,dt);cy+=this.rideLift;if(ride&&!this.preferences.reduced){cz+=1.6;cy+=.8;}
     // Nitro: a restrained low dive behind the car, scaled by charge level.
     if(!home&&!this.preferences.reduced&&state?.status!=='task'){cy-=.45*this.boostFx.intensity;cz+=.9*this.boostFx.intensity;}
     // Narrow portrait screens see too little road beside the car. Pull the
     // chase camera back and up so both neighbouring lanes stay readable.
     if(!home&&state?.status!=='task'){const narrow=THREE.MathUtils.clamp((.95-this.viewport.width/this.viewport.height)/.5,0,1);cz+=6.5*narrow;cy+=2.4*narrow;}
     if(!cameraFrozen){this.camera.position.x=THREE.MathUtils.damp(this.camera.position.x,cx,4,dt);this.camera.position.y=THREE.MathUtils.damp(this.camera.position.y,cy,4,dt);this.camera.position.z=THREE.MathUtils.damp(this.camera.position.z,cz,4,dt);}
-    const readingFov=Math.max(24,Math.min(52,2*Math.atan(this.viewport.height*3.35/(2*27*Math.min(140,(this.viewport.width-24)/3)))*180/Math.PI));if(!cameraFrozen)this.camera.fov=THREE.MathUtils.damp(this.camera.fov,state?.status==='task'?readingFov:playing?52+(this.preferences.reduced?0:Math.min(12,Math.max(0,state.speedFactor-1)*5.4)):52,state?.nitroActive?9:4,dt);this.camera.updateProjectionMatrix();const raceTilt=Math.atan2(this.camera.position.y-.8,Math.max(1,this.camera.position.z-4))-Math.atan(.58*Math.tan(this.camera.fov*Math.PI/360));const raceLookY=this.camera.position.y-Math.tan(raceTilt)*(this.camera.position.z+11);if(!cameraFrozen){const bendLook=this.preferences.reduced?0:THREE.MathUtils.clamp(-this.heading(d+10,state?.route)*6,-2.2,2.2);this.look.set(home?(isPortrait?-1.8:-6.5):state?.status==='task'?x*.65:x*.25+bendLook,home?(isPortrait?-1:-.5):raceLookY,home?(isPortrait?-9:-6):-11);this.camera.lookAt(this.look);}
+    const readingFov=Math.max(24,Math.min(52,2*Math.atan(this.viewport.height*3.35/(2*27*Math.min(140,(this.viewport.width-24)/3)))*180/Math.PI));if(!cameraFrozen)this.camera.fov=THREE.MathUtils.damp(this.camera.fov,state?.status==='task'?readingFov:playing?52+(this.preferences.reduced?0:Math.min(12,Math.max(0,state.speedFactor-1)*5.4)+(ride?THREE.MathUtils.clamp(-ride.slope*14,0,8):0)):52,state?.nitroActive?9:4,dt);this.camera.updateProjectionMatrix();const raceTilt=Math.atan2(this.camera.position.y-this.rideLift-.8,Math.max(1,this.camera.position.z-4))-Math.atan(.58*Math.tan(this.camera.fov*Math.PI/360));const raceLookY=this.camera.position.y-Math.tan(raceTilt)*(this.camera.position.z+11);if(!cameraFrozen){const bendLook=this.preferences.reduced?0:THREE.MathUtils.clamp(-this.heading(d+10,state?.route)*6,-2.2,2.2);this.look.set(home?(isPortrait?-1.8:-6.5):state?.status==='task'?x*.65:x*.25+bendLook,home?(isPortrait?-1:-.5):raceLookY+(ride&&!this.preferences.reduced?THREE.MathUtils.clamp(ride.slope*7,-4,2):0),home?(isPortrait?-9:-6):-11);this.camera.lookAt(this.look);}
     // A steady dusk light avoids full-screen storm flashes during reading.
     // Focus grade: the world cools and dims slightly while English text
     // (HTML above the canvas) stays crisp. Reduced motion keeps this calm cue.

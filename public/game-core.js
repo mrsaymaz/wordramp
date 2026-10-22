@@ -1,4 +1,4 @@
-/* Wordramp v0.24.0 — deterministic gameplay and question adapter. */
+/* Wordramp v0.25.0 — deterministic gameplay and question adapter. */
 (function(root){
   'use strict';
   const ARENAS=[
@@ -55,6 +55,45 @@
     if(kind==='junction'&&index===14)return 'image';
     return null;
   }
+  // Sky Coaster (Sunlit Boulevard): the correct branch of each route choice
+  // climbs onto an elevated coaster track beside the road and lands back in
+  // its lane. Heights are metres above the road at metres along the ride.
+  const COASTER_SPAN=300,COASTER_CLEAR=3,COASTER_OUT=17,COASTER_GAIN=18;
+  const COASTER_HEIGHTS=[[0,0],[12,0],[72,13],[86,13.6],[116,2.2],[148,8.2],[170,3.4],[196,6],[222,4.8],[262,4],[294,0],[300,0]];
+  const ease=t=>{t=clamp(t,0,1);return t*t*t*(10+t*(-15+6*t));};
+  function keyframes(points,u){
+    if(u<=points[0][0])return points[0][1];
+    for(let i=1;i<points.length;i++)if(u<=points[i][0]){const [u0,v0]=points[i-1],[u1,v1]=points[i];return v0+(v1-v0)*ease((u-u0)/(u1-u0));}
+    return points.at(-1)[1];
+  }
+  // Ride position in the reference 300 m profile, so a shorter ride keeps its shape.
+  const rideAt=(route,at)=>(at-route.start)*COASTER_SPAN/(route.end-route.start);
+  function coasterHeight(route,at){return route?.coaster&&at>route.start&&at<route.end?keyframes(COASTER_HEIGHTS,rideAt(route,at)):0;}
+  // Lateral offset from the route lane: out beside the road, a banked swerve,
+  // then back into the lane while still above the traffic. A centre-lane ride
+  // waits until it is above the other branches before it swings out.
+  function coasterLateral(route,u){
+    const out=route.side*COASTER_OUT-route.lane*3.35,leave=route.lane?keyframes([[0,0],[70,1]],u):keyframes([[0,0],[40,0],[96,1]],u);
+    const back=keyframes([[0,1],[222,1],[262,0]],u),swerve=keyframes([[0,0],[180,0],[205,5],[230,0]],u);
+    return out*leave*back+route.side*swerve*back||0;
+  }
+  // Speed follows the drop: slow up the lift, fast at the bottom. The ride's
+  // physical length is normalised so it gains exactly COASTER_GAIN metres,
+  // the same reward as an ordinary shortcut. One table per ride length.
+  const coasterTables=new Map();
+  function coasterTable(span){
+    let table=coasterTables.get(span);if(table)return table;
+    const steps=Math.ceil(span),pace=[];for(let i=0;i<=steps;i++){const h=keyframes(COASTER_HEIGHTS,i*COASTER_SPAN/steps);pace.push(1/Math.sqrt(1+.11*(14-h)));}
+    const mean=pace.reduce((a,b,i)=>a+(i===0||i===steps?b/2:b),0)/steps,scale=(span-COASTER_GAIN)/span/mean;
+    table=pace.map(p=>p*scale);coasterTables.set(span,table);return table;
+  }
+  function routeRatio(route,at){
+    if(!route?.coaster)return route?.ratio??1;
+    const table=coasterTable(route.end-route.start),x=clamp(at-route.start,0,table.length-1),i=Math.min(table.length-2,Math.floor(x));
+    return table[i]+(table[i+1]-table[i])*(x-i);
+  }
+  // Cars on the raised track and cars on the road never meet.
+  function deckLevel(o,at=o.at){return o?.route?.coaster&&coasterHeight(o.route,at)>=COASTER_CLEAR?1:0;}
   function makeTasks(unit,difficulty,arenaIndex,rng){
     const count=ARENAS[arenaIndex].checkpoints,used=new Set(),usedWords=new Set();
     const takeWords=words=>{const key=w=>w.toLowerCase(),fresh=words.filter(w=>!usedWords.has(key(w))),seen=words.filter(w=>usedWords.has(key(w))),picked=[...shuffle(fresh,rng),...shuffle(seen,rng)].slice(0,2);picked.forEach(w=>usedWords.add(key(w)));return picked;};
@@ -98,6 +137,12 @@
       else t.rows=[{at:t.at,options:t.options,answer:t.answer,correctIndex:t.correctIndex}];
       t.rowIndex=0;t.endAt=t.rows.at(-1).at;t.success=null;t.completed=false;if(t.people){t.stopAt=t.at-16;t.exitEndAt=t.at+36;t.people.forEach((p,j)=>p.at=t.at+j*3);}tasks.push(t);
     }
+    // Sunlit route choices hide a Sky Coaster behind the correct sign. A
+    // centre-lane ride alternates sides; an outer lane rides on its own side.
+    if(arenaIndex===0){let rides=0;tasks.forEach((t,i)=>{
+      if(t.kind!=='junction')return;const room=(tasks[i+1]?.at??ARENAS[0].length)-t.at-240;
+      if(room>=200)t.coaster={span:Math.min(COASTER_SPAN,room),side:t.correctIndex===1?(rides%2?-1:1):t.correctIndex-1};rides++;
+    });}
     return tasks;
   }
   function createRace(unit,difficulty='relaxed',arenaIndex=0,seed=Date.now(),settings={}){
@@ -111,7 +156,7 @@
     const patternSpacing=(difficulty==='relaxed'?[66,48,44]:[58,46,42])[arenaIndex];let escape=0;
     const types=['cones','barrier','crates','pothole','barrels','fallen_branch',...(arenaIndex>0?['tire_stack','road_panels']:[]),...(arenaIndex===2?['rockfall']:[])];
     // Plan every clear stretch first, then hand some of them a traffic group.
-    const stretches=[];for(let i=0;i<=tasks.length;i++){const previous=tasks[i-1],next=tasks[i],start=previous?taskZone(previous).end+80:60,end=next?taskZone(next).start-120:arena.length-60;if(end-start>=65)stretches.push({i,start,end});}
+    const stretches=[];for(let i=0;i<=tasks.length;i++){const previous=tasks[i-1],next=tasks[i],start=previous?taskZone(previous).reach+80:60,end=next?taskZone(next).start-120:arena.length-60;if(end-start>=65)stretches.push({i,start,end});}
     // Civilian traffic arrives in short groups of 2-3 that make the driver
     // weave. Relaxed is lighter; each arena is busier than the last.
     const trafficTarget={relaxed:[6,12,18],challenge:[10,18,26]}[difficulty][arenaIndex],rowGap={relaxed:[48,44,40],challenge:[40,36,34]}[difficulty][arenaIndex];
@@ -183,11 +228,22 @@
   function addNitro(actor,time){const live=actor.nitro>0;actor.fuel-=NITRO_COST;actor.nitroLevel=live?Math.min(NITRO_MAX_STACKS,(actor.nitroLevel||1)+1):1;actor.nitro=Math.min(NITRO_DURATION*NITRO_MAX_STACKS,(live?actor.nitro:0)+NITRO_DURATION);actor.nitroUses++;actor.lastNitroAt=time;}
   function nitroSpeed(level=1){return Math.min(MAX_SPEED,2.65+Math.max(0,level-1)*.4);}
   function activateNitro(s){if(!canNitro(s))return false;addNitro(s,s.elapsed);s.notice={type:'nitro',text:s.nitroLevel===3?'MAX CHARGE · HOLD TO BOOST':s.nitroLevel===2?'DOUBLE CHARGE · HOLD TO BOOST':'NITRO LOADED · HOLD TO BOOST',level:s.nitroLevel};return true;}
-  function makeRoute(s,t,index,shortcut){
+  function makeRoute(s,t,index,shortcut,ground=false){
+    // A ride's ratio is its fastest point (routeRatio varies along the ride).
+    if(t.coaster&&shortcut&&!ground&&index===t.correctIndex){const span=t.coaster.span;return {id:t.id+'-route-exit',taskId:t.id,start:t.at,end:t.at+span,exitEndAt:t.at+span+36,lane:index-1,shortcut:true,coaster:true,side:t.coaster.side,extra:-COASTER_GAIN,ratio:Math.min(...coasterTable(span)),amplitude:0,startedAt:s.elapsed};}
     const next=s.tasks.find(q=>q.at>t.at),span=Math.max(35,Math.min(90,(next?.at??s.arena.length)-t.at-70));
-    return {id:t.id+'-route-exit',taskId:t.id,start:t.at,end:t.at+span,exitEndAt:t.at+span+36,lane:index-1,shortcut,extra:shortcut?-18:32,ratio:(span+(shortcut?-18:32))/span,amplitude:(index-1)*(shortcut?5:11),startedAt:s.elapsed};
+    // Beside a coaster, the centre detour sways away from the raised track.
+    return {id:t.id+'-route-exit',taskId:t.id,start:t.at,end:t.at+span,exitEndAt:t.at+span+36,lane:index-1,shortcut,extra:shortcut?-18:32,ratio:(span+(shortcut?-18:32))/span,amplitude:(index-1)*(shortcut?5:11),...(t.coaster?{away:-t.coaster.side}:{}),startedAt:s.elapsed};
   }
-  function routeOffset(route,at){if(!route||at<route.start||at>route.end)return 0;const p=clamp((at-route.start)/(route.end-route.start),0,1);const envelope=Math.sin(p*Math.PI);return route.amplitude*envelope*envelope*envelope+(route.lane===0&&!route.shortcut?3*Math.sin(p*Math.PI*2)*envelope*envelope:0);}
+  // The asphalt branches of a route choice. A Sky Coaster lifts off above
+  // the ordinary shortcut branch, so the road itself never changes.
+  function groundRoutes(s,t){return [0,1,2].map(i=>makeRoute(s,t,i,i===t.correctIndex,true));}
+  function routeOffset(route,at){
+    if(!route||at<route.start||at>route.end)return 0;
+    if(route.coaster)return coasterLateral(route,rideAt(route,at));
+    const p=clamp((at-route.start)/(route.end-route.start),0,1),envelope=Math.sin(p*Math.PI);
+    return route.amplitude*envelope*envelope*envelope+(route.lane===0&&!route.shortcut?3*(route.away?route.away*envelope*envelope:Math.sin(p*Math.PI*2))*envelope*envelope:0);
+  }
   function alternateReview(unit,item,rng){
     const reviewSource=root.MATCH_BANK[unit.id].find(x=>x.id===item.id.replace(/(?:-review)+$/,''));
     // An inverse translation review answers in Turkish. Repeating that miss
@@ -235,12 +291,12 @@
   function raceFailed(s){return !!s&&(['failed','breakdown'].includes(s.status)||!!s.failureReason||!!s.breakdown||(s.damage||0)>=DAMAGE_LIMIT);}
   function raceSucceeded(s){return !!s&&s.status==='finished'&&!raceFailed(s)&&s.distance>=s.arena.length;}
   function raceOrder(s){const dnf=raceFailed(s),racers=[{id:'player',name:'YOU',at:s.distance,finishedAt:dnf?null:s.finishedAt,dnf},...s.rivals];return racers.sort((a,b)=>!!a.dnf!==!!b.dnf?(a.dnf?1:-1):a.finishedAt!=null&&b.finishedAt!=null?a.finishedAt-b.finishedAt:a.finishedAt!=null?-1:b.finishedAt!=null?1:b.at-a.at||String(a.id).localeCompare(String(b.id)));}
-  function taskZone(t){return {id:t.id,start:t.at-100,end:t.kind==='junction'?t.at+150:t.kind==='pedestrian'?t.at+84:t.kind==='repair'?t.endAt+48:t.at+48,task:t};}
+  function taskZone(t){const end=t.kind==='junction'?t.at+150:t.kind==='pedestrian'?t.at+84:t.kind==='repair'?t.endAt+48:t.at+48;return {id:t.id,start:t.at-100,end,reach:t.coaster?Math.max(end,t.at+t.coaster.span+60):end,task:t};}
   function taskRoadZone(s,at){return s.tasks.map(taskZone).find(z=>at>=z.start-70&&at<=z.end+25);}
   const roadCache=new WeakMap();
   function roadCourse(s){
     let c=roadCache.get(s);if(c?.tasks===s.tasks&&c.revision===s.taskRevision)return c;
-    c={tasks:s.tasks,revision:s.taskRevision,zones:s.tasks.map(taskZone),forks:s.tasks.filter(t=>t.kind==='junction').map(t=>[0,1,2].map(i=>makeRoute(s,t,i,i===t.correctIndex)))};roadCache.set(s,c);return c;
+    c={tasks:s.tasks,revision:s.taskRevision,zones:s.tasks.map(taskZone),forks:s.tasks.filter(t=>t.kind==='junction').map(t=>groundRoutes(s,t))};roadCache.set(s,c);return c;
   }
   const smoothRoad=t=>{t=clamp(t,0,1);return t*t*t*(10+t*(-15+6*t));};
   function apronWidth(s,at){let width=5.4;for(const z of roadCourse(s).zones)width=Math.max(width,5.4+6.15*Math.min(smoothRoad((at-z.start+70)/40),smoothRoad((z.end+80-at)/55)));return width;}
@@ -257,6 +313,7 @@
     for(const span of spans){const last=union.at(-1);if(last&&span[0]<=last[1])last[1]=Math.max(last[1],span[1]);else union.push(span);}return union;
   }
   function vehicleOnRoad(s,body,at=body.at,lane=body.lanePos??body.lane){
+    if(body.route?.coaster&&at>=body.route.start-2.3&&at<=body.route.end+2.3)return true;
     const centre=p=>courseCurve(s.arenaIndex,p)+routeOffset(body.route,p),slope=(centre(at+.1)-centre(at-.1))/.2;
     const x=lane*3.35+(body.passingOffset||0)+routeOffset(body.route,at),half=(body.halfWidth??1.25)+.42;
     return [-2.3,0,2.3].every(d=>{const edgeX=x+d*slope+courseCurve(s.arenaIndex,at)-courseCurve(s.arenaIndex,at+d);return roadSpans(s,at+d).some(([left,right])=>edgeX-half>=left&&edgeX+half<=right);});
@@ -266,16 +323,16 @@
   function playerBody(s,physicalLane){return {id:'player',at:s.distance,lanePos:physicalLane,route:s.route,speed:s.arena.speed*s.speedFactor*(s.worldTimeScale??1),halfLength:2.3,halfWidth:1.25};}
   // A dormant traffic group is a ghost: not physical and not drawn until it wakes.
   function actors(s,physicalLane){return [...s.obstacles.filter(o=>!o.dormant),...s.rivals,playerBody(s,physicalLane)];}
-  function sameRoadSpace(s,a,b){const width=(a.halfWidth??1.25)+(b.halfWidth??1.25)+.2;return Math.abs(actorX(s,a,a.lanePos??a.lane,b.at)-actorX(s,b))<width;}
+  function sameRoadSpace(s,a,b){if(deckLevel(a,b.at)!==deckLevel(b))return false;const width=(a.halfWidth??1.25)+(b.halfWidth??1.25)+.2;return Math.abs(actorX(s,a,a.lanePos??a.lane,b.at)-actorX(s,b))<width;}
   // Held-input impacts use the true body width; braking assists keep a margin.
-  function physicallyAligned(s,a,b){return Math.abs(actorX(s,a,a.lanePos??a.lane,b.at)-actorX(s,b))<(a.halfWidth??1.25)+(b.halfWidth??1.25);}
+  function physicallyAligned(s,a,b){return deckLevel(a,b.at)===deckLevel(b)&&Math.abs(actorX(s,a,a.lanePos??a.lane,b.at)-actorX(s,b))<(a.halfWidth??1.25)+(b.halfWidth??1.25);}
   function openRoadDriving(s){return s.status==='driving'&&!s.route&&!learningPaceProtected(s)&&(s.accelerationHeld||s.accelerating||s.nitroHeld&&s.nitro>0);}
   function contactDistance(body,o){return (body.halfLength??2.3)+(o.halfLength??2.3)+.25;}
   function laneStepBlocker(s,body,from,to,physicalLane){
     const x0=actorX(s,body,from),x1=actorX(s,body,to),half=body.halfWidth??1.25;
     return actors(s,physicalLane).find(o=>{
       const length=body.id==='player'?(body.halfLength??2.3)+(o.halfLength??2.3)+.1:6;
-      if(o===body||o.id==='player'&&body.id==='player'||Math.abs(o.at-body.at)>length)return false;
+      if(o===body||o.id==='player'&&body.id==='player'||Math.abs(o.at-body.at)>length||deckLevel(o)!==deckLevel(body))return false;
       // A rival half into an escape lane may finish its move ahead of a car
       // that is clear behind it and not closing; that car's own forward guard
       // keeps the gap. Holding it in place beside a rockfall froze both cars.
@@ -291,7 +348,7 @@
     return (body.id==='player'||vehicleOnRoad(s,body,body.at,to))&&!laneStepBlocker(s,body,from,to,physicalLane);
   }
   function guideRouteLane(s,physicalLane){
-    if(!s.route)return;
+    if(!s.route||s.route.coaster)return;
     const centre=s.route.lane,body=playerBody(s,physicalLane);
     const near=s.rivals.filter(r=>r.route?.taskId===s.route.taskId&&Math.abs(r.at-s.distance)<18);
     const clearance=lane=>Math.min(Infinity,...near.map(r=>Math.abs(actorX(s,body,lane)-actorX(s,r))));
@@ -313,7 +370,7 @@
       // Driving away from a body that is already behind can only increase
       // separation. A car that just changed lane beside an obstacle's tail
       // must never be pinned by it (that froze the race until timeout).
-      if(o.at<body.at&&at>body.at)return true;
+      if(o.at<body.at&&at>body.at||deckLevel(body,at)!==deckLevel(o))return true;
       // The player's path is physical: a car stopped 0.1 m beside the lane must
       // not hold the player back while it waits for the player to pass.
       return Math.abs(actorX(s,body,body.lanePos??body.lane,at)-actorX(s,o))>(body.halfWidth??1.25)+(o.halfWidth??1.25)+(body.id==='player'?0:.15);
@@ -324,7 +381,7 @@
   function playerLaneClear(s,from,to){return laneStepClear(s,playerBody(s,from),from,to,from);}
   function playerLaneBlocker(s,from,to){return laneStepBlocker(s,playerBody(s,from),from,to,from);}
   function mergingAcross(s,body,o){
-    if(o.type!=='traffic'||Math.abs(o.target)>1||!o.changed||!(o.laneProgress<1&&(o.laneProgress>0||o.yieldForPlayer!=null)))return false;
+    if(o.type!=='traffic'||deckLevel(body,o.at)!==deckLevel(o)||Math.abs(o.target)>1||!o.changed||!(o.laneProgress<1&&(o.laneProgress>0||o.yieldForPlayer!=null)))return false;
     // Reserve the remaining sweep of a committed merge. A following rival
     // must leave its gap before the merging car reaches the lane centre.
     const x=actorX(s,body,body.lanePos??body.lane,o.at),from=actorX(s,o),to=actorX(s,o,o.target),width=(body.halfWidth??1.25)+(o.halfWidth??1.25)+.2;
@@ -383,7 +440,7 @@
       if(r.finishedAt!=null){r.nitroActive=false;const space=forwardSpace(s,r,physicalLane);r.speed+=(s.arena.speed-r.speed)*(1-Math.exp(-dt*2));r.at+=safeForwardTravel(s,r,Math.min(Math.max(0,space.limit-r.at),Math.max(0,r.speed)*dt),physicalLane);continue;}
       const profile=r.profile,t=s.tasks[r.nextTask],preparingFork=!r.route&&t?.kind==='junction'&&r.at<t.at&&r.at>t.at-220,forkIndex=preparingFork?(r.decisions[r.nextTask]?t.correctIndex:(t.correctIndex+1)%3):null,forkLane=preparingFork?forkIndex-1:null,forkSide=preparingFork?(Math.sign(forkLane)||-Math.sign(t.correctIndex-1)||(r.id?1:-1)):0;
       if(r.route&&r.at>=r.route.end)r.route=null;
-      const playerRoute=s.route||s.mergeAssist,passSide=r.route?(r.route.lane||((playerRoute?.taskId===r.route.taskId&&playerRoute.lane)?-Math.sign(playerRoute.lane):r.id?1:-1)):0;
+      const playerRoute=s.route||s.mergeAssist,passSide=r.route?(r.route.coaster?r.route.side:r.route.lane||((playerRoute?.taskId===r.route.taskId&&playerRoute.lane)?-Math.sign(playerRoute.lane):r.id?1:-1)):0;
       const passing=(r.passingOffset||0)+((r.route?passSide*3.2:0)-(r.passingOffset||0))*(1-Math.exp(-dt*10));const oldPassing=r.passingOffset||0;r.passingOffset=passing;if(!laneStepClear(s,r,r.lanePos,r.lanePos,physicalLane))r.passingOffset=oldPassing;
       if(t&&!r.reading&&r.at>=t.at-(t.kind==='junction'?110:70))r.reading={task:t,startedAt:s.elapsed};
       const late=r.at>s.arena.length*.8,pace=Math.min(REGULAR_MAX_SPEED,r.basePace+(late?profile.push:0));
@@ -490,7 +547,7 @@
       if(r.nitroActive){desired=s.arena.speed*Math.min(MAX_SPEED,profile.burst+Math.max(0,(r.nitroLevel||1)-1)*.4);r.nitro=Math.max(0,r.nitro-dt);}
       desired=Math.min(desired,speedCeiling);
       const oldSpeed=r.speed;r.speed=Math.max(0,oldSpeed+(desired-oldSpeed)*(1-Math.exp(-dt*(desired<oldSpeed?8:profile.throttle))));
-      const ratio=r.route?.ratio??1;
+      const ratio=routeRatio(r.route,r.at);
       let travel=Math.min(gap,(oldSpeed+r.speed)*.5*dt/ratio);
       if(protectedTravel!==null){
         // Reading is a shared neutral phase: moving opponents cannot earn a
@@ -534,7 +591,7 @@
     if(t.success){s.correct++;if(t.kind==='junction')s.time+=3;if(t.kind==='light')s.boost=3.5;}
     if(!right){s.slow=2.5;s.detour=2.5;}
     if(t.kind==='pedestrian'){s.exitTask=t.id;s.lane=0;}
-    if(t.kind==='junction'){const index=t.chosenIndex??t.correctIndex,takeShort=right;s.route=makeRoute(s,t,index,takeShort);s.routeHistory.push(s.route);text=takeShort?'SHORTCUT · −18m · +3s':'DETOUR · +32m · YOU CAN CATCH UP';s.lane=index-1;}
+    if(t.kind==='junction'){const index=t.chosenIndex??t.correctIndex,takeShort=right;s.route=makeRoute(s,t,index,takeShort);s.routeHistory.push(s.route);text=takeShort?(s.route.coaster?'SKY COASTER · −18m · +3s':'SHORTCUT · −18m · +3s'):'DETOUR · +32m · YOU CAN CATCH UP';s.lane=index-1;}
     s.taskIndex++;s.status='resolving';s.resolve=2;
     s.notice={type:right?'correct':'wrong',kind:t.kind,text:text||(right?(t.kind==='light'?'GREEN LIGHT · GO!':t.kind==='pedestrian'?'CROSSWALK CLEAR!':'FAST ROUTE · +3s'):'CORRECT ANSWER: '+t.answer)};
     scheduleReview(s);
@@ -598,8 +655,9 @@
       // Civilian queues pass through the central fork after the racers clear.
       // Rejoin before the fork narrows; shoulders are not separate roads.
       if(zone?.task?.kind==='junction'&&o.at>=zone.task.at-90&&o.forkTask!==zone.id){
-        o.forkTask=zone.id;o.route={...makeRoute(s,zone.task,1,zone.task.correctIndex===1),ratio:1};
-        o.fromLane=o.lanePos;o.target=0;o.changed=true;o.laneProgress=0;o.routeChanging=true;o.signalAt=s.elapsed;
+        const q=zone.task,branch=q.coaster&&q.correctIndex===1?1-q.coaster.side:1;
+        o.forkTask=zone.id;o.route={...makeRoute(s,q,branch,q.correctIndex===branch),ratio:1};
+        o.fromLane=o.lanePos;o.target=branch-1;o.changed=true;o.laneProgress=0;o.routeChanging=true;o.signalAt=s.elapsed;
       }
       // A centre car whose chosen shoulder is now occupied beside it swaps
       // sides rather than parking in the lane the player must use.
@@ -709,7 +767,7 @@
     s.invulnerable=Math.max(0,s.invulnerable-dt);s.slow=Math.max(0,s.slow-dt);s.boost=Math.max(0,s.boost-dt);s.detour=Math.max(0,s.detour-dt);if(!protectedPhase)s.impactRecovery=Math.max(0,s.impactRecovery-dt);
     if(s.lastPass)s.lastPass.life=Math.max(0,s.lastPass.life-dt);
     if(s.time<=0){s.time=0;s.status='failed';s.failureReason='time';stopInputs(s);return;}
-    const prev=s.distance,ratio=s.route?.ratio??1,nominal=s.arena.speed*s.speedFactor,worldDt=dt*s.worldTimeScale;
+    const prev=s.distance,ratio=routeRatio(s.route,s.distance),nominal=s.arena.speed*s.speedFactor,worldDt=dt*s.worldTimeScale;
     // Resolve other vehicles first during manual driving. Their real travel
     // supplies the moving bumper position, without predictive jumps or early
     // player braking. Protected tasks keep their existing shared pace order.
@@ -737,5 +795,5 @@
   function stars(s){if(!raceSucceeded(s))return 0;const accuracy=s.correct/s.tasks.length;return accuracy>=.9&&s.collisions<=2?3:accuracy>=.75?2:1;}
   function pause(s){if(!['finished','failed','paused'].includes(s.status)){s.previousStatus=s.status;s.status='paused';s.accelerationHeld=false;s.accelerating=false;s.nitroHeld=false;s.nitroActive=false;return true;}return false;}
   function resume(s){if(s.status==='paused')s.status=s.previousStatus;}
-  root.RallyCore={ARENAS,emojiFor,pictureDistinct,DIFFICULTIES,RIVAL_PROFILES,PEDESTRIAN_WALK_TIME,PEDESTRIAN_ENTRY_TIME,VEHICLE_GAP,TASK_VIEW_DISTANCE,REGULAR_MAX_SPEED,MAX_SPEED,DAMAGE_LIMIT,COLLISION_GRACE,BREAKDOWN_DURATION,IMPACT_RECOVERY,carCondition,NITRO_COST,NITRO_DURATION,NITRO_MAX_STACKS,CHOICE_FOCUS_DISTANCE,nitroSpeed,taskZone,taskRoadZone,apronWidth,roadSpans,vehicleOnRoad,courseCurve,actorX,playerLaneClear,playerLaneBlocker,contactBump,learningPaceProtected,focusCruise,steeringLocked,repairCruise,canShortenFocus,canNitro,canEngageNitro,setNitroHeld,engageNitro,activateNitro,makeRoute,routeOffset,raceOrder,raceFailed,raceSucceeded,alternateReview,createReviewLap,exitAssist,pedestrianReady,crosswalkOccupied,crosswalkTimeLeft,random,shuffle,createRace,makeTasks,tick,move,choose,setAccelerating,currentRow,connectRepair,sortPerson,answer,stars,pause,resume,obstacleLane,clamp};
+  root.RallyCore={ARENAS,emojiFor,pictureDistinct,DIFFICULTIES,RIVAL_PROFILES,PEDESTRIAN_WALK_TIME,PEDESTRIAN_ENTRY_TIME,VEHICLE_GAP,TASK_VIEW_DISTANCE,REGULAR_MAX_SPEED,MAX_SPEED,DAMAGE_LIMIT,COLLISION_GRACE,BREAKDOWN_DURATION,IMPACT_RECOVERY,carCondition,NITRO_COST,NITRO_DURATION,NITRO_MAX_STACKS,CHOICE_FOCUS_DISTANCE,nitroSpeed,taskZone,taskRoadZone,apronWidth,roadSpans,vehicleOnRoad,courseCurve,actorX,playerLaneClear,playerLaneBlocker,contactBump,learningPaceProtected,focusCruise,steeringLocked,repairCruise,canShortenFocus,canNitro,canEngageNitro,setNitroHeld,engageNitro,activateNitro,makeRoute,routeOffset,groundRoutes,routeRatio,coasterHeight,coasterLateral,deckLevel,COASTER_CLEAR,COASTER_GAIN,raceOrder,raceFailed,raceSucceeded,alternateReview,createReviewLap,exitAssist,pedestrianReady,crosswalkOccupied,crosswalkTimeLeft,random,shuffle,createRace,makeTasks,tick,move,choose,setAccelerating,currentRow,connectRepair,sortPerson,answer,stars,pause,resume,obstacleLane,clamp};
 })(typeof window==='undefined'?globalThis:window);
