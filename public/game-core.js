@@ -22,7 +22,7 @@
     // Sunlit's Sky Coaster landings replace one obstacle stretch per route
     // choice; its Challenge rivals wait a little longer at crossings to match.
     relaxed:[{pace:[1.50,1.51,1.55],think:[1.05,.7,.35],readPace:[1.35,1.45,1.53],crossWait:[2.6,1.4,.9],throttle:5.5,accuracy:[.92,.93,.98],lookAhead:3.3,burst:2.8,push:.04,fuel:60,weave:[16,16,6],fuelGain:[10,10,13]},{pace:[1.50,1.51,1.55],think:[.9,.6,.3],readPace:[1.4,1.48,1.54],crossWait:[2.6,1.4,.9],throttle:6,accuracy:[.88,.9,.97],lookAhead:3.1,burst:2.9,push:.04,fuel:60,weave:[16,16,6],fuelGain:[10,10,13]}],
-    challenge:[{pace:[1.50,1.495,1.55],think:.40,readPace:1.50,crossWait:[3.8,2.8,2.2],throttle:7,accuracy:.985,lookAhead:3.7,burst:[2.9,3.0,3.3],push:.06,fuel:60,weave:6,fuelGain:[11,13,24]},{pace:[1.50,1.495,1.55],think:.30,readPace:1.55,crossWait:[3.8,2.8,2.2],throttle:7,accuracy:.95,lookAhead:3.3,burst:[2.9,3.0,3.3],push:.08,fuel:60,weave:6,fuelGain:[11,13,24]}]
+    challenge:[{pace:[1.505,1.495,1.55],think:.40,readPace:1.50,crossWait:[3.6,2.8,2.2],throttle:7,accuracy:.985,lookAhead:3.7,burst:[2.9,3.0,3.3],push:.06,fuel:60,weave:6,fuelGain:[11,13,24]},{pace:[1.505,1.495,1.55],think:.30,readPace:1.55,crossWait:[3.6,2.8,2.2],throttle:7,accuracy:.95,lookAhead:3.3,burst:[2.9,3.0,3.3],push:.08,fuel:60,weave:6,fuelGain:[11,13,24]}]
   };
 
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
