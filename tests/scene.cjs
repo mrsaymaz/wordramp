@@ -182,7 +182,7 @@ console.log('PASS: real scene steering reports an identified side collision once
 // the cars through the loop, corkscrew and helix; reduced motion keeps the
 // route with flatter drops and no inversions.
 {
- scene.setup(0);scene.preferences.reduced=false;const s=C.createRace(window.LANGUAGE_BANK[0].units[0],'relaxed',0,35),task=s.tasks.find(t=>t.coaster);
+ scene.setup(0);scene.preferences.reduced=false;const s=C.createRace(window.LANGUAGE_BANK[0].units[0],'relaxed',0,35),task=s.tasks.find(t=>t.coaster?.layout==='classic');
  assert(task,'Sunlit route choices carry a Sky Coaster');
  s.status='task';s.task=task;s.taskIndex=s.tasks.indexOf(task);s.distance=task.at-40;scene.update(.05,s,'race');
  const ride=()=>scene.gates.get(task.id).userData.coaster;assert(ride().pieces.length>=6);assert(ride().pieces.every(p=>!p.mesh.visible),'The track stays hidden while the sign is read');
@@ -196,7 +196,7 @@ console.log('PASS: real scene steering reports an identified side collision once
  assert(ride().pieces.every(p=>p.mesh.visible&&Math.abs(p.mesh.scale.y-1)<1e-9),'After the answer the whole track rises within 1.5 s');
  assert(ride().pieces.every(p=>p.delay+.2<=.53),'The reveal is a quick wave (about half a second)');
  const lifted=scene.rivalCars.find(m=>m.userData.rival===rival);assert(lifted.position.y>9,'The risen track carries a rival into the air');
- const at=u=>task.at+u*task.coaster.span/C.COASTER_SPAN,upY=()=>{const q=scene.player.quaternion;return 1-2*(q.x*q.x+q.z*q.z);};
+ const at=u=>task.at+u*task.coaster.span/C.RIDE_LAYOUTS.classic.span,upY=()=>{const q=scene.player.quaternion;return 1-2*(q.x*q.x+q.z*q.z);};
  s.distance=at(66);scene.update(.05,s,'race');assert(scene.player.position.y>12.5,'The player rides the crest of the launch hill');
  s.distance=at(119);scene.update(.05,s,'race');assert(scene.player.position.y>18&&upY()<-.9,'Upside down at the top of the loop');
  s.distance=at(110);scene.update(.05,s,'race');assert(scene.rideSpeed>1.3,'The loop swoops faster than the road');
@@ -212,3 +212,43 @@ console.log('PASS: real scene steering reports an identified side collision once
  assert(scene.sceneryEdge(at(234),1)>=54&&scene.sceneryEdge(at(234),-1)>=54,'Buildings clear the helix on both sides');
  console.log('PASS: Sky Coaster hidden while reading and when a rival rides first, rises in a half-second wave after the answer, carries rivals and the player upside down through the loop and corkscrew and around the helix in view, flattens without inversions for reduced motion and clears scenery on both sides.');
 }
+// Rides stay drawn to their very end (the fork gate lives for the whole ride).
+{
+ scene.setup(0);const s=C.createRace(window.LANGUAGE_BANK[0].units[0],'relaxed',0,35),task=s.tasks.find(t=>t.coaster?.layout==='finale');
+ task.completed=true;task.answeredRight=true;s.status='driving';s.taskIndex=s.tasks.indexOf(task)+1;s.route=C.makeRoute(s,task,task.correctIndex,true);
+ for(const u of [10,200,task.coaster.span-30]){s.distance=task.at+u;for(let i=0;i<12;i++)scene.update(.05,s,'race');assert(scene.gates.get(task.id)?.visible,'The ride is drawn at '+u+' m');}
+ s.distance=task.at+task.coaster.span-60;scene.update(.05,s,'race');assert(scene.player.position.y>3,'The car is still on the track during the glide');
+ console.log('PASS: every ride stays drawn through its glide landing.');
+}
+// Bridge Builder: a real gap in the road, slabs that drop in one at a time,
+// a wrong slab that bounces out, words that light up under the wheels, a hop
+// at the end, and planks under any car that reaches the open gap first.
+for(const arena of [0,1,2]){
+ scene.setup(arena);scene.preferences.reduced=false;const s=C.createRace(window.LANGUAGE_BANK[0].units[0],'relaxed',arena,41),task=s.tasks.find(t=>t.kind==='repair');
+ s.status='task';s.task=task;s.taskIndex=s.tasks.indexOf(task);s.distance=task.at-30;scene.update(.05,s,'race');
+ const g=scene.gates.get(task.id),bridge=g.userData.bridge;assert(bridge,'A repair is a Bridge Builder');
+ // The asphalt is missing over the gap; the shoulders stay.
+ let cut=0;for(const seg of scene.segments){const at=seg.userData.courseIndex*20+10,road=seg.userData.roadSurfaces[0],p=road.userData.flatPositions,idx=road.geometry.index.array;for(let i=0;i<idx.length;i+=3){const course=at-(p[idx[i]*3+2]+p[idx[i+1]*3+2]+p[idx[i+2]*3+2])/3;assert(!(course>task.at+.5&&course<task.at+47.5),'No asphalt over the open gap');}if(at>task.at&&at<task.at+48)cut++;}
+ assert(cut>0);assert(g.userData.barriers.some(m=>m.visible),'BRIDGE OUT shows before the bridge is built');
+ const placedY=()=>bridge.slabs.map(m=>m.position.y);
+ if(arena!==1)assert(bridge.slabs.every(m=>!m.visible),'No slab before its block is connected');
+ // A wrong block: its slab appears, wobbles and swings out within 0.7 s.
+ assert.equal(C.placeRepairBlock(s,2),'wrong');scene.update(.05,s,'race');scene.update(.1,s,'race');assert(bridge.ghost.visible,'A wrong slab appears');
+ for(let i=0;i<10;i++)scene.update(.1,s,'race');assert(!bridge.ghost.visible,'and swings back out');
+ // Each correct block drops its slab into place within half a second.
+ for(const id of [0,1,2]){assert(['placed','solved'].includes(C.placeRepairBlock(s,id)));scene.update(.05,s,'race');assert(bridge.slabs[id].visible);for(let i=0;i<6;i++)scene.update(.1,s,'race');assert(Math.abs(bridge.slabs[id].position.y-.12)<1e-6,'Slab '+id+' is in place');}
+ if(arena===1)assert(bridge.slabs.every(m=>m.userData.leaves.every(l=>Math.abs(l.rotation.x)<1e-6)),'The drawbridge leaves are down');
+ assert(task.solved);scene.update(.05,s,'race');assert(g.userData.barriers.every(m=>!m.visible),'BRIDGE OUT clears once built');
+ // Driving over the sentence lights each word in turn; the kick ramp hops.
+ const cues=[];scene.onCue=n=>cues.push(n);
+ for(const u of [8,24,40]){s.distance=task.at+u;scene.update(.05,s,'race');}
+ assert(bridge.lit.every(Boolean)&&bridge.lit.length===3,'Every word lights up under the wheels');assert.deepEqual(cues.filter(c=>/^word/.test(c)),['word1','word2','word3']);
+ s.distance=task.at+53;scene.update(.05,s,'race');assert(scene.bridgeHop(s,s.distance)>.8,'A hop off the kick ramp');assert(cues.includes('hop'));
+ scene.preferences.reduced=true;assert.equal(scene.bridgeHop(s,s.distance),0,'Reduced motion: no hop');scene.preferences.reduced=false;scene.onCue=null;
+ // A rival reaching the open gap first rides a plank, never thin air.
+ const s2=C.createRace(window.LANGUAGE_BANK[0].units[0],'relaxed',arena,43),t2=s2.tasks.find(t=>t.kind==='repair');s2.status='task';s2.task=t2;s2.taskIndex=s2.tasks.indexOf(t2);s2.distance=t2.at-30;
+ const r=s2.rivals[0];r.at=t2.at+20;r.lanePos=r.lane=0;scene.update(.05,s2,'race');const b2=scene.gates.get(t2.id).userData.bridge;
+ assert(b2.planks.some(p=>p.visible&&Math.abs(p.position.z-(b2.slabs[1].position.z-7.9))<1e-6),'A plank under the rival');
+ r.at=t2.at+80;scene.update(.05,s2,'race');assert(b2.planks.every(p=>!p.visible),'and gone once it has passed');
+}
+console.log('PASS: Bridge Builder in all three arenas: a real gap without asphalt, BRIDGE OUT until built, slabs drop in one by one within half a second (drawbridge leaves fold down in Coastal), a wrong slab wobbles out, words light up under the wheels with their notes, a kick-ramp hop (none with reduced motion) and planks under cars that reach the open gap first.');

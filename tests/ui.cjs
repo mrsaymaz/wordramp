@@ -45,7 +45,7 @@ global.RallyScene=class{constructor(){this.currentLane=0;}resize(){}setup(){}cle
 let nextFrame;global.requestAnimationFrame=cb=>nextFrame=cb;global.setTimeout=fn=>fn();
 const source=fs.readFileSync('app.js','utf8').replace(/^import .*;\n/gm,'');vm.runInThisContext(source,{filename:'app-ui-test.js'});
 const el=findId,C=window.RallyCore;
-assert.equal(window.WORDRIFT,window.WORDSHIFT,'The old API remains an alias after rebranding');assert.equal(window.WORDRAMP,window.WORDRIFT,'Wordramp is the current API name; older names stay aliases');assert.equal(window.WORDRIFT.version,'0.26.0');assert.equal(window.WORDRIFT.settings.fuel,60,'Existing saved fuel loads after renaming');
+assert.equal(window.WORDRIFT,window.WORDSHIFT,'The old API remains an alias after rebranding');assert.equal(window.WORDRAMP,window.WORDRIFT,'Wordramp is the current API name; older names stay aliases');assert.equal(window.WORDRIFT.version,'0.27.0');assert.equal(window.WORDRIFT.settings.fuel,60,'Existing saved fuel loads after renaming');
 assert(el('pause').closest('.hud-top'));assert(el('fuel-value').closest('.nitro-pod'));assert(el('streak-count').closest('.nitro-pod'));assert(!el('hud').querySelector('.race-meta'));assert(!el('hud').querySelector('.accuracy-pill'));assert(!el('race-position-feedback'));assert(!el('nitro-hint'));
 assert.equal(document.documentElement.style['--play-height'],'672px','Browser controls reserve space even when innerHeight stays 844');
 window.visualViewport.height=396;for(const f of window.visualViewport.listeners.resize)f();assert(document.body.classList.contains('short-viewport'));assert.equal(document.documentElement.style['--play-height'],'396px');

@@ -228,16 +228,18 @@ export function createKit(index){
 }
 // Deterministic per course chunk: a segment always has the same look.
 export function chunkPlan(index,n,ctx={}){
-  const at=n*20+10,h=(k)=>hash(n,k,index),inTunnel=(ctx.tunnels||[]).find(t=>at>t.start&&at<t.end);
+  // ctx.open: ride ranges. Both sides stay open there (sea in Coastal, the low
+  // drop side in Stormcrest), so the scenery never hints at the ride's side.
+  const at=n*20+10,h=(k)=>hash(n,k,index),inTunnel=(ctx.tunnels||[]).find(t=>at>t.start&&at<t.end),open=(ctx.open||[]).some(r=>at>r.start&&at<r.end);
   if(index===0){const v=Math.floor(h(1)*4);return {roadside:{'-1':['street',v],'1':['street',(v+2)%4]},scenery:{'-1':Math.floor(h(2)*VARIANTS),'1':Math.floor(h(3)*VARIANTS)}};}
   if(index===1){
     if(inTunnel){const first=at-20<inTunnel.start,last=at+20>inTunnel.end,kind=first?'portalIn':last?'portalOut':'tunnel';return {roadside:{'-1':[kind,0],'1':[kind,0]},scenery:{'-1':-1,'1':-1},tunnel:true};}
-    const band=Math.floor(at/240),land=hash(band,7,index)<.38,landSide=hash(band,8,index)<.5?-1:1,pier=n%2===0?0:n%4===1?1:2;
+    const band=Math.floor(at/240),land=!open&&hash(band,7,index)<.38,landSide=hash(band,8,index)<.5?-1:1,pier=n%2===0?0:n%4===1?1:2;
     const side=s=>land&&s===landSide?['shore',n%2]:['bridge',pier];
     const scen=s=>land&&s===landSide?5+Math.floor(h(4+s)*3):Math.floor(h(5+s)*5);
     return {roadside:{'-1':side(-1),'1':side(1)},scenery:{'-1':scen(-1),'1':scen(1)},land:land?landSide:0};
   }
-  const band=Math.floor(at/320),cliffSide=hash(band,9,index)<.5?-1:1,v=Math.floor(h(1)*3);
+  const band=Math.floor(at/320),cliffSide=open?0:hash(band,9,index)<.5?-1:1,v=Math.floor(h(1)*3);
   return {roadside:{'-1':[cliffSide===-1?'cliff':'drop',v],'1':[cliffSide===1?'cliff':'drop',(v+1)%3]},scenery:{'-1':Math.floor(h(2)*VARIANTS),'1':Math.floor(h(3)*VARIANTS)}};
 }
 // Tunnels sit in long clear stretches only: never across a task zone,

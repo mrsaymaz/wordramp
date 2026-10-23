@@ -53,6 +53,15 @@ export class Sound {
     if(type==='finish'){[523,659,784,1046,1318].forEach((hz,i)=>{this.voice('triangle',hz,t+i*.11,.4,.07);this.voice('sine',hz/2,t+i*.11,.4,.03);});return;}
     if(type==='go'){[392,587,784].forEach((hz,i)=>this.voice('square',hz,t+i*.08,.18,.035));return;}
     if(type==='tick'){this.voice('square',440,t,.12,.03);return;}
+    // Bridge Builder: a bell note per placed slab (C, E, G), the full chime
+    // when the sentence is complete, softer notes as the wheels cross each
+    // word, a buzz for a wrong block and a stone slam in Stormcrest.
+    const bell=[523,659,784],note=/^(note|word)([123])$/.exec(type);
+    if(note){const hz=bell[+note[2]-1],soft=note[1]==='word';this.voice('triangle',hz,t,soft?.35:.5,soft?.04:.085);this.voice('sine',hz*2,t,soft?.25:.35,soft?.015:.03);return;}
+    if(type==='chime'){[523,659,784,1046].forEach((hz,i)=>{this.voice('triangle',hz,t+i*.09,.6,.08);this.voice('sine',hz*2,t+i*.09,.4,.025);});return;}
+    if(type==='buzz'){this.voice('square',150,t,.22,.035);this.voice('square',142,t+.02,.2,.03);return;}
+    if(type==='slam'){this.voice('sine',70,t,.35,.2,this.master,38);this.burst(t,.25,.12,'lowpass',600);return;}
+    if(type==='hop'){this.voice('sine',220,t,.18,.04,this.master,440);return;}
     const notes={click:[520],build:[493,740],pause:[330],overtake:[740,988]}[type]||[440];
     notes.forEach((hz,i)=>this.voice('sine',hz,t+i*.065,.2,type==='click'?.035:.08));
   }

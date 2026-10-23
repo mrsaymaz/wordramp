@@ -1,4 +1,4 @@
-/* Wordramp v0.26.0 — deterministic gameplay and question adapter. */
+/* Wordramp v0.27.0 — deterministic gameplay and question adapter. */
 (function(root){
   'use strict';
   const ARENAS=[
@@ -19,10 +19,11 @@
     // per correct answer), tighter weaving (6 m behind a slower car, not 16 m)
     // and shorter crosswalk waits, which otherwise made Stormcrest the easiest
     // arena. Challenge rivals read faster and charge Nitro faster than Relaxed.
-    // Sunlit's Sky Coaster landings replace one obstacle stretch per route
-    // choice; its Challenge rivals wait a little longer at crossings to match.
+    // Every ride's landing replaces one obstacle stretch per route choice;
+    // Challenge rivals in Sunlit and Stormcrest (four rides) wait longer at
+    // crossings, and Stormcrest's charge Nitro a little slower, to match.
     relaxed:[{pace:[1.50,1.51,1.55],think:[1.05,.7,.35],readPace:[1.35,1.45,1.53],crossWait:[2.6,1.4,.9],throttle:5.5,accuracy:[.92,.93,.98],lookAhead:3.3,burst:2.8,push:.04,fuel:60,weave:[16,16,6],fuelGain:[10,10,13]},{pace:[1.50,1.51,1.55],think:[.9,.6,.3],readPace:[1.4,1.48,1.54],crossWait:[2.6,1.4,.9],throttle:6,accuracy:[.88,.9,.97],lookAhead:3.1,burst:2.9,push:.04,fuel:60,weave:[16,16,6],fuelGain:[10,10,13]}],
-    challenge:[{pace:[1.505,1.495,1.55],think:.40,readPace:1.50,crossWait:[3.6,2.8,2.2],throttle:7,accuracy:.985,lookAhead:3.7,burst:[2.9,3.0,3.3],push:.06,fuel:60,weave:6,fuelGain:[11,13,24]},{pace:[1.505,1.495,1.55],think:.30,readPace:1.55,crossWait:[3.6,2.8,2.2],throttle:7,accuracy:.95,lookAhead:3.3,burst:[2.9,3.0,3.3],push:.08,fuel:60,weave:6,fuelGain:[11,13,24]}]
+    challenge:[{pace:[1.505,1.495,1.55],think:.40,readPace:1.50,crossWait:[3.6,2.8,3.4],throttle:7,accuracy:.985,lookAhead:3.7,burst:[2.9,3.0,3.3],push:.06,fuel:60,weave:6,fuelGain:[11,13,18]},{pace:[1.505,1.495,1.55],think:.30,readPace:1.55,crossWait:[3.6,2.8,3.4],throttle:7,accuracy:.95,lookAhead:3.3,burst:[2.9,3.0,3.3],push:.08,fuel:60,weave:6,fuelGain:[11,13,18]}]
   };
 
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
@@ -57,50 +58,84 @@
     if(kind==='junction'&&index===14)return 'image';
     return null;
   }
-  // Sky Coaster (Sunlit Boulevard): the correct branch of each route choice
-  // launches onto an elevated coaster track beside the road and glides back
-  // into its lane. Heights are metres above the road at metres along the ride.
-  // The loop, corkscrew and helix are drawn by coaster-track.js on top of this
-  // path, in the flat windows the height profile leaves for them.
-  const COASTER_SPAN=340,COASTER_CLEAR=3,COASTER_OUT=17,COASTER_GAIN=18;
-  const COASTER_HEIGHTS=[[0,0],[10,0],[55,12],[66,13],[96,4],[140,4],[158,8],[172,7],[212,7],[220,7.5],[252,5],[272,4.5],[334,0],[340,0]];
+  // Rides: the correct branch of each route choice leaves the road for a
+  // raised ride beside it and lands back in its lane. Sunlit's three Sky
+  // Coasters escalate (gentle, classic, finale); Coastal has a Sea Jump and
+  // Stormcrest a Cliff Plunge. A layout gives, in ride metres (0..span):
+  // heights above the road ([u, h] or [u, h, slope]); the sideways path;
+  // course pace relative to the road ('w' marks the slow windows, solved so
+  // every ride gains exactly COASTER_GAIN metres, like a shortcut); and the
+  // visual elements coaster-track.js draws on top (loops, corkscrews, helix,
+  // flight, tunnel, half-pipe). Heights stay flat where loops and corkscrews
+  // sit; a centre-lane ride crosses lanes only above COASTER_CLEAR.
+  const COASTER_CLEAR=3,COASTER_GAIN=18;
+  const RIDE_LAYOUTS={
+    gentle:{hint:'The right answer rides the Sky Coaster!',title:'SKY COASTER',tagline:'THE RIGHT ANSWER RIDES IT',span:260,out:17,
+      heights:[[0,0],[10,0],[50,10],[60,10.5],[90,3.5],[110,5],[118,5],[154,4.2],[172,4.5],[196,4.2],[254,0],[260,0]],
+      leave:[[0,0],[50,1]],leaveCentre:[[0,0],[30,0],[72,1]],back:[[0,1],[172,1],[196,0]],
+      pace:[[0,1],[8,1],[26,2],[50,1.6],[62,1.3],[90,2],[112,'w'],[156,'w'],[176,1.4],[220,1.2],[260,1]],
+      elements:[{kind:'helix',start:118,end:154,radius:12,bank:1}]},
+    classic:{hint:'The right answer rides the Sky Coaster!',title:'SKY COASTER',tagline:'THE RIGHT ANSWER RIDES IT',span:340,out:17,
+      heights:[[0,0],[10,0],[55,12],[66,13],[96,4],[140,4],[158,8],[172,7],[212,7],[220,7.5],[252,5],[272,4.5],[334,0],[340,0]],
+      leave:[[0,0],[60,1]],leaveCentre:[[0,0],[34,0],[84,1]],back:[[0,1],[252,1],[276,0]],
+      pace:[[0,1],[8,1],[26,2],[56,1.75],[68,1.3],[96,2],[114,'w'],[124,'w'],[142,1.6],[158,1.25],[172,1.5],[206,1.5],[226,'w'],[242,'w'],[260,1.4],[300,1.25],[340,1]],
+      elements:[{kind:'loop',start:102,end:136,radius:9.5,shift:10,settle:26},{kind:'corkscrew',start:174,end:208},{kind:'helix',start:216,end:252,radius:14,bank:1.1}]},
+    finale:{hint:'The right answer rides the Sky Coaster!',title:'SKY COASTER',tagline:'THE RIGHT ANSWER RIDES IT',span:370,out:17,
+      heights:[[0,0],[10,0],[58,16],[70,17],[104,3.5],[150,3.5],[168,8],[180,7.5],[226,7.5],[234,8],[272,5.5],[292,5],[362,0],[370,0]],
+      leave:[[0,0],[60,1]],leaveCentre:[[0,0],[34,0],[86,1]],back:[[0,1],[276,1],[300,0]],
+      pace:[[0,1],[8,1],[26,2.1],[58,1.8],[72,1.3],[104,2.2],[124,'w'],[134,'w'],[158,1.7],[170,1.3],[184,1.6],[224,1.6],[246,'w'],[262,'w'],[282,1.4],[320,1.25],[370,1]],
+      elements:[{kind:'loop',start:108,end:150,radius:9.5,shift:8,settle:34,count:2},{kind:'corkscrew',start:184,end:226,turns:2},{kind:'helix',start:236,end:272,radius:15,bank:1.15}]},
+    seaJump:{hint:'The right answer flies the Sea Jump!',title:'SEA JUMP',tagline:'THE RIGHT ANSWER FLIES',span:330,out:20,
+      heights:[[0,0],[10,0],[62,7,.27],[150,6,-.33],[176,3.5],[200,6.5],[222,3.8],[244,6.2],[266,4],[322,0],[330,0]],
+      leave:[[0,0],[50,1]],leaveCentre:[[0,0],[46,0],[100,1]],back:[[0,1],[246,1],[270,0]],
+      pace:[[0,1],[8,1],[30,2.2],[62,2.2],[86,'w'],[124,'w'],[150,1.9],[176,1.6],[200,1.3],[222,1.6],[244,1.3],[266,1.5],[300,1.25],[330,1]],
+      elements:[{kind:'air',start:63,end:149},{kind:'roll',start:88,end:128}]},
+    cliffPlunge:{hint:'The right answer drops into the Cliff Plunge!',title:'CLIFF PLUNGE',tagline:'THE RIGHT ANSWER DROPS IN',span:320,out:18,
+      heights:[[0,0],[10,0],[40,6],[96,18],[104,18.5],[136,2.5],[150,2.5],[186,3.5],[196,4],[250,4],[262,4],[316,0],[320,0]],
+      leave:[[0,0],[40,1]],leaveCentre:[[0,0],[28,0],[64,1]],back:[[0,1],[252,1],[274,0]],
+      pace:[[0,1],[8,1],[26,1.7],[40,1.2],[54,'w'],[92,'w'],[104,1.2],[136,2.4],[150,2.2],[186,2],[200,1.6],[250,1.6],[270,1.4],[300,1.2],[320,1]],
+      elements:[{kind:'tunnel',start:140,end:184},{kind:'halfpipe',start:196,end:252,swing:4.5,bank:1}]}
+  };
+  for(const layout of Object.values(RIDE_LAYOUTS)){Object.values(layout).forEach(v=>Array.isArray(v)&&Object.freeze(v));Object.freeze(layout);}
+  // Ride layouts by arena: Sunlit's escalate through its route choices.
+  const RIDE_ORDER=[['gentle','classic','finale'],['seaJump'],['cliffPlunge']];
   const ease=t=>{t=clamp(t,0,1);return t*t*t*(10+t*(-15+6*t));};
+  // Smooth keyframes; a point with a slope ([u, v, slope]) uses a cubic
+  // Hermite segment, as for a jump's takeoff and landing.
   function keyframes(points,u){
     if(u<=points[0][0])return points[0][1];
-    for(let i=1;i<points.length;i++)if(u<=points[i][0]){const [u0,v0]=points[i-1],[u1,v1]=points[i];return v0+(v1-v0)*ease((u-u0)/(u1-u0));}
+    for(let i=1;i<points.length;i++)if(u<=points[i][0]){
+      const [u0,v0,m0]=points[i-1],[u1,v1,m1]=points[i],t=(u-u0)/(u1-u0);
+      if(m0==null&&m1==null)return v0+(v1-v0)*ease(t);
+      const l=u1-u0,a=m0??0,b=m1??0;return (2*t**3-3*t*t+1)*v0+(t**3-2*t*t+t)*l*a+(-2*t**3+3*t*t)*v1+(t**3-t*t)*l*b;
+    }
     return points.at(-1)[1];
   }
-  // Ride position in the reference profile, so a shorter ride keeps its shape.
-  const rideAt=(route,at)=>(at-route.start)*COASTER_SPAN/(route.end-route.start);
-  function coasterHeight(route,at){return route?.coaster&&at>route.start&&at<route.end?keyframes(COASTER_HEIGHTS,rideAt(route,at)):0;}
+  const rideLayout=route=>RIDE_LAYOUTS[route?.layout]||null;
+  const rideTitle=route=>rideLayout(route)?.title||'SHORTCUT';
+  // Ride position in the layout's metres, so a shorter ride keeps its shape.
+  const rideAt=(route,at)=>(at-route.start)*rideLayout(route).span/(route.end-route.start);
+  function coasterHeight(route,at){return route?.coaster&&at>route.start&&at<route.end?keyframes(rideLayout(route).heights,rideAt(route,at)):0;}
   // Lateral offset from the route lane: out beside the road, then back into
   // the lane while still above the traffic. A centre-lane ride waits until it
   // is above the other branches before it swings out.
   function coasterLateral(route,u){
-    const out=route.side*COASTER_OUT-route.lane*3.35,leave=route.lane?keyframes([[0,0],[60,1]],u):keyframes([[0,0],[34,0],[84,1]],u);
-    return out*leave*keyframes([[0,1],[252,1],[276,0]],u)||0;
+    const layout=rideLayout(route),out=route.side*layout.out-route.lane*3.35,leave=keyframes(route.lane?layout.leave:layout.leaveCentre,u);
+    return out*leave*keyframes(layout.back,u)||0;
   }
-  // Course speed along the ride, relative to the road: a launch the moment
-  // the answer is judged right, fast drops, and slower course progress through
-  // the loop and the helix (whose track is far longer than the road beside
-  // it, so the car still looks fast). It starts and ends at road speed, and is
-  // scaled so the ride gains exactly COASTER_GAIN metres, like a shortcut.
-  // The loop and helix windows share one speed, solved so the ride gains
-  // exactly COASTER_GAIN metres; everything else follows the drop. Speed
-  // changes ease over 18 m or more, in step with the loop's own swing.
-  const coasterPaceAt=(window,u)=>keyframes([[0,1],[8,1],[26,2],[56,1.75],[68,1.3],[96,2],[114,window],[124,window],[142,1.6],[158,1.25],[172,1.5],[206,1.5],[226,window],[242,window],[260,1.4],[300,1.25],[340,1]],u);
   const coasterTables=new Map();
-  function coasterTable(span){
-    let table=coasterTables.get(span);if(table)return table;
-    const steps=Math.ceil(span*2),ratios=w=>Array.from({length:steps+1},(_,i)=>1/coasterPaceAt(w,i*COASTER_SPAN/steps));
+  function coasterTable(route){
+    const layout=rideLayout(route),span=route.end-route.start,key=route.layout+':'+span;let table=coasterTables.get(key);if(table)return table;
+    const steps=Math.ceil(span*2),pace=w=>layout.pace.map(([u,v])=>[u,v==='w'?w:v]);
+    const ratios=w=>{const points=pace(w);return Array.from({length:steps+1},(_,i)=>1/keyframes(points,i*layout.span/steps));};
     const physical=w=>{const r=ratios(w);return r.reduce((a,b,i)=>a+(i===0||i===steps?b/2:b),0)*span/steps;};
     // Faster windows always shorten the ride, so bisection is safe.
-    let lo=.2,hi=3;for(let i=0;i<60;i++){const mid=(lo+hi)/2;if(physical(mid)>span-COASTER_GAIN)lo=mid;else hi=mid;}
-    table=ratios((lo+hi)/2);table.step=span/steps;coasterTables.set(span,table);return table;
+    let lo=.15,hi=3;for(let i=0;i<60;i++){const mid=(lo+hi)/2;if(physical(mid)>span-COASTER_GAIN)lo=mid;else hi=mid;}
+    table=ratios((lo+hi)/2);table.step=span/steps;table.window=(lo+hi)/2;coasterTables.set(key,table);return table;
   }
   function routeRatio(route,at){
     if(!route?.coaster)return route?.ratio??1;
-    const table=coasterTable(route.end-route.start),x=clamp((at-route.start)/table.step,0,table.length-1),i=Math.min(table.length-2,Math.floor(x));
+    const table=coasterTable(route),x=clamp((at-route.start)/table.step,0,table.length-1),i=Math.min(table.length-2,Math.floor(x));
     return table[i]+(table[i+1]-table[i])*(x-i);
   }
   // Road-relative course speed on a ride (1 on the road).
@@ -150,11 +185,11 @@
       else t.rows=[{at:t.at,options:t.options,answer:t.answer,correctIndex:t.correctIndex}];
       t.rowIndex=0;t.endAt=t.rows.at(-1).at;t.success=null;t.completed=false;if(t.people){t.stopAt=t.at-16;t.exitEndAt=t.at+36;t.people.forEach((p,j)=>p.at=t.at+j*3);}tasks.push(t);
     }
-    // Sunlit route choices hide a Sky Coaster behind the correct sign. A
-    // centre-lane ride alternates sides; an outer lane rides on its own side.
-    if(arenaIndex===0){let rides=0;tasks.forEach((t,i)=>{
-      if(t.kind!=='junction')return;const room=(tasks[i+1]?.at??ARENAS[0].length)-t.at-240;
-      if(room>=200)t.coaster={span:Math.min(COASTER_SPAN,room),side:t.correctIndex===1?(rides%2?-1:1):t.correctIndex-1};rides++;
+    // Every route choice hides a ride behind the correct sign. A centre-lane
+    // ride alternates sides; an outer lane rides on its own side.
+    {let rides=0;tasks.forEach((t,i)=>{
+      if(t.kind!=='junction')return;const room=(tasks[i+1]?.at??ARENAS[arenaIndex].length)-t.at-240,order=RIDE_ORDER[arenaIndex]||RIDE_ORDER[0],layout=order[Math.min(rides,order.length-1)];
+      if(room>=200)t.coaster={layout,span:Math.min(RIDE_LAYOUTS[layout].span,room),side:t.correctIndex===1?(rides%2?-1:1):t.correctIndex-1};rides++;
     });}
     return tasks;
   }
@@ -243,7 +278,7 @@
   function activateNitro(s){if(!canNitro(s))return false;addNitro(s,s.elapsed);s.notice={type:'nitro',text:s.nitroLevel===3?'MAX CHARGE · HOLD TO BOOST':s.nitroLevel===2?'DOUBLE CHARGE · HOLD TO BOOST':'NITRO LOADED · HOLD TO BOOST',level:s.nitroLevel};return true;}
   function makeRoute(s,t,index,shortcut,ground=false){
     // A ride's ratio is its fastest point (routeRatio varies along the ride).
-    if(t.coaster&&shortcut&&!ground&&index===t.correctIndex){const span=t.coaster.span;return {id:t.id+'-route-exit',taskId:t.id,start:t.at,end:t.at+span,exitEndAt:t.at+span+36,lane:index-1,shortcut:true,coaster:true,side:t.coaster.side,extra:-COASTER_GAIN,ratio:Math.min(...coasterTable(span)),amplitude:0,startedAt:s.elapsed};}
+    if(t.coaster&&shortcut&&!ground&&index===t.correctIndex){const span=t.coaster.span,route={id:t.id+'-route-exit',taskId:t.id,start:t.at,end:t.at+span,exitEndAt:t.at+span+36,lane:index-1,shortcut:true,coaster:true,layout:t.coaster.layout,side:t.coaster.side,extra:-COASTER_GAIN,amplitude:0,startedAt:s.elapsed};route.ratio=Math.min(...coasterTable(route));return route;}
     const next=s.tasks.find(q=>q.at>t.at),span=Math.max(35,Math.min(90,(next?.at??s.arena.length)-t.at-70));
     // Beside a coaster, the centre detour sways away from the raised track.
     return {id:t.id+'-route-exit',taskId:t.id,start:t.at,end:t.at+span,exitEndAt:t.at+span+36,lane:index-1,shortcut,extra:shortcut?-18:32,ratio:(span+(shortcut?-18:32))/span,amplitude:(index-1)*(shortcut?5:11),...(t.coaster?{away:-t.coaster.side}:{}),startedAt:s.elapsed};
@@ -591,11 +626,23 @@
   function setAccelerating(s,active,useLoadedNitro=true){if(!s)return false;s.accelerationHeld=!!active&&['driving','task','resolving'].includes(s.status);s.accelerationUsesNitro=!!useLoadedNitro;s.accelerating=s.accelerationHeld&&!focusCruise(s);if(!s.accelerating&&!s.nitroHeld)s.nitroActive=false;return s.accelerating;}
   function obstacleLane(s,o){return o.lanePos??o.lane;}
   function missed(s,t,detail){t.attempts++;s.streak=0;s.time=Math.max(0,s.time-1.5);const item=detail||{id:t.id,kind:t.kind,type:t.type,prompt:t.kind==='repair'?t.blocks.join(' '):t.prompt,answer:t.answer,tr:t.tr,blocks:t.blocks?.slice()};item.learningKey=detail?'word:'+item.prompt.toLowerCase():learningKey(t);if(!s.review.some(x=>x.id===item.id)){s.review.push(item);if(!t.reviewOf&&!s.reviewLap)s.pendingReview.push(item);}}
+  // Bridge Builder: blocks are placed one at a time. The next block in
+  // sentence order drops into the next gap slot (t.chosen grows); any other
+  // block bounces back out (t.lastWrong for the scene), costing the usual
+  // 1.5 s and first-try credit. Returns 'placed', 'solved', 'wrong' or false.
+  function placeRepairBlock(s,id){
+    const t=s.task;
+    if(s.status!=='task'||t?.kind!=='repair'||t.solved||!Number.isInteger(id)||id<0||id>2||t.chosen.includes(id))return false;
+    if(id!==t.chosen.length){missed(s,t);t.lastWrong={block:id,slot:t.chosen.length,at:s.elapsed,count:(t.lastWrong?.count||0)+1};s.notice={type:'wrong',kind:'repair',text:'Not that block yet · −1.5s'};return 'wrong';}
+    t.chosen=[...t.chosen,id];t.placedAt=[...(t.placedAt||[]),s.elapsed];
+    if(t.chosen.length<3)return 'placed';
+    t.connection=[0,1,2];t.solved=true;finishTask(s,true,'SENTENCE CONNECTED · BRIDGE BUILT');return 'solved';
+  }
   function connectRepair(s,order){
     const t=s.task;
     if(s.status!=='task'||t?.kind!=='repair'||t.solved||!Array.isArray(order)||order.length!==3||new Set(order).size!==3||order.some(x=>!Number.isInteger(x)||x<0||x>2))return false;
     if(!order.every((x,j)=>x===j)){missed(s,t);s.notice={type:'wrong',kind:'repair',text:'Try another connection order · −1.5s'};return false;}
-    t.connection=order.slice();t.chosen=[0,1,2];t.solved=true;finishTask(s,true,'SENTENCE CONNECTED · ROAD REPAIRED');return true;
+    t.connection=order.slice();t.chosen=[0,1,2];t.solved=true;finishTask(s,true,'SENTENCE CONNECTED · BRIDGE BUILT');return true;
   }
   function finishTask(s,right,text){
     const t=s.task;
@@ -607,7 +654,7 @@
     if(t.success){s.correct++;if(t.kind==='junction')s.time+=3;if(t.kind==='light')s.boost=3.5;}
     if(!right){s.slow=2.5;s.detour=2.5;}
     if(t.kind==='pedestrian'){s.exitTask=t.id;s.lane=0;}
-    if(t.kind==='junction'){const index=t.chosenIndex??t.correctIndex,takeShort=right;s.route=makeRoute(s,t,index,takeShort);s.routeHistory.push(s.route);text=takeShort?(s.route.coaster?'SKY COASTER · −18m · +3s':'SHORTCUT · −18m · +3s'):'DETOUR · +32m · YOU CAN CATCH UP';s.lane=index-1;}
+    if(t.kind==='junction'){const index=t.chosenIndex??t.correctIndex,takeShort=right;s.route=makeRoute(s,t,index,takeShort);s.routeHistory.push(s.route);text=takeShort?rideTitle(s.route)+' · −18m · +3s':'DETOUR · +32m · YOU CAN CATCH UP';s.lane=index-1;}
     s.taskIndex++;s.status='resolving';s.resolve=2;
     s.notice={type:right?'correct':'wrong',kind:t.kind,text:text||(right?(t.kind==='light'?'GREEN LIGHT · GO!':t.kind==='pedestrian'?'CROSSWALK CLEAR!':'FAST ROUTE · +3s'):'CORRECT ANSWER: '+t.answer)};
     scheduleReview(s);
@@ -811,5 +858,5 @@
   function stars(s){if(!raceSucceeded(s))return 0;const accuracy=s.correct/s.tasks.length;return accuracy>=.9&&s.collisions<=2?3:accuracy>=.75?2:1;}
   function pause(s){if(!['finished','failed','paused'].includes(s.status)){s.previousStatus=s.status;s.status='paused';s.accelerationHeld=false;s.accelerating=false;s.nitroHeld=false;s.nitroActive=false;return true;}return false;}
   function resume(s){if(s.status==='paused')s.status=s.previousStatus;}
-  root.RallyCore={ARENAS,emojiFor,pictureDistinct,DIFFICULTIES,RIVAL_PROFILES,PEDESTRIAN_WALK_TIME,PEDESTRIAN_ENTRY_TIME,VEHICLE_GAP,TASK_VIEW_DISTANCE,REGULAR_MAX_SPEED,MAX_SPEED,DAMAGE_LIMIT,COLLISION_GRACE,BREAKDOWN_DURATION,IMPACT_RECOVERY,carCondition,NITRO_COST,NITRO_DURATION,NITRO_MAX_STACKS,CHOICE_FOCUS_DISTANCE,nitroSpeed,taskZone,taskRoadZone,apronWidth,roadSpans,vehicleOnRoad,courseCurve,actorX,playerLaneClear,playerLaneBlocker,contactBump,learningPaceProtected,focusCruise,steeringLocked,repairCruise,canShortenFocus,canNitro,canEngageNitro,setNitroHeld,engageNitro,activateNitro,makeRoute,routeOffset,groundRoutes,routeRatio,coasterPace,coasterHeight,coasterLateral,COASTER_SPAN,deckLevel,COASTER_CLEAR,COASTER_GAIN,raceOrder,raceFailed,raceSucceeded,alternateReview,createReviewLap,exitAssist,pedestrianReady,crosswalkOccupied,crosswalkTimeLeft,random,shuffle,createRace,makeTasks,tick,move,choose,setAccelerating,currentRow,connectRepair,sortPerson,answer,stars,pause,resume,obstacleLane,clamp};
+  root.RallyCore={ARENAS,emojiFor,pictureDistinct,DIFFICULTIES,RIVAL_PROFILES,PEDESTRIAN_WALK_TIME,PEDESTRIAN_ENTRY_TIME,VEHICLE_GAP,TASK_VIEW_DISTANCE,REGULAR_MAX_SPEED,MAX_SPEED,DAMAGE_LIMIT,COLLISION_GRACE,BREAKDOWN_DURATION,IMPACT_RECOVERY,carCondition,NITRO_COST,NITRO_DURATION,NITRO_MAX_STACKS,CHOICE_FOCUS_DISTANCE,nitroSpeed,taskZone,taskRoadZone,apronWidth,roadSpans,vehicleOnRoad,courseCurve,actorX,playerLaneClear,playerLaneBlocker,contactBump,learningPaceProtected,focusCruise,steeringLocked,repairCruise,canShortenFocus,canNitro,canEngageNitro,setNitroHeld,engageNitro,activateNitro,makeRoute,routeOffset,groundRoutes,routeRatio,coasterPace,coasterHeight,coasterLateral,RIDE_LAYOUTS,RIDE_ORDER,rideLayout,rideTitle,deckLevel,COASTER_CLEAR,COASTER_GAIN,raceOrder,raceFailed,raceSucceeded,alternateReview,createReviewLap,exitAssist,pedestrianReady,crosswalkOccupied,crosswalkTimeLeft,random,shuffle,createRace,makeTasks,tick,move,choose,setAccelerating,currentRow,connectRepair,placeRepairBlock,sortPerson,answer,stars,pause,resume,obstacleLane,clamp};
 })(typeof window==='undefined'?globalThis:window);

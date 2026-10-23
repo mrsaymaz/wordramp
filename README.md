@@ -42,7 +42,7 @@ The release keeps the project layout intact, includes prebuilt `dist`, and
 excludes dependencies, local hosting identity and compiled test files.
 
 See `dist/QUICK_START.txt` for controls and `dist/ULTI_INTEGRATION.md` for the
-English League connection. Version 0.26.0 adds a launch, a loop, a corkscrew and a helix to the Sky Coaster, which arrived in 0.25.0: in Sunlit
+English League connection. Version 0.27.0 puts a ride behind every route choice (escalating Sky Coasters in Sunlit, a Sea Jump on the Coastal Overpass, a Cliff Plunge in Stormcrest) and turns road repairs into a Bridge Builder; 0.26.0 added the launch, loop, corkscrew and helix to the Sky Coaster, which arrived in 0.25.0: in Sunlit
 Boulevard the right answer at a route choice rides a raised coaster track
 (`coaster-track.js` builds it; the ride itself lives in `public/game-core.js`).
 Version 0.24.0 rebuilt the cars and the three arenas, fixed the phone HUD

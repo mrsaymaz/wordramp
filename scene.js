@@ -4,7 +4,7 @@ import {createPerformanceBudget,samplePerformance} from './presentation.js';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {createDrivingFeel,updateDrivingFeel} from './driving-feel.js';
 import {forkBounds,forkSurface} from './route-road.js';
-import {rideFrames,sweep,supportPlan,framePose,DETOURS,DECK_SECTION,railSection,TRACK_PASS,TRACK_HALF} from './coaster-track.js';
+import {rideFrames,sweep,supportPlan,framePose,frameRuns,DECK_SECTION,railSection,wallSection,ribSection,TRACK_PASS,TRACK_HALF} from './coaster-track.js';
 import {vehicleParts,TRAFFIC_KINDS} from './vehicle-geometry.js';
 import {PartSet} from './parts.js';
 import {LOOKS,createKit,chunkPlan,planTunnels,skyDome,backdrop,landmarkPlan,landmarkGeometry,rotorGeometry} from './world.js';
@@ -28,6 +28,10 @@ const geo={arch:new THREE.TorusGeometry(.48,.07,5,18,Math.PI),rock:new THREE.Ico
 function mesh(group,shape,color,x,y,z,sx=1,sy=1,sz=1,roughness=.7,metalness=0,emissive=0){let m=new THREE.Mesh(geo[shape],mat(color,roughness,metalness,emissive));m.position.set(x,y,z);m.scale.set(sx,sy,sz);group.add(m);return m;}
 function compact(group){group.updateMatrixWorld(true);const inverse=group.matrixWorld.clone().invert();let byMat=new Map(),paint=new Set();group.traverse(m=>{if(m.isMesh){if(m.userData.paint)paint.add(m.material);let a=byMat.get(m.material)||[];a.push(m.geometry.clone().applyMatrix4(m.matrixWorld.clone().premultiply(inverse)));byMat.set(m.material,a);}});let result=new THREE.Group();for(let [material,geos]of byMat){if(geos.some(g=>g.index)&&geos.some(g=>!g.index))for(let i=0;i<geos.length;i++)if(geos[i].index){const old=geos[i];geos[i]=old.toNonIndexed();old.dispose();}let merged=mergeGeometries(geos);let m=new THREE.Mesh(merged,material);m.receiveShadow=true;m.castShadow=true;m.userData.paint=paint.has(material);result.add(m);geos.forEach(g=>g.dispose());}return result;}
 function canvasTexture(draw,w=512,h=1024){let c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);let t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;}
+// Bridge Builder: three 16 m word slabs span the repair gap.
+const BRIDGE_SLOT=16,BRIDGE_LENGTH=48;
+function wordTexture(word){return canvasTexture((c,w,h)=>{c.clearRect(0,0,w,h);c.textAlign='center';c.textBaseline='middle';let size=150;c.font='900 '+size+'px sans-serif';while((c.measureText(word)?.width||0)>w-60&&size>40){size-=6;c.font='900 '+size+'px sans-serif';}c.lineWidth=14;c.strokeStyle='rgba(20,34,52,.85)';c.strokeText(word,w/2,h/2);c.fillStyle='#ffffff';c.fillText(word,w/2,h/2);},1024,320);}
+function stripeTexture(text){return canvasTexture((c,w,h)=>{for(let x=-h;x<w;x+=56){c.fillStyle='#e8443a';c.beginPath();c.moveTo(x,0);c.lineTo(x+28,0);c.lineTo(x+28+h,h);c.lineTo(x+h,h);c.fill();}c.fillStyle='#f6f1e7';c.fillRect(24,h*.2,w-48,h*.6);c.fillStyle='#c62f27';c.textAlign='center';c.textBaseline='middle';c.font='900 '+Math.round(h*.42)+'px sans-serif';c.fillText(text,w/2,h/2+4);},1024,256);}
 function signTexture(text,color='#ffd976',sub=''){return canvasTexture((c,w,h)=>{c.fillStyle='#192c43';c.fillRect(0,0,w,h);c.strokeStyle=color;c.lineWidth=12;c.strokeRect(12,12,w-24,h-24);c.textAlign='center';c.fillStyle=color;c.font='900 120px sans-serif';c.fillText(text,w/2,145);if(sub){c.fillStyle='#fff';c.font='bold 28px sans-serif';c.fillText(sub,w/2,207);}},512,256);}
 function liveryPlate(key,label,color){if(!liveryPlates.has(key)){const texture=canvasTexture((c,w,h)=>{c.fillStyle='#11283b';c.fillRect(0,0,w,h);c.strokeStyle='#'+color.toString(16).padStart(6,'0');c.lineWidth=12;c.strokeRect(7,7,w-14,h-14);c.fillStyle='#fff5dd';c.font='900 142px sans-serif';c.textAlign='center';c.fillText(label,w/2,163);c.font='bold 22px sans-serif';c.fillStyle='#a9c9d9';c.fillText('WORDRAMP',w/2,212);},192,256);liveryPlates.set(key,new THREE.MeshStandardMaterial({map:texture,roughness:.56,metalness:.08}));}return liveryPlates.get(key);}
 export class RallyScene{
@@ -165,7 +169,7 @@ export class RallyScene{
   }
   // Rebuild one recycled chunk at its course position (only behind the camera).
   rebuildChunk(g,n,at){
-    const plan=chunkPlan(this.index,n,{tunnels:this.tunnels});g.userData.plan=plan;
+    const plan=chunkPlan(this.index,n,{tunnels:this.tunnels,open:this.coasterRanges});g.userData.plan=plan;
     for(const [i,road]of g.userData.roadSurfaces.entries()){road.geometry.dispose();road.geometry=this.mainRoadGeometry(at,i===1);road.userData.flatPositions=road.geometry.attributes.position.array.slice();road.userData.flatNormals=road.geometry.attributes.normal.array.slice();}
     for(const m of g.userData.roadside){const [name,v]=plan.roadside[m.userData.side],list=this.kit.roadside[name],src=list[v%list.length][m.userData.side];m.geometry.dispose();m.geometry=src.clone();m.userData.flatPositions=src.attributes.position.array;m.userData.flatNormals=src.attributes.normal.array;m.castShadow=!!plan.tunnel;}
     const edgeMax={'-1':5.4,'1':5.4};for(let z=-10;z<=10;z+=2.5)for(const s of [-1,1])edgeMax[s]=Math.max(edgeMax[s],this.sceneryEdge(at-z,s));
@@ -178,19 +182,21 @@ export class RallyScene{
     }
   }
   // Buildings and landmarks keep clear of a coaster track on either side.
-  sceneryEdge(at,side){let clear=0;for(const r of this.coasterRanges||[])if(at>r.start&&at<r.end)clear=Math.max(clear,at>r.wideStart&&at<r.wideEnd?54:27);return Math.max(this.edge(at,side),clear);}
+  sceneryEdge(at,side){let clear=0;for(const r of this.coasterRanges||[])if(at>r.start&&at<r.end)clear=Math.max(clear,r.wide.some(w=>at>w.start&&at<w.end)?54:27);return Math.max(this.edge(at,side),clear);}
   curve(at){return window.RallyCore.courseCurve(this.index,at);}
   heading(at,route){const C=window.RallyCore;return -Math.atan((this.curve(at+1)+C.routeOffset(route,at+1)-this.curve(at-1)-C.routeOffset(route,at-1))/2);}
   prepareCourse(state){
     if(this.courseState===state&&this.courseRevision===state?.taskRevision)return;
     this.courseState=state;this.courseRevision=state?.taskRevision;this.roadReservations=[];this.forkRanges=[];this.apronRanges=[];
+    // Bridge Builder: the road itself is missing over each repair gap.
+    this.gapRanges=(state?.tasks||[]).filter(t=>t.kind==='repair').map(t=>({start:t.at,end:t.at+BRIDGE_LENGTH}));
     for(const t of state?.tasks||[]){const zone=window.RallyCore.taskZone(t);this.roadReservations.push({start:zone.start-80,end:zone.end+80});this.apronRanges.push({start:zone.start-70,fullStart:zone.start-30,fullEnd:zone.end+25,end:zone.end+80});
       // The same landing shoulder as the core (see landingZone).
       if(t.coaster){const at=t.at+t.coaster.span;this.apronRanges.push({start:at-110,fullStart:at-70,fullEnd:at+45,end:at+100});}if(t.kind==='junction')this.forkRanges.push(forkBounds(window.RallyCore.makeRoute(state,t,0,true,true)));}
     const C=window.RallyCore;this.forkRoutes=(state?.tasks||[]).filter(t=>t.kind==='junction').map(t=>{const routes=C.groundRoutes(state,t);return {routes,bounds:forkBounds(routes[0])};});
     // Buildings step back on both sides of a Sky Coaster, so neither the track
     // nor the cleared side hints at the answer before it is judged.
-    this.coasterRanges=(state?.tasks||[]).filter(t=>t.coaster).map(t=>{const at=u=>t.at+u*t.coaster.span/C.COASTER_SPAN,helix=DETOURS.find(d=>d.kind==='helix');return {start:t.at-40,end:t.at+t.coaster.span+30,wideStart:at(helix.start-12),wideEnd:at(helix.end+12)};});
+    this.coasterRanges=(state?.tasks||[]).filter(t=>t.coaster).map(t=>{const layout=C.RIDE_LAYOUTS[t.coaster.layout],at=u=>t.at+u*t.coaster.span/layout.span;return {start:t.at-40,end:t.at+t.coaster.span+30,wide:layout.elements.filter(d=>d.kind==='helix').map(d=>({start:at(d.start-12),end:at(d.end+12)}))};});
     // Tunnels avoid every task zone, spectator stand and the finish straight.
     const zones=(state?.tasks||[]).map(t=>C.taskZone(t)),blocked=zones.map(z=>({start:z.start-80,end:z.reach+80}));
     const length=state?.arena?.length??C.ARENAS[this.index].length;blocked.push({start:length-260,end:length+200});
@@ -204,10 +210,10 @@ export class RallyScene{
   }
   mainRoadGeometry(at,shoulder=false){
     const start=at-10,end=at+10,ats=new Set();for(let i=0;i<=8;i++)ats.add(start+i*2.5);
-    for(const r of this.forkRanges||[])for(const edge of [r.start,r.end])if(edge>start&&edge<end)ats.add(edge);
+    for(const r of [...this.forkRanges||[],...this.gapRanges||[]])for(const edge of [r.start,r.end])if(edge>start&&edge<end)ats.add(edge);
     const rows=[...ats].sort((a,b)=>a-b),positions=[],uvs=[],indices=[],normals=[],stride=shoulder?4:2;
     rows.forEach(p=>{const width=this.apronWidth(p),xs=shoulder?[-width,-5.4,5.4,width]:[-5.4,5.4];for(const x of xs){positions.push(x,0,at-p);normals.push(0,1,0);uvs.push(shoulder?x/10.8:x<0?0:1,p/20);}});
-    for(let i=0;i<rows.length-1;i++){const mid=(rows[i]+rows[i+1])/2;if(this.forkRanges?.some(r=>mid>r.start&&mid<r.end)||shoulder&&this.apronWidth(mid)<5.40001)continue;for(let j=0;j<stride;j+=2){const n=i*stride+j;indices.push(n,n+1,n+stride,n+stride,n+1,n+stride+1);}}
+    for(let i=0;i<rows.length-1;i++){const mid=(rows[i]+rows[i+1])/2;if(this.forkRanges?.some(r=>mid>r.start&&mid<r.end)||!shoulder&&this.gapRanges?.some(r=>mid>r.start&&mid<r.end)||shoulder&&this.apronWidth(mid)<5.40001)continue;for(let j=0;j<stride;j+=2){const n=i*stride+j;indices.push(n,n+1,n+stride,n+stride,n+1,n+stride+1);}}
     const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));g.setIndex(indices);return g;
   }
   clearGate(){
@@ -225,24 +231,34 @@ export class RallyScene{
   // Sky Coaster: twin banked tracks on white supports, in 40 m pieces that
   // rise out of the ground once the route choice is judged. One vertex-coloured
   // mesh per piece keeps the draw calls low.
+  // Rides (Sky Coaster, Sea Jump, Cliff Plunge): twin banked tracks in the
+  // arena's style, in 40 m pieces that rise out of the ground once the route
+  // choice is judged. One vertex-coloured mesh per piece keeps draw calls low.
   buildCoaster(g,task,state){
-    const C=window.RallyCore,route=C.makeRoute(state,task,task.correctIndex,true),reduced=!!this.preferences.reduced,old=g.userData.coaster;
+    const C=window.RallyCore,route=C.makeRoute(state,task,task.correctIndex,true),layout=C.rideLayout(route),reduced=!!this.preferences.reduced,old=g.userData.coaster;
     if(old){g.remove(old.group);old.group.traverse(m=>{if(m.isMesh)m.geometry.dispose();});}
-    const frames=rideFrames({route,curve:at=>this.curve(at),offset:C.routeOffset,height:C.coasterHeight,origin:task.at,span:C.COASTER_SPAN,reduced});
+    const frames=rideFrames({route,curve:at=>this.curve(at),offset:C.routeOffset,height:C.coasterHeight,origin:task.at,span:layout.span,elements:layout.elements,reduced});
     const centre=at=>this.curve(at)-this.curve(task.at),supports=supportPlan(frames,centre,(at,side)=>this.edge(at,side));
+    // Sunlit: steel and red rails; Coastal: white deck, teal rails, pylons into
+    // the sea; Stormcrest: timber deck, steel rails, dark rock tunnel.
+    const style=[{deck:0x3d4f63,rail:0xe8574a,support:0xf1efe8,base:0,rock:0x6d6a66},{deck:0xe3e9ec,rail:0x26aebc,support:0xb7c3c8,base:-3.3,rock:0x7d8a8c},{deck:0x6e5440,rail:0x9aa5ad,support:0x574d45,base:0,rock:0x55504b}][this.index]||{deck:0x3d4f63,rail:0xe8574a,support:0xf1efe8,base:0,rock:0x6d6a66};
     const group=new THREE.Group(),pieces=[],colour=new THREE.Color(),piece=40,battery=this.preferences.graphics==='battery';
     for(let start=route.start;start<route.end-1;start+=piece){
-      const slice=frames.filter((f,i)=>f.at>=start-1e-6&&f.at<=start+piece+.51&&f.p[1]>.12&&(!battery||i%2===0||f.inDetour)),parts=[];
+      const slice=frames.filter((f,i)=>f.at>=start-1e-6&&f.at<=start+piece+.51&&(!battery||i%2===0||f.inDetour)),parts=[];
       const add=(geometry,hex)=>{const count=geometry.positions.length/3,colours=new Float32Array(count*3);colour.setHex(hex);for(let i=0;i<count;i++)colours.set([colour.r,colour.g,colour.b],i*3);parts.push({...geometry,colours});};
-      if(slice.length>1)for(const track of [0,route.side*TRACK_PASS]){
-        add(sweep(slice,DECK_SECTION,track),0x3d4f63);
-        for(const rail of [-TRACK_HALF+.12,TRACK_HALF-.12])add(sweep(slice,railSection(rail),track),0xe8574a);
+      // A flight leaves a real gap; a half-pipe swaps the rails for walls.
+      for(const run of frameRuns(slice,f=>!f.air&&f.p[1]>.12))for(const track of [0,route.side*TRACK_PASS]){
+        add(sweep(run,DECK_SECTION,track),style.deck);
+        for(const part of frameRuns(run,f=>!f.halfpipe))for(const rail of [-TRACK_HALF+.12,TRACK_HALF-.12])add(sweep(part,railSection(rail),track),style.rail);
+        for(const part of frameRuns(run,f=>f.halfpipe))for(const rail of [-TRACK_HALF,TRACK_HALF])add(sweep(part,wallSection(rail),track),style.rail);
       }
+      // Rock ribs every few metres: a tunnel the camera can still see into.
+      const ribs=slice.filter(f=>f.tunnel);for(let i=0;i<ribs.length-3;i+=9)add(sweep(ribs.slice(i,i+3),ribSection(route.side*TRACK_PASS/2),0),style.rock);
       const box=(x0,x1,y0,y1,z,depth)=>{const xs=[x0,x1],ys=[y0,y1],zs=[z-depth/2,z+depth/2],positions=[];for(const x of xs)for(const y of ys)for(const zz of zs)positions.push(x,y,zz);
         return {positions,indices:[0,1,3,0,3,2,4,6,7,4,7,5,0,4,5,0,5,1,2,3,7,2,7,6,0,2,6,0,6,4,1,5,7,1,7,3]};};
       for(const p of supports.filter(p=>p.at>=start&&p.at<start+piece)){
-        if(p.kind==='column')add(box(p.x-.32,p.x+.32,0,p.top,p.z,.64),0xf1efe8);
-        else{for(const x of [p.left,p.right])add(box(x-.3,x+.3,0,p.top,p.z,.6),0xf1efe8);add(box(p.left-.3,p.right+.3,p.top-.55,p.top,p.z,.7),0xf1efe8);}
+        if(p.kind==='column')add(box(p.x-.32,p.x+.32,style.base,p.top,p.z,.64),style.support);
+        else{for(const x of [p.left,p.right])add(box(x-.3,x+.3,style.base,p.top,p.z,.6),style.support);add(box(p.left-.3,p.right+.3,p.top-.55,p.top,p.z,.7),style.support);}
       }
       if(!parts.length)continue;
       const positions=[],colours=[],indices=[];for(const part of parts){const offset=positions.length/3;positions.push(...part.positions);colours.push(...part.colours);for(const i of part.indices)indices.push(i+offset);}
@@ -253,7 +269,7 @@ export class RallyScene{
     }
     // A billboard before the fork promises the ride without showing the lane.
     if(!old){const board=new THREE.Group();for(const x of [-1.4,1.4])mesh(board,'cylinder',0x58707f,x,3.2,0,.12,6.4,.12);
-      const tex=signTexture('SKY COASTER','#ffd976','THE RIGHT ANSWER RIDES IT');g.userData.textures.push(tex);const material=new THREE.MeshBasicMaterial({map:tex});g.userData.ownMaterials.push(material);
+      const tex=signTexture(layout.title,'#ffd976',layout.tagline);g.userData.textures.push(tex);const material=new THREE.MeshBasicMaterial({map:tex});g.userData.ownMaterials.push(material);
       const face=new THREE.Mesh(new THREE.PlaneGeometry(5.4,2.7),material);face.position.set(0,5.4,.15);board.add(face);
       const at=task.at-130;board.position.set(this.curve(at)-this.curve(task.at)+this.edge(at,1)+3.2,0,130);board.rotation.y=-.35;g.add(board);}
     g.add(group);g.userData.coaster={group,pieces,frames,route,reduced,revealedAt:old?.revealedAt??null};
@@ -281,8 +297,103 @@ export class RallyScene{
     const position=new THREE.Vector3(pose.position[0]+gateX,pose.position[1]*(fallback?1:rise),pose.position[2]+gateZ);
     const basis=new THREE.Matrix4().makeBasis(new THREE.Vector3(...pose.right),new THREE.Vector3(...pose.up),new THREE.Vector3(...pose.forward).negate()),quaternion=new THREE.Quaternion().setFromRotationMatrix(basis);
     if(rise<1&&fallback){position.lerpVectors(fallback.position,position,rise);quaternion.slerpQuaternions(fallback.quaternion,quaternion,rise);}
-    return {position,quaternion,forward:pose.forward,up:pose.up,speed:pose.speed*C.coasterPace(route,at),detour:pose.detour*rise,kind:pose.kind,side:route.side,rise};
+    return {position,quaternion,forward:pose.forward,up:pose.up,speed:pose.speed*C.coasterPace(route,at),detour:pose.detour*rise,wide:pose.wide*rise,kind:pose.kind,air:pose.air,side:route.side,rise};
   }
+  // Bridge Builder: a real gap with a BRIDGE OUT board. Each word slab drops
+  // in as its block is connected (Sunlit: a crane lowers it; Coastal: a
+  // drawbridge leaf folds down; Stormcrest: a carved stone slams in), a wrong
+  // block's slab wobbles and swings back out, the words light up under the
+  // wheels, and a kick ramp on the last slab gives a small hop.
+  buildBridge(g,task){
+    const curveAt=at=>this.curve(at)-this.curve(task.at),heading=at=>-Math.atan((this.curve(at+1)-this.curve(at-1))/2),arena=this.index;
+    const style=[{slab:0x8e979e,pit:0x1d1815,wall:0x3a3532,depth:5},{slab:0x7f939e,pit:0,wall:0xc9d1d5,depth:1.4},{slab:0x7d746c,pit:0x221f1c,wall:0x37322e,depth:16}][arena]||{slab:0x8e979e,pit:0x1d1815,wall:0x3a3532,depth:5};
+    // The hole follows the road's bend in 4 m pieces. Over land it is a dark
+    // shaded void just under the road (the ground sits right below it); on the
+    // Coastal bridge it opens to the sea, with the deck's cut edges showing.
+    const voidTex=canvasTexture((c,w,h)=>{const grad=c.createLinearGradient(0,0,w,0);grad.addColorStop(0,'#2b2622');grad.addColorStop(.18,'#0d0b0a');grad.addColorStop(.82,'#0d0b0a');grad.addColorStop(1,'#2b2622');c.fillStyle=grad;c.fillRect(0,0,w,h);},128,8);g.userData.textures.push(voidTex);
+    const voidMat=new THREE.MeshBasicMaterial({map:voidTex,color:style.pit||0x0d0b0a});g.userData.ownMaterials.push(voidMat);
+    for(let at=task.at;at<task.at+BRIDGE_LENGTH-1e-6;at+=4){const mid=at+2,x=curveAt(mid),z=task.at-mid,r=heading(mid);
+      if(arena===1){for(const side of [-1,1]){const wall=mesh(g,'box',style.wall,x+side*5.5,-style.depth/2,z,.25,style.depth,4.05);wall.rotation.y=r;}}
+      else{const hole=new THREE.Mesh(new THREE.PlaneGeometry(10.8,4.05),voidMat);hole.rotation.set(-Math.PI/2,0,r);hole.position.set(x,-.035,z);g.add(hole);}}
+    if(arena===1)for(const z of [0,-BRIDGE_LENGTH]){const end=mesh(g,'box',style.wall,curveAt(task.at-z),-style.depth/2,z,10.8,style.depth,.3);end.rotation.y=heading(task.at-z);}
+    // A hazard edge at the drop, and BRIDGE OUT signs at both road sides
+    // (never across the road, so the open gap stays visible behind them).
+    const hazard=canvasTexture((c,w,h)=>{for(let x=-h;x<w;x+=48){c.fillStyle='#f2c230';c.fillRect(x,0,24,h);c.fillStyle='#1d1d1d';c.fillRect(x+24,0,24,h);}},512,32);hazard.wrapS=THREE.RepeatWrapping;g.userData.textures.push(hazard);
+    const edgeMat=new THREE.MeshBasicMaterial({map:hazard});g.userData.ownMaterials.push(edgeMat);const edge=new THREE.Mesh(new THREE.PlaneGeometry(10.8,.7),edgeMat);edge.rotation.x=-Math.PI/2;edge.position.set(0,.05,.35);g.add(edge);g.userData.barriers.push(edge);
+    const tex=stripeTexture('BRIDGE OUT');g.userData.textures.push(tex);const boardMat=new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide});g.userData.ownMaterials.push(boardMat);
+    for(const side of [-1,1]){const board=new THREE.Mesh(new THREE.PlaneGeometry(4.4,1.1),boardMat);board.position.set(side*7.4,2.5,4);board.rotation.y=-side*.45;g.add(board);g.userData.barriers.push(board);g.userData.barriers.push(mesh(g,'cylinder',0xd9dde0,side*7.4,1.2,4.1,.1,2.4,.1));}
+    const wordMats=task.blocks.map(word=>{const t=wordTexture(word);g.userData.textures.push(t);const m=new THREE.MeshBasicMaterial({map:t,transparent:true,color:0xb7c7d4,depthWrite:false});g.userData.ownMaterials.push(m);return m;});
+    const makeSlab=(j,word)=>{const slab=new THREE.Group(),at=task.at+j*BRIDGE_SLOT+8;slab.position.set(curveAt(at),.12,-j*BRIDGE_SLOT);slab.rotation.y=heading(at);
+      // Coastal slots are bascule spans: two leaves hinged at the slot ends.
+      const near=new THREE.Group(),far=new THREE.Group();far.position.z=-15.8;slab.add(near,far);slab.userData.leaves=arena===1?[near,far]:null;
+      if(arena===1){mesh(near,'box',style.slab,0,-.35,-3.95,10.4,.5,7.9);mesh(far,'box',style.slab,0,-.35,3.95,10.4,.5,7.9);for(const leaf of [near,far])mesh(leaf,'box',0x26aebc,0,-.05,leaf===near?-7.85:7.85,10.4,.12,.18);}
+      else mesh(near,'box',style.slab,0,-.35,-7.9,10.4,.5,15.8);
+      const face=new THREE.Mesh(new THREE.PlaneGeometry(9.4,2.94),word);face.rotation.x=-Math.PI/2;face.position.set(0,-.07,arena===1?-4.2:-7.9);near.add(face);slab.userData.face=face;
+      if(j===task.blocks.length-1){const kick=mesh(far,'box',0xf1c35a,0,-.05,1.2,10.4,.3,2.6);kick.rotation.x=.16;}
+      g.add(slab);return slab;};
+    const slabs=task.blocks.map((_,j)=>makeSlab(j,wordMats[j]));
+    // The bouncing slab of a wrong block (its word is set when it appears).
+    const ghost=makeSlab(0,new THREE.MeshBasicMaterial({transparent:true,color:0xffc2b8,depthWrite:false}));g.userData.ownMaterials.push(ghost.userData.face.material);ghost.visible=false;
+    const bridge={slabs,ghost,wordMats,placed:0,placedAt:[],lit:[],lastWrong:0,style,planks:[]},bridge0=bridge;
+    if(arena===0){
+      // A road crew: a crane on the right, three cheering workers on the left.
+      const side=1,edge=this.edge(task.at+24,side)+5,crane=new THREE.Group();crane.position.set(curveAt(task.at+24)+side*edge,0,-24);
+      mesh(crane,'box',0xf0b532,0,8,0,.8,16,.8);const jib=new THREE.Group();jib.position.y=16;crane.add(jib);mesh(jib,'box',0xf0b532,-side*8,0,0,18,.6,.6);mesh(jib,'box',0x3c4b57,side*3,-.5,0,3,1.4,1.4);
+      const cable=mesh(crane,'box',0x2d3742,0,0,0,.06,1,.06);cable.visible=false;g.add(crane);bridge.crane={crane,jib,cable,side,yaw:0};
+      bridge.workers=[0,1,2].map(i=>{const w=new THREE.Group();w.position.set(curveAt(task.at+6+i*14)-(this.edge(task.at+6+i*14,-1)+2.4),0,-6-i*14);mesh(w,'box',0xff7a1a,0,1.2,0,.6,.9,.4);mesh(w,'box',0x2f3e52,0,.45,0,.5,.8,.35);mesh(w,'sphere',0xd6a37f,0,1.9,0,.24,.26,.24);mesh(w,'sphere',0xffd23a,0,2.08,0,.27,.14,.27);w.rotation.y=Math.PI/2;g.add(w);return w;});
+    }else if(arena===1){
+      // Drawbridge leaves wait raised (blank); spray rises from the sea below.
+      slabs.forEach(slab=>{this.placeSlab(bridge0,slab,0,false);slab.userData.face.visible=false;});
+      bridge.spray=[0,1,2,3].map(i=>{const m=mesh(g,'sphere',0xffffff,-3+i*2,-2.8,-8-i*11,.9,.5,.9,.2);m.material=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.45,depthWrite:false});g.userData.ownMaterials.push(m.material);return m;});
+    }else{
+      const dust=mesh(g,'sphere',0xd9d4cb,0,.6,-8,1,1,1);dust.material=new THREE.MeshBasicMaterial({color:0xd9d4cb,transparent:true,opacity:0,depthWrite:false});g.userData.ownMaterials.push(dust.material);dust.visible=false;bridge.dust={mesh:dust,at:-Infinity};
+    }
+    if(arena!==1)slabs.forEach(slab=>{slab.visible=false;});
+    for(let i=0;i<4;i++){const plank=mesh(g,'box',0x7d8b95,0,-.05,0,2.8,.22,BRIDGE_SLOT-.4);plank.visible=false;bridge.planks.push(plank);}
+    g.userData.bridge=bridge;g.userData.repairSlabs=slabs;
+  }
+  // Slab j's resting pose, and its pose t (0..1) of the way through placing.
+  placeSlab(bridge,slab,t,reduced){
+    const e=1-(1-t)**3;
+    if(this.index===1){const raised=1.2*(1-(reduced?t:e));slab.position.y=.12;slab.rotation.x=0;if(slab.userData.leaves){slab.userData.leaves[0].rotation.x=raised;slab.userData.leaves[1].rotation.x=-raised;}}
+    else if(this.index===2){slab.rotation.x=0;slab.position.y=.12+(reduced?4*(1-t):16*(1-t*t));}
+    else{slab.rotation.x=0;slab.position.y=.12+(reduced?4:13)*(1-e);}
+  }
+  updateBridge(g,t,state,dt){
+    const bridge=g.userData.bridge;if(!bridge)return;const reduced=!!this.preferences.reduced,chosen=t.chosen?.length||0;
+    // Newly placed slabs animate in; slabs solved all at once appear in place.
+    if(chosen>bridge.placed){const bulk=chosen-bridge.placed>1;for(let j=bridge.placed;j<chosen;j++)bridge.placedAt[j]=bulk?-Infinity:this.clock;bridge.placed=chosen;}
+    const duration=this.index===2?.32:.42;
+    bridge.slabs.forEach((slab,j)=>{
+      if(j>=chosen){if(this.index===1){slab.visible=true;this.placeSlab(bridge,slab,0,reduced);slab.userData.face.visible=false;}else slab.visible=false;return;}
+      const p=THREE.MathUtils.clamp((this.clock-bridge.placedAt[j])/duration,0,1);slab.visible=true;slab.userData.face.visible=true;this.placeSlab(bridge,slab,p,reduced);
+      if(p>=1&&!bridge.seated?.[j]){(bridge.seated||=[])[j]=true;if(this.index===2&&bridge.placedAt[j]>-Infinity){this.onCue?.('slam');if(bridge.dust){bridge.dust.at=this.clock;bridge.dust.mesh.position.copy(slab.position).add(new THREE.Vector3(0,.4,-7.9));}if(!reduced)this.shake=.35;}}
+    });
+    // The crane follows the slab it is lowering.
+    if(bridge.crane){const c=bridge.crane,j=Math.max(0,Math.min(2,chosen-1)),slab=bridge.slabs[j],target=Math.atan2(c.side*(slab.position.z-7.9-c.crane.position.z),-c.side*(slab.position.x-c.crane.position.x));c.yaw=THREE.MathUtils.damp(c.yaw,chosen?target:0,6,dt);c.jib.rotation.y=c.yaw;
+      const lowering=chosen&&this.clock-bridge.placedAt[j]<duration+.15&&slab.position.y>.2;c.cable.visible=!!lowering;if(lowering){const tip=new THREE.Vector3(-c.side*17,16,0).applyAxisAngle(new THREE.Vector3(0,1,0),c.yaw).add(c.crane.position),top=slab.position.y+.3,length=Math.max(.1,tip.y-top);c.cable.position.set(tip.x-c.crane.position.x,top+length/2,tip.z-c.crane.position.z);c.cable.scale.y=length;}}
+    // A wrong block: its slab drops short, wobbles and swings back out.
+    const wrong=t.lastWrong;if(wrong&&wrong.count!==bridge.lastWrong){bridge.lastWrong=wrong.count;bridge.wrongAt=this.clock;const ghost=bridge.ghost,m=ghost.userData.face.material;m.map=bridge.wordMats[wrong.block].map;m.needsUpdate=true;bridge.wrongSlot=Math.min(2,wrong.slot);}
+    const ghost=bridge.ghost,age=this.clock-(bridge.wrongAt??-Infinity);ghost.visible=age<.7&&!t.solved;
+    if(ghost.visible){const home=bridge.slabs[bridge.wrongSlot],p=age/.7;ghost.position.copy(home.position);ghost.rotation.copy(home.rotation);ghost.rotation.x=0;(ghost.userData.leaves||[]).forEach(l=>{l.rotation.x=0;});
+      if(reduced){ghost.position.y=.12+1.5;ghost.userData.face.material.opacity=1-p;}
+      else{const drop=Math.min(1,p/.3),out=Math.max(0,(p-.55)/.45);ghost.position.y=.12+4*(1-drop)+1.2*drop+5*out*out;ghost.position.x+=10*out*out*(bridge.wrongSlot%2?-1:1);ghost.rotation.z=Math.sin(p*38)*.14*Math.min(1,p*3)*(1-out);ghost.userData.face.material.opacity=1-out;}}
+    // Words light up as the wheels cross them, each with its note again.
+    if(t.solved)bridge.slabs.forEach((slab,j)=>{if(!bridge.lit[j]&&state.distance>=t.at+j*BRIDGE_SLOT+6&&state.distance<t.at+j*BRIDGE_SLOT+BRIDGE_SLOT+8){bridge.lit[j]=true;slab.userData.face.material.color.setHex(0xffd96b);this.onCue?.('word'+(j+1));}});
+    // Workers cheer once the bridge locks.
+    if(t.solved&&bridge.lockedAt==null)bridge.lockedAt=this.clock;
+    (bridge.workers||[]).forEach((w,i)=>{const cheer=bridge.lockedAt!=null&&this.clock-bridge.lockedAt<2.2&&!reduced;w.position.y=cheer?Math.abs(Math.sin((this.clock-bridge.lockedAt)*9+i))*.55:0;});
+    (bridge.spray||[]).forEach((m,i)=>{const k=reduced?.5:.5+.5*Math.sin(this.clock*2.4+i*1.7);m.scale.set(.8+k,.4+k*.5,.8+k);m.material.opacity=.25+.25*k;});
+    if(bridge.dust){const a=this.clock-bridge.dust.at,d=bridge.dust.mesh;d.visible=a<.8&&!reduced;if(d.visible){d.scale.setScalar(1+a*8);d.material.opacity=.55*(1-a/.8);}}
+    // A rival or traffic car reaching the gap first rides a temporary plank
+    // under its own wheels, so it never floats over the open gap.
+    let used=0;const actors=[...state.rivals,...state.obstacles.filter(o=>o.type==='traffic'&&!o.dormant)];
+    for(const o of actors){if(used>=bridge.planks.length)break;const slot=Math.floor((o.at-t.at)/BRIDGE_SLOT);if(o.at<t.at-2.3||o.at>t.at+BRIDGE_LENGTH+2.3||Math.abs(o.lanePos??o.lane)>1.3)continue;
+      for(const k of [slot,Math.floor((o.at+2.3-t.at)/BRIDGE_SLOT)]){if(k<0||k>2||k<chosen||used>=bridge.planks.length)continue;const plank=bridge.planks[used++],slab=bridge.slabs[k];plank.visible=true;plank.position.set(window.RallyCore.actorX(state,o)-this.curve(t.at),.01,slab.position.z-7.9);plank.rotation.y=slab.rotation.y;}}
+    for(let i=used;i<bridge.planks.length;i++)bridge.planks[i].visible=false;
+  }
+  // The kick ramp's hop for a car at course position at (feel only).
+  bridgeHop(state,at){if(!state||this.preferences.reduced)return 0;const t=state.tasks.find(q=>q.kind==='repair'&&q.solved&&at>q.at+BRIDGE_LENGTH-2&&at<q.at+BRIDGE_LENGTH+12);if(!t)return 0;const p=(at-(t.at+BRIDGE_LENGTH-2))/14;return Math.sin(Math.PI*p)*1.1;}
   makeGate(task,state){
     const g=new THREE.Group();g.userData={task,textures:[],ownMaterials:[],barriers:[],repairSlabs:[]};
     if(task.kind==='finish'){
@@ -298,9 +409,8 @@ export class RallyScene{
       for(let side of[-1,1]){mesh(g,'cylinder',0x43586a,side*12.1,3.2,0,.15,6.4,.15);mesh(g,'box',0x405768,side*6.1,6.4,0,12.2,.2,.25);mesh(g,'box',0x152638,side*3.25,5.6,0,.8,1.8,.7);for(let j=0;j<3;j++){let bulb=mesh(g,'sphere',j===0?0xff6663:j===1?0x5e5144:0x334b46,side*3.25,6.2-j*.57,.38,.22,.22,.08,.25,0,j===0?0xff4039:0);bulb.userData.bulb=j;}}
       for(let z of[-1,-.4,.2])mesh(g,'box',0xf3eed8,0,.04,z,10.3,.015,.22);
     }else if(task.kind==='repair'){
-      const length=task.blocks.length*16;mesh(g,'box',0x9d7155,0,.03,-length/2,10.5,.05,length);
-      for(let j=0;j<task.blocks.length;j++){let slab=mesh(g,'box',0x536b7f,0,-1.5,-8-j*16,10.45,.12,15.85);g.userData.repairSlabs.push(slab);}
-      for(let side of[-1,1]){g.userData.barriers.push(mesh(g,'box',0xec9252,side*3,1.3,-2,4,.25,.12));for(let j=0;j<3;j++)g.userData.barriers.push(mesh(g,'cone',0xf19657,side*(3.2+j*.75),.5,1,.27,1,.27));}
+      this.buildBridge(g,task);
+      for(let side of[-1,1]){g.userData.barriers.push(mesh(g,'box',0xec9252,side*3,1.3,2,4,.25,.12));for(let j=0;j<3;j++)g.userData.barriers.push(mesh(g,'cone',0xf19657,side*(3.2+j*.75),.5,3,.27,1,.27));}
     }else{
       const C=window.RallyCore,routes=C.groundRoutes(state,task);
       const surface=forkSurface(routes,at=>this.curve(at),C.routeOffset,task.at),geometry=new THREE.BufferGeometry();
@@ -337,12 +447,12 @@ export class RallyScene{
       for(const t of tasks)if(!this.gates.has(t.id)&&t.at-d>window.RallyCore.TASK_VIEW_DISTANCE)this.makeGate(t,state).visible=false;
       this.preparedRevision=state.taskRevision;
     }
-    for(const t of tasks){const ahead=t.at-d,keep=t.kind==='finish'?80:window.RallyCore.taskZone(t).end-t.at+120;const g=this.gates.get(t.id);if(!g)continue;g.visible=ahead<=window.RallyCore.TASK_VIEW_DISTANCE&&ahead>=-keep;if(!g.visible)continue;g.position.set(this.curve(t.at)-base,0,-ahead+4);
+    for(const t of tasks){const ahead=t.at-d,keep=t.kind==='finish'?80:window.RallyCore.taskZone(t).reach-t.at+120;const g=this.gates.get(t.id);if(!g)continue;g.visible=ahead<=window.RallyCore.TASK_VIEW_DISTANCE&&ahead>=-keep;if(!g.visible)continue;g.position.set(this.curve(t.at)-base,0,-ahead+4);
       if(t.kind==='junction'&&t.completed&&g.userData.chosenIndex!==t.chosenIndex){g.userData.chosenIndex=t.chosenIndex;for(const path of g.userData.routePaths||[]){const chosen=path.index===t.chosenIndex,paint=mat(chosen?(t.success?0xa9eccb:0xf1c187):0x748895,.55,0,chosen?(t.success?0x28674b:0x6b4c29):0);path.left.material=path.right.material=paint;path.chevrons.traverse(m=>{if(m.isMesh)m.material=paint;});}}
       if(t.kind==='junction')this.updateCoaster(g,t,state);
       if(t.kind==='junction')g.userData.mergeGuide.visible=!!state.mergeAssist&&state.mergeAssist.taskId===t.id&&window.RallyCore.exitAssist(state)===state.mergeAssist;
       if(t.kind==='light'&&t.success)g.traverse(m=>{if(m.userData.bulb===0)m.material=mat(0x5b3439);if(m.userData.bulb===2)m.material=mat(0x69f3b7,.3,0,0x3ceb91);});
-      if(t.kind==='repair'){g.userData.repairSlabs.forEach((m,j)=>{const filled=j<(t.chosen?.length||0);m.position.y=t.solved?.12:THREE.MathUtils.damp(m.position.y,filled?.12:-1.5,12,dt);});g.userData.barriers.forEach(m=>m.visible=!t.solved);}
+      if(t.kind==='repair'){this.updateBridge(g,t,state,dt);g.userData.barriers.forEach(m=>m.visible=!t.solved);}
       if(t.kind==='pedestrian'){g.userData.exitGuide.visible=!!window.RallyCore.exitAssist(state)&&state.exitTask===t.id&&!window.RallyCore.crosswalkOccupied(state,t);g.traverse(n=>{if(n.userData.crossingSignal)n.material=window.RallyCore.crosswalkOccupied(state,t)?mat(0xe67d69,.3,0,0xff6444):mat(0x87d6bd,.3,0,0x4ae6a4);});}
       if(t.kind==='pedestrian')g.userData.people.forEach((m,i)=>{
         const p=t.people[i],walk=p.sent?Math.min(1,(state.elapsed-p.sentAt)/window.RallyCore.PEDESTRIAN_WALK_TIME):0,side=p.side===0?-1:1;
@@ -353,7 +463,7 @@ export class RallyScene{
         m.traverse(n=>{if(n.userData.leg)n.rotation.x=p.sent||enter>0&&enter<1?Math.sin(this.elapsed*9)*.3*n.userData.leg:Math.sin(this.elapsed*2+i)*.025;});
       });
     }
-    for(const [id,g]of this.gates){if(g.userData.task.at-d<-(g.userData.task.kind==='finish'?80:window.RallyCore.taskZone(g.userData.task).end-g.userData.task.at+120)){this.disposeGate(g);this.gates.delete(id);}}
+    for(const [id,g]of this.gates){if(g.userData.task.at-d<-(g.userData.task.kind==='finish'?80:window.RallyCore.taskZone(g.userData.task).reach-g.userData.task.at+120)){this.disposeGate(g);this.gates.delete(id);}}
     const active=state.task||state.tasks[state.taskIndex];if(active){this.gate=this.gates.get(active.id)||this.gate;this.lastGate=active.id;this.repairSlabs=this.gate.userData.repairSlabs||[];}else if(state.distance>state.arena.length-170){this.gate=this.gates.get('finish')||this.gate;this.lastGate='finish';}
   }
   pedestrianProjection(state){
@@ -450,7 +560,7 @@ export class RallyScene{
     const frozen=state&&['paused','finished','failed','countdown'].includes(state.status);
     this.updateAtmosphere(dt,worldDt,d,base,frozen);
     this.spectators.update(worldDt,state,this.index,d,base,at=>this.curve(at),this.preferences,frozen);
-    for(const m of this.rivalCars){const r=m.userData.rival,ahead=r.at-d;m.visible=ahead>-60&&ahead<330;m.position.set(this.curve(r.at)+window.RallyCore.routeOffset(r.route,r.at)-base+r.lanePos*3.35+(r.passingOffset||0),0,-ahead+4);m.rotation.y=this.heading(r.at,r.route)-THREE.MathUtils.clamp((r.lane-r.lanePos)*.16,-.16,.16);if(r.route?.coaster){const task=state.tasks.find(t=>t.id===r.route.taskId),ground=task&&window.RallyCore.makeRoute(state,task,task.correctIndex,true,true);
+    for(const m of this.rivalCars){const r=m.userData.rival,ahead=r.at-d;m.visible=ahead>-60&&ahead<330;m.position.set(this.curve(r.at)+window.RallyCore.routeOffset(r.route,r.at)-base+r.lanePos*3.35+(r.passingOffset||0),0,-ahead+4);m.rotation.y=this.heading(r.at,r.route)-THREE.MathUtils.clamp((r.lane-r.lanePos)*.16,-.16,.16);m.position.y+=this.bridgeHop(state,r.at);if(r.route?.coaster){const task=state.tasks.find(t=>t.id===r.route.taskId),ground=task&&window.RallyCore.makeRoute(state,task,task.correctIndex,true,true);
       m.position.x+=ground?window.RallyCore.routeOffset(ground,r.at)-window.RallyCore.routeOffset(r.route,r.at):0;
       const ride=this.ridePose(r.route,r.at,r.passingOffset||0,d,base,{position:m.position.clone(),quaternion:m.quaternion.clone()});if(ride){m.position.copy(ride.position);m.quaternion.copy(ride.quaternion);}}if(!frozen){m.userData.wheelAngle=((m.userData.wheelAngle||0)+Math.max(0,r.at-(m.userData.previousAt??r.at))/.43)%(Math.PI*2);m.userData.previousAt=r.at;}this.animateCar(m,m.userData.wheelAngle||0,-(r.lane-r.lanePos)*.28,r.braking);m.userData.nitroExhaust.visible=!!r.nitroActive&&!frozen;this.placeContactShadow(m);const direction=Math.sign((r.plannedLane??r.lane)-r.lanePos);for(const lamp of m.userData.indicators||[])lamp.visible=direction!==0&&(r.plannedLane!=null||Math.abs(r.lane-r.lanePos)>.05)&&lamp.userData.indicator===direction&&Math.floor((state.elapsed||0)*3)%2===0;}
     for(let m of this.traffic){const o=m.userData.obstacle,ahead=o.at-d;m.visible=!o.dormant&&ahead>-50&&ahead<360;m.position.set(window.RallyCore.actorX(state,o)-base,0,-ahead+4);const turning=o.changed&&o.laneProgress<1,steer=turning?THREE.MathUtils.clamp(-(o.target-o.fromLane)*Math.sin(o.laneProgress*Math.PI)*.12,-.16,.16):0;m.rotation.y=this.heading(o.at,o.route)+steer;(m.userData.indicators||[]).forEach(n=>{n.visible=(o.moving||o.routeChanging)&&turning&&n.userData.indicator===Math.sign(o.target-o.fromLane)&&Math.floor((state?.elapsed||0)*3)%2===0;});m.rotation.z=o.hit&&state.elapsed-(o.hitAt??0)<.45?Math.sin(state.elapsed*18)*.08:0;if(!frozen){m.userData.wheelAngle=((m.userData.wheelAngle||0)+Math.max(0,o.at-(m.userData.previousAt??o.at))/.43)%(Math.PI*2);m.userData.previousAt=o.at;}this.animateCar(m,m.userData.wheelAngle||0,steer,o.braking||o.waiting);this.placeContactShadow(m);}
@@ -463,9 +573,10 @@ export class RallyScene{
     let x=this.currentLane*3.35;const playerZ=mode==='home'&&this.viewport.width<760&&this.viewport.height>this.viewport.width?-9:4,ride=this.ridePose(state?.route,d,0,d,base,null);
     // Touchdown: a short suspension settle as the coaster hands back to the road.
     if(this.lastRide&&!ride)this.landedAt=this.clock;this.lastRide=!!ride;const landing=this.landedAt!=null&&!this.preferences.reduced?this.clock-this.landedAt:Infinity,settle=landing<1.2?-.11*Math.exp(-landing*4.5)*Math.sin(landing*15):0;
-    this.player.position.set(x,.04+settle+(this.preferences.reduced?0:this.motion.bob),playerZ);this.player.rotation.set(this.preferences.reduced?0:this.motion.pitch,this.heading(d,state?.route)+this.motion.steer*.22,this.preferences.reduced?0:this.motion.roll);
+    const hop=this.bridgeHop(state,d);if(hop>.05&&!this.hopping)this.onCue?.('hop');this.hopping=hop>.05;
+    this.player.position.set(x,.04+settle+hop+(this.preferences.reduced?0:this.motion.bob),playerZ);this.player.rotation.set(this.preferences.reduced?0:this.motion.pitch,this.heading(d,state?.route)+this.motion.steer*.22,this.preferences.reduced?0:this.motion.roll);
     if(ride){this.player.position.copy(ride.position);this.player.quaternion.copy(ride.quaternion);}
-    const rideY=ride?ride.position.y:0;this.rideSpeed=ride?ride.speed:1;this.animateCar(this.player,this.motion.wheelAngle,this.motion.steer,this.motion.braking||!!state?.yielding&&speed<.5);this.player.visible=true;this.shadow.position.set(ride?ride.position.x:x,.07+rideY,ride?ride.position.z:playerZ);this.shadow.visible=!ride||ride.up[1]>.8;this.shadow.rotation.z=-this.player.rotation.y;this.nitroReadyGlow.position.set(ride?ride.position.x:x,.08+rideY,ride?ride.position.z:playerZ);this.nitroReadyGlow.rotation.z=-this.player.rotation.y;this.nitroReadyGlow.visible=!frozen&&!state?.nitroActive&&window.RallyCore.canEngageNitro(state);this.nitroReadyGlow.scale.setScalar(this.preferences.reduced?1:1+Math.sin(this.elapsed*3)*.025);
+    const rideY=ride?ride.position.y:hop;this.rideSpeed=ride?ride.speed:1;this.animateCar(this.player,this.motion.wheelAngle,this.motion.steer,this.motion.braking||!!state?.yielding&&speed<.5);this.player.visible=true;this.shadow.position.set(ride?ride.position.x:x,.07+rideY,ride?ride.position.z:playerZ);this.shadow.visible=!ride||ride.up[1]>.8;this.shadow.rotation.z=-this.player.rotation.y;this.nitroReadyGlow.position.set(ride?ride.position.x:x,.08+rideY,ride?ride.position.z:playerZ);this.nitroReadyGlow.rotation.z=-this.player.rotation.y;this.nitroReadyGlow.visible=!frozen&&!state?.nitroActive&&window.RallyCore.canEngageNitro(state);this.nitroReadyGlow.scale.setScalar(this.preferences.reduced?1:1+Math.sin(this.elapsed*3)*.025);
     this.damageFx.update(dt,state,this.preferences,frozen);
     this.boostFx.update(worldDt,state,this.preferences,frozen);if(this.waterNormal&&!frozen&&!this.preferences.reduced)this.waterNormal.offset.set(this.elapsed*.009,this.elapsed*.005);this.trail.children.forEach((p,i)=>{p.visible=!!state&&!frozen&&!this.preferences.reduced&&this.preferences.graphics!=='battery'&&(this.lookConfig.trail||state.nitroActive)&&speed>2;p.position.set(x+(i%2?1:-1)*.64,.08+rideY,playerZ+3+i*.45);p.material=mat(state?.nitroActive?0x89ddff:0x80cbb8,.5,0,state?.nitroActive?0x2698c9:0x367c67);p.scale.z=1-i/16;});
     const cameraFrozen=state&&['paused','finished','failed'].includes(state.status);
@@ -479,14 +590,16 @@ export class RallyScene{
     for(const axis of ['x','y','z'])this.rideCam[axis]=THREE.MathUtils.damp(this.rideCam[axis],rideFocus[axis],axis==='y'?7:5,dt);
     // Loops and the helix are framed in three-quarter view from outside the
     // ride, so the whole circle shows and the far arm never hides the car.
-    this.rideWide=THREE.MathUtils.damp(this.rideWide||0,THREE.MathUtils.clamp((ride?.detour||0)/5,0,1),3.5,dt);const wide=this.rideWide;this.rideSide=ride?ride.side:this.rideSide||1;if(ride?.kind)this.rideKind=ride.kind;const helix=this.rideKind==='helix';
-    this.rideLift=this.rideCam.y;cy+=this.rideLift+(helix?9:4.5)*wide;cz+=(this.rideCam.z-playerZ)*.55*(1-wide)+(helix?8:4)*wide;cx+=(this.rideCam.x-x)*.6+this.rideSide*(helix?-4:13)*wide;if(ride&&!this.preferences.reduced){cz+=1.4+Math.min(2.2,Math.max(0,this.rideSpeed-1)*1.6);cy+=.6;}
+    this.rideWide=THREE.MathUtils.damp(this.rideWide||0,ride?.wide||0,3.5,dt);const wide=this.rideWide;this.rideSide=ride?ride.side:this.rideSide||1;if(ride?.kind)this.rideKind=ride.kind;const helix=this.rideKind==='helix',flight=this.rideKind==='air';
+    this.rideLift=this.rideCam.y;cy+=this.rideLift+(helix?9:flight?1.5:4.5)*wide;cz+=(this.rideCam.z-playerZ)*.55*(1-wide)+(helix?8:flight?-2:4)*wide;cx+=(this.rideCam.x-x)*.6+this.rideSide*(helix?-4:flight?-15:13)*wide;if(ride&&!this.preferences.reduced){cz+=1.4+Math.min(2.2,Math.max(0,this.rideSpeed-1)*1.6);cy+=.6;}
     // Nitro: a restrained low dive behind the car, scaled by charge level.
     if(!home&&!this.preferences.reduced&&state?.status!=='task'){cy-=.45*this.boostFx.intensity;cz+=.9*this.boostFx.intensity;}
     // Narrow portrait screens see too little road beside the car. Pull the
     // chase camera back and up so both neighbouring lanes stay readable.
     if(!home&&state?.status!=='task'){const narrow=THREE.MathUtils.clamp((.95-this.viewport.width/this.viewport.height)/.5,0,1);cz+=6.5*narrow;cy+=2.4*narrow;}
     if(!cameraFrozen){this.camera.position.x=THREE.MathUtils.damp(this.camera.position.x,cx,4,dt);this.camera.position.y=THREE.MathUtils.damp(this.camera.position.y,cy,4,dt);this.camera.position.z=THREE.MathUtils.damp(this.camera.position.z,cz,4,dt);}
+    // A stone slab landing shakes the camera briefly (never with reduced motion).
+    if(this.shake>0){this.shake=Math.max(0,this.shake-dt*1.6);if(!this.preferences.reduced&&!cameraFrozen){this.camera.position.x+=(Math.random()-.5)*this.shake*.5;this.camera.position.y+=(Math.random()-.5)*this.shake*.4;}}
     const readingFov=Math.max(24,Math.min(52,2*Math.atan(this.viewport.height*3.35/(2*27*Math.min(140,(this.viewport.width-24)/3)))*180/Math.PI));if(!cameraFrozen)this.camera.fov=THREE.MathUtils.damp(this.camera.fov,state?.status==='task'?readingFov:playing?52+(this.preferences.reduced?0:Math.min(12,Math.max(0,state.speedFactor-1)*5.4)+(ride?THREE.MathUtils.clamp((this.rideSpeed-1)*10,0,13):0)):52,state?.nitroActive?9:4,dt);this.camera.updateProjectionMatrix();const raceTilt=Math.atan2(this.camera.position.y-this.rideLift-.8,Math.max(1,this.camera.position.z-4))-Math.atan(.58*Math.tan(this.camera.fov*Math.PI/360));const raceLookY=this.camera.position.y-Math.tan(raceTilt)*(this.camera.position.z+11);if(!cameraFrozen){const bendLook=this.preferences.reduced?0:THREE.MathUtils.clamp(-this.heading(d+10,state?.route)*6,-2.2,2.2);const rideLook=home?0:(this.rideCam.x-x)*.85;this.look.set(home?(isPortrait?-1.8:-6.5):state?.status==='task'?x*.65:x*.25+bendLook+rideLook,home?(isPortrait?-1:-.5):raceLookY+(ride&&!this.preferences.reduced?THREE.MathUtils.clamp(ride.forward[1]*7,-4,6):0),home?(isPortrait?-9:-6):-11+(this.rideCam.z-playerZ)*.8);if(!home&&wide>.001){const car=ride?ride.position:this.rideCam;this.look.lerp(new THREE.Vector3(car.x,car.y+1,car.z),wide);}this.camera.lookAt(this.look);}
     // A steady dusk light avoids full-screen storm flashes during reading.
     // Focus grade: the world cools and dims slightly while English text

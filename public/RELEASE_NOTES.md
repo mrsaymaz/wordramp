@@ -1,3 +1,47 @@
+# v0.27.0 · Rides & Bridges
+
+Rides on every route choice
+- Sunlit's Sky Coasters now build up through the race: the first is gentle
+  (launch, drop, helix), the second adds the loop and corkscrew, and the
+  finale has the biggest drop (17 m), a double loop, a double corkscrew and a
+  wider helix.
+- Coastal Overpass: the Sea Jump. A ramp launch off the bridge, a long flight
+  over the sea with slow-motion hang time and a barrel roll, a landing deck
+  and wave rollers. Pylons stand in the sea; the camera films the flight from
+  the side.
+- Stormcrest Expressway: the Cliff Plunge. A slow climb up the mountainside on
+  a timber track, a steep plunge, a run through rock arches and bobsled
+  half-pipe swerves between tall walls.
+- Every ride: hidden until the answer is judged, feel only (exactly 18 m, like
+  a shortcut), no hits possible, rivals ride the passing track, and reduced
+  motion keeps the ride without loops, rolls, helix or swerves.
+- Along a ride, Coastal keeps open sea on both sides and Stormcrest keeps the
+  low roadside on both sides, so the scenery never hints at the answer.
+- Fixed: rides longer than 270 m lost their last stretch (including the
+  landing glide) because the fork gate was hidden too early.
+
+Bridge Builder (road repair)
+- The repair is now a real gap with a hazard edge and BRIDGE OUT signs.
+- Blocks are placed one at a time in sentence order. Each correct block drops
+  its word slab into the gap with a bell note (C, E, G); the full sentence
+  plays a chime. A wrong block's slab wobbles and swings back out with a buzz,
+  costing the usual 1.5 s and first-try credit; placed slabs stay.
+- Sunlit: a crane lowers each slab and road workers cheer when it locks.
+  Coastal: bascule drawbridge leaves fold down over the sea. Stormcrest:
+  carved stone slabs slam down with dust and a short camera shake.
+- Driving over the bridge lights each word in turn, with its note again, and
+  a kick ramp on the last slab gives a small hop (feel only).
+- A rival or traffic car that reaches the open gap first rides a temporary
+  plank, never thin air. Reduced motion: gentle slab drops, no hop or shake.
+
+Balance
+- Each ride's landing replaces one obstacle stretch per route choice. Challenge
+  rivals wait longer at crossings in Sunlit and Stormcrest, and Stormcrest's
+  charge Nitro a little slower. Held-acceleration first places: Relaxed
+  11/8/5 and Challenge 6/4/2 by arena of 12; earned Nitro still wins all 72.
+- The fastest honest Sunlit win is unchanged (215.6 s), so the League's
+  minSeconds stays 180.
+
 # v0.26.0 · Sky Coaster Thrills
 
 - Launch: a right answer catapults the car onto the coaster at about twice

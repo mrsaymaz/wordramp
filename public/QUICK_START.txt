@@ -1,22 +1,35 @@
 WORDRAMP — by Mr. Saymaz
-v0.26.0 · Sky Coaster Thrills
+v0.27.0 · Rides & Bridges
 
 Wordramp is the new name of Wordrift. Saved progress, stars and arena wins
 carry over unchanged.
 
-SKY COASTER (SUNLIT BOULEVARD)
-A billboard before each route choice promises the Sky Coaster. Steer into
-the right answer and a coaster track snaps up out of the ground ahead: your
-car is launched at about twice road speed, crests a hill, dives beside the
-park, goes upside down through a vertical loop, rolls through a corkscrew,
-circles a banked helix and glides gently back down into its own lane. The
-camera swings out to show the loop and helix whole, and the speedometer shows
-the speed along the track. The track stays hidden until your answer is
-judged, so it never gives the answer away. The ride is for fun: it gains the
-same 18 m as an ordinary shortcut (the real reward is not taking the slow
-detour) and can never cost a hit. Rivals who answer right ride the passing
-track beside you. Reduced motion keeps the ride with lower drops and no
-loop, corkscrew, helix or banking.
+RIDES (EVERY ROUTE CHOICE)
+A billboard before each route choice promises a ride. Steer into the right
+answer and its track snaps up out of the ground ahead; the car is launched
+and lands gently back in its own lane.
+- Sunlit Boulevard, Sky Coaster: three rides that build up through the race.
+  The first is gentle (launch, drop, helix); the second adds a vertical loop
+  and a corkscrew; the finale has the biggest drop, a double loop, a double
+  corkscrew and a wide helix.
+- Coastal Overpass, Sea Jump: a ramp launch off the bridge, a long flight
+  over the sea with a barrel roll at the top, a landing deck and wave rollers.
+- Stormcrest Expressway, Cliff Plunge: a slow climb up the mountainside, a
+  steep plunge, a run through rock arches and bobsled half-pipe swerves.
+The track stays hidden until your answer is judged, so it never gives the
+answer away. Rides are for fun: each gains the same 18 m as an ordinary
+shortcut (the real reward is not taking the slow detour) and can never cost
+a hit. Rivals who answer right ride the passing track beside you. Reduced
+motion keeps every ride with lower drops and no loops, rolls, helix or
+swerves.
+
+BRIDGE OUT (ROAD REPAIR)
+The road ahead breaks over a gap. Connect the three sentence blocks in order:
+each correct block drops its word slab into the gap with a note (a crane in
+Sunlit, drawbridge leaves in Coastal, carved stone in Stormcrest), and the
+full sentence plays a little chime. A wrong block's slab wobbles and swings
+back out; the slabs already placed stay. Then drive over your sentence: each
+word lights up under the wheels, with a small hop off the end.
 
 PICTURE SIGNS
 Some vocabulary signs show a 3D Fluent Emoji picture: choose the word that
