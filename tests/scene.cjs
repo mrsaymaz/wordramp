@@ -179,7 +179,8 @@ assert.equal(sideSwipe.collisions,1,'Repeated steering into the same actor remai
 console.log('PASS: real scene steering reports an identified side collision once, keeps bodies separated and leaves the escape lane available.');
 // Sky Coaster: hidden until the player's own answer is judged (a rival riding
 // it first must not reveal the lane), then it rises piece by piece and carries
-// the cars; reduced motion flattens the drops and removes the bank.
+// the cars through the loop, corkscrew and helix; reduced motion keeps the
+// route with flatter drops and no inversions.
 {
  scene.setup(0);scene.preferences.reduced=false;const s=C.createRace(window.LANGUAGE_BANK[0].units[0],'relaxed',0,35),task=s.tasks.find(t=>t.coaster);
  assert(task,'Sunlit route choices carry a Sky Coaster');
@@ -193,13 +194,21 @@ console.log('PASS: real scene steering reports an identified side collision once
  scene.update(.05,s,'race');assert(ride().revealedAt!=null,"The answer reveals the track");
  for(let i=0;i<30;i++)scene.update(.05,s,'race');
  assert(ride().pieces.every(p=>p.mesh.visible&&Math.abs(p.mesh.scale.y-1)<1e-9),'After the answer the whole track rises within 1.5 s');
+ assert(ride().pieces.every(p=>p.delay+.2<=.53),'The reveal is a quick wave (about half a second)');
  const lifted=scene.rivalCars.find(m=>m.userData.rival===rival);assert(lifted.position.y>9,'The risen track carries a rival into the air');
- s.distance=task.at+86;scene.update(.05,s,'race');assert(scene.player.position.y>13,'The player rides the crest of the lift hill');
- const pose=scene.ridePose(s.route,task.at+205,0);assert(Math.abs(pose.bank)>.1,'The swerve is banked');
- scene.preferences.reduced=true;scene.update(.05,s,'race');const calm=scene.ridePose(s.route,task.at+205,0);assert.equal(calm.bank,0);assert(scene.player.position.y<9,'Reduced motion flattens the lift hill');
+ const at=u=>task.at+u*task.coaster.span/C.COASTER_SPAN,upY=()=>{const q=scene.player.quaternion;return 1-2*(q.x*q.x+q.z*q.z);};
+ s.distance=at(66);scene.update(.05,s,'race');assert(scene.player.position.y>12.5,'The player rides the crest of the launch hill');
+ s.distance=at(119);scene.update(.05,s,'race');assert(scene.player.position.y>18&&upY()<-.9,'Upside down at the top of the loop');
+ s.distance=at(110);scene.update(.05,s,'race');assert(scene.rideSpeed>1.3,'The loop swoops faster than the road');
+ s.distance=at(191);scene.update(.05,s,'race');assert(upY()<-.5,'Upside down in the corkscrew');
+ s.distance=at(234);scene.update(.05,s,'race');assert(Math.abs(scene.player.position.x)>20,'The helix swings far beside the road');assert(upY()<.8,'The helix is steeply banked');
+ for(let i=0;i<40;i++)scene.update(.05,s,'race');const wide=scene.camera.position.clone();assert(scene.player.position.distanceTo(wide)<45,'The camera keeps the helix in view');
+ scene.preferences.reduced=true;s.distance=at(119);scene.update(.05,s,'race');assert(upY()>.9&&scene.player.position.y<6,'Reduced motion: no loop, flatter heights');
+ s.distance=at(66);scene.update(.05,s,'race');assert(scene.player.position.y<9,'Reduced motion flattens the launch hill');
  assert(scene.gates.get(task.id).userData.coaster.reduced,'The track is rebuilt for reduced motion');
  scene.preferences.reduced=false;
  let vertices=0;ride().group.traverse(m=>{if(m.isMesh)for(const n of m.geometry.attributes.position.array){vertices++;assert(Number.isFinite(n));}});assert(vertices>1000);
  assert(scene.coasterRanges.length===s.tasks.filter(t=>t.coaster).length);assert(scene.sceneryEdge(task.at+150,1)>=27&&scene.sceneryEdge(task.at+150,-1)>=27,'Buildings step back on both sides, so the cleared side gives nothing away');
- console.log('PASS: Sky Coaster hidden while reading and when a rival rides first, rises after the answer, carries rivals and player, banks the swerve, flattens for reduced motion and clears scenery on both sides.');
+ assert(scene.sceneryEdge(at(234),1)>=54&&scene.sceneryEdge(at(234),-1)>=54,'Buildings clear the helix on both sides');
+ console.log('PASS: Sky Coaster hidden while reading and when a rival rides first, rises in a half-second wave after the answer, carries rivals and the player upside down through the loop and corkscrew and around the helix in view, flattens without inversions for reduced motion and clears scenery on both sides.');
 }

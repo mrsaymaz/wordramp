@@ -1,3 +1,23 @@
+# v0.26.0 · Sky Coaster Thrills
+
+- Launch: a right answer catapults the car onto the coaster at about twice
+  road speed, with a whoosh, speed lines and a wider view. The track snaps up
+  out of the ground in a half-second wave.
+- Inversions: a vertical loop (upside down at the top), a full corkscrew
+  barrel roll and a steeply banked helix that swings far out beside the road.
+  The camera keeps the horizon level and moves to a three-quarter view
+  outside the loop and above the helix, so the car stays in view.
+- Feel only: the ride still gains exactly 18 m, like an ordinary shortcut.
+  Its course speed is shaped (2x launch and drops, slower course progress
+  through the loop and helix, whose track is far longer) so the car looks
+  about 1.5x road speed on average. The speedometer shows the speed along
+  the track.
+- Smoother landing: a 60 m glide down instead of a short drop, speed easing
+  back to road pace over the last stretch, a soft suspension settle on
+  touchdown, and no forced merge to the centre lane. The ride is now 340 m.
+- Reduced motion: no loop, corkscrew, helix or banking; lower drops.
+- Buildings step further back around the helix on both sides of the road.
+
 # v0.25.0 · Sky Coaster
 
 Sky Coaster (Sunlit Boulevard)

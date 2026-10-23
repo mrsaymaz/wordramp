@@ -473,9 +473,10 @@ function updateUI(now){
   setText('time',Math.floor(t/60)+':'+String(t%60).padStart(2,'0'));$('time').parentElement.classList.toggle('urgent',t<20);
   $('progress-fill').style.width=progress+'%';$('progress-fill').parentElement.setAttribute('aria-valuenow',String(Math.round(progress)));
   setText('road-fairness',C.learningPaceProtected(race)?'TASK PACE PROTECTED · RIVALS MATCH YOU':'');
-  const dashboardSpeed=displaySpeed(race,C.REGULAR_MAX_SPEED,C.MAX_SPEED);setText('speed',dashboardSpeed);$('throttle').style.setProperty('--speed-fill',dashboardSpeed/200);
+  // On a Sky Coaster the dashboard shows the speed you see along the track.
+  const dashboardSpeed=displaySpeed(race.route?.coaster?{...race,speedFactor:race.speedFactor*(scene?.rideSpeed||1)}:race,C.REGULAR_MAX_SPEED,C.MAX_SPEED);setText('speed',dashboardSpeed);$('throttle').style.setProperty('--speed-fill',dashboardSpeed/200);
   document.body.dataset.nitroLevel=String(race.nitroActive&&['driving','resolving'].includes(race.status)?race.nitroLevel||1:0);$('throttle').setAttribute('aria-pressed',String(!!race.accelerating||cruising&&drivingHeld()));
-  const ride=race.route?.coaster?race.route:null,dropping=!!ride&&!preferences().reduced&&C.coasterHeight(ride,race.distance+5)<C.coasterHeight(ride,race.distance)-.9;$('speedlines').classList.toggle('boost',(race.boost>0||dropping)&&race.status==='driving');$('speedlines').classList.toggle('focus',race.status==='task');$('speedlines').classList.toggle('accelerating',race.accelerating&&race.speedFactor>.05);
+  const rushing=!!race.route?.coaster&&!preferences().reduced&&(scene?.rideSpeed||1)>1.35;$('speedlines').classList.toggle('boost',(race.boost>0||rushing)&&race.status==='driving');$('speedlines').classList.toggle('focus',race.status==='task');$('speedlines').classList.toggle('accelerating',race.accelerating&&race.speedFactor>.05);
   $('left').setAttribute('aria-label',race.status==='task'&&race.task.kind==='pedestrian'?'Send visitor left':'Steer left');$('right').setAttribute('aria-label',race.status==='task'&&race.task.kind==='pedestrian'?'Send visitor right':'Steer right');
   const sorting=race.status==='task'&&race.task?.kind==='pedestrian';
   $('left').disabled=$('right').disabled=sorting?race.task.pedWait>0||!C.pedestrianReady(race):C.steeringLocked(race)||!!C.exitAssist(race)||!!race.route;
@@ -608,4 +609,4 @@ function frame(now){let rawDt=(now-previous)/1000,dt=Math.min(rawDt,.06);previou
   const idleBehindModal=!$('modal-backdrop').hidden&&(!race||['paused','finished','failed'].includes(race.status));idleFrames=idleBehindModal?idleFrames+1:0;
   if(idleFrames%6===0)scene?.update(dt,race,mode);updateUI(now);sound.update(race,scene?.spectators?.proximity||0);if(now>toastEnd)$('toast').classList.remove('visible');if(roadFeedbackEnd&&now>roadFeedbackEnd){setText('road-feedback','');roadFeedbackEnd=0;}requestAnimationFrame(frame);}
 requestAnimationFrame(frame);setTimeout(()=>$('loading').hidden=true,500);
-window.WORDRAMP=window.WORDRIFT=window.WORDSHIFT={version:'0.25.0',ulti:Object.freeze({snapshot:grade=>league.snapshot(grade??saved.grade),enabled:league.enabled}),get race(){return race;},get settings(){return saved;},get scene(){return scene;}};
+window.WORDRAMP=window.WORDRIFT=window.WORDSHIFT={version:'0.26.0',ulti:Object.freeze({snapshot:grade=>league.snapshot(grade??saved.grade),enabled:league.enabled}),get race(){return race;},get settings(){return saved;},get scene(){return scene;}};

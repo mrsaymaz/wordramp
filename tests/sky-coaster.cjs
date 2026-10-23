@@ -12,22 +12,26 @@ for(const unit of units.slice(0,12))for(const difficulty of ['relaxed','challeng
  const s=C.createRace(unit,difficulty,arena,unit.id.length*7+arena),coasters=s.tasks.filter(t=>t.coaster);
  assert.equal(coasters.length,arena===0?s.tasks.filter(t=>t.kind==='junction').length:0);
  for(const t of coasters){
-  assert.equal(t.coaster.span,300);assert([-1,1].includes(t.coaster.side));if(t.correctIndex!==1)assert.equal(t.coaster.side,t.correctIndex-1,'An outer-lane ride stays on its own side');
-  const zone=C.taskZone(t);assert.equal(zone.reach,t.at+360);assert.equal(zone.end,t.at+150,'The road shoulders are unchanged');
+  assert.equal(t.coaster.span,340);assert([-1,1].includes(t.coaster.side));if(t.correctIndex!==1)assert.equal(t.coaster.side,t.correctIndex-1,'An outer-lane ride stays on its own side');
+  const zone=C.taskZone(t);assert.equal(zone.reach,t.at+400);assert.equal(zone.end,t.at+150,'The road shoulders are unchanged');
   assert(!s.obstacles.some(o=>o.at>t.at-100&&o.at<zone.reach+80),'Nothing waits in the landing stretch');
  }
  for(const t of s.tasks.filter(t=>!t.coaster))assert.equal(C.taskZone(t).reach,C.taskZone(t).end);
 }
 assert(!C.createReviewLap(units[0],[{id:'x',kind:'light',type:'translation',prompt:'p',answer:units[0].translations[0].en,tr:''}],'relaxed',3).tasks.some(t=>t.coaster));
 
-// The ride: smooth joins, gain of exactly 18 m, slower up the lift and faster down the drop.
+// The ride: smooth joins, gain of exactly 18 m (feel only), a launch on the
+// right answer, road speed at both ends and a long, gentle glide to land.
 {
  const s=C.createRace(units[0],'relaxed',0,5),t=s.tasks.find(t=>t.coaster),r=C.makeRoute(s,t,t.correctIndex,true),ground=C.makeRoute(s,t,t.correctIndex,true,true);
  assert(r.coaster&&!ground.coaster);assert.equal(ground.end-ground.start,90);
  let physical=0;for(let at=r.start;at<r.end;at+=.25)physical+=C.routeRatio(r,at+.125)*.25;assert(Math.abs(physical-(r.end-r.start-C.COASTER_GAIN))<.05,'The ride gains exactly a shortcut');
- const speed=u=>1/C.routeRatio(r,r.start+u);assert(speed(80)<.85*speed(118),'Slow up the lift hill, fast at the bottom of the drop');
+ const speed=u=>C.coasterPace(r,r.start+u);assert(speed(26)>1.9,'The right answer launches the car');assert(speed(96)>1.9,'Fast at the bottom of the first drop');
+ assert(Math.abs(speed(0)-1)<1e-9&&Math.abs(speed(r.end-r.start)-1)<1e-9,'Ride speed meets road speed at both ends');
+ let steepest=0;for(let at=r.end-70;at<r.end;at+=.5)steepest=Math.max(steepest,Math.abs(C.coasterHeight(r,at+.5)-C.coasterHeight(r,at))/.5);assert(steepest<.15,'The landing is a gentle glide: '+steepest);
+ for(let u=0;u<r.end-r.start;u+=1)assert(Math.abs(speed(u+1)-speed(u))<.2,'Ride speed changes smoothly, never in a jump');
  for(let at=r.start;at<=r.end;at+=1)assert(C.routeRatio(r,at)>=r.ratio-1e-12,'route.ratio is the fastest point of the ride');
- let peak=0;for(let at=r.start;at<=r.end;at+=1)peak=Math.max(peak,C.coasterHeight(r,at));assert(peak>13.5);assert.equal(C.coasterHeight(r,r.start),0);assert.equal(C.coasterHeight(r,r.end),0);
+ let peak=0;for(let at=r.start;at<=r.end;at+=1)peak=Math.max(peak,C.coasterHeight(r,at));assert(peak>12.9);assert.equal(C.coasterHeight(r,r.start),0);assert.equal(C.coasterHeight(r,r.end),0);
  // Below the clearance height, the ride never overlaps a road branch.
  for(let at=r.start;at<=r.end;at+=.5)if(C.coasterHeight(r,at)<C.COASTER_CLEAR)for(const g of C.groundRoutes(s,t))if(g.lane!==r.lane&&at<=g.end)assert(Math.abs(r.lane*3.35+C.routeOffset(r,at)-g.lane*3.35-C.routeOffset(g,at))>=3.35-1e-9);
  // Levels: a car on the raised track never meets a car on the road below.
@@ -53,6 +57,7 @@ function race(difficulty,seed,wrongAtForks,nitro){
   if(nitro)C.activateNitro(s);if(!keepHolding(C,s,m.lane)){C.setAccelerating(s,false);C.setNitroHeld(s,false);}
   const damage=s.damage;C.tick(s,.05,m.lane);const oldLane=m.lane;updateDrivingFeel(m,s.lane,s.distance,s.arena.speed*s.speedFactor,.05);if(!C.playerLaneClear(s,oldLane,m.lane)){m.lane=oldLane;m.velocity=0;}
   if(s.route?.coaster){if(ride!==s.route){ride=s.route;rode++;}assert.equal(s.damage,damage,'Riding the coaster never costs a hit');}
+  else if(ride&&s.distance<ride.end+40){assert(!C.exitAssist(s),'A coaster lands straight in its lane, with no forced merge');assert.equal(s.damage,damage);}
   assert(!s.obstacles.some(o=>o.route?.coaster),'Road traffic never rides the coaster');
   for(const r of s.rivals)if(r.route?.coaster&&!r.counted){r.counted=r.route.id;rivalRides++;}else if(!r.route)r.counted=null;
  }
@@ -65,4 +70,4 @@ function race(difficulty,seed,wrongAtForks,nitro){
 const seeds=Number(process.env.WORDRAMP_TEST_SEEDS)||8;
 for(const difficulty of ['relaxed','challenge'])for(let seed=1;seed<=seeds;seed++){race(difficulty,seed,false,seed%2===0);race(difficulty,seed,true,false);}
 assert(rivalRides>0,'Rivals who answer right ride the coaster too');
-console.log(`PASS: Sky Coaster only on Sunlit route choices (not review laps); exact 18 m gain with lift/drop speed; smooth joins and clear landing stretches; raised and road levels never meet; landings keep rivals on asphalt; ${sims} Sunlit races: ${rides} player rides and ${rivalRides} rival rides without a single bump, wrong answers take the detour, traffic never rides.`);
+console.log(`PASS: Sky Coaster only on Sunlit route choices (not review laps); exact 18 m gain (feel only) with a 2x launch, road speed at both ends and a gentle glide landing with no forced merge; smooth joins and clear landing stretches; raised and road levels never meet; landings keep rivals on asphalt; ${sims} Sunlit races: ${rides} player rides and ${rivalRides} rival rides without a single bump, wrong answers take the detour, traffic never rides.`);
