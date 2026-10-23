@@ -20,10 +20,10 @@
     // and shorter crosswalk waits, which otherwise made Stormcrest the easiest
     // arena. Challenge rivals read faster and charge Nitro faster than Relaxed.
     // Every ride's landing replaces one obstacle stretch per route choice;
-    // Challenge rivals in Sunlit and Stormcrest (four rides) wait longer at
-    // crossings, and Stormcrest's charge Nitro a little slower, to match.
-    relaxed:[{pace:[1.50,1.51,1.55],think:[1.05,.7,.35],readPace:[1.35,1.45,1.53],crossWait:[2.6,1.4,.9],throttle:5.5,accuracy:[.92,.93,.98],lookAhead:3.3,burst:2.8,push:.04,fuel:60,weave:[16,16,6],fuelGain:[10,10,13]},{pace:[1.50,1.51,1.55],think:[.9,.6,.3],readPace:[1.4,1.48,1.54],crossWait:[2.6,1.4,.9],throttle:6,accuracy:[.88,.9,.97],lookAhead:3.1,burst:2.9,push:.04,fuel:60,weave:[16,16,6],fuelGain:[10,10,13]}],
-    challenge:[{pace:[1.505,1.495,1.55],think:.40,readPace:1.50,crossWait:[3.6,2.8,3.4],throttle:7,accuracy:.985,lookAhead:3.7,burst:[2.9,3.0,3.3],push:.06,fuel:60,weave:6,fuelGain:[11,13,18]},{pace:[1.505,1.495,1.55],think:.30,readPace:1.55,crossWait:[3.6,2.8,3.4],throttle:7,accuracy:.95,lookAhead:3.3,burst:[2.9,3.0,3.3],push:.08,fuel:60,weave:6,fuelGain:[11,13,18]}]
+    // Challenge rivals wait longer at crossings, and Stormcrest rivals (four
+    // rides) charge Nitro a little slower, to match.
+    relaxed:[{pace:[1.50,1.51,1.55],think:[1.05,.7,.35],readPace:[1.35,1.45,1.53],crossWait:[2.6,1.4,.9],throttle:5.5,accuracy:[.92,.93,.98],lookAhead:3.3,burst:2.8,push:.04,fuel:60,weave:[16,16,6],fuelGain:[10,10,11]},{pace:[1.50,1.51,1.55],think:[.9,.6,.3],readPace:[1.4,1.48,1.54],crossWait:[2.6,1.4,.9],throttle:6,accuracy:[.88,.9,.97],lookAhead:3.1,burst:2.9,push:.04,fuel:60,weave:[16,16,6],fuelGain:[10,10,11]}],
+    challenge:[{pace:[1.505,1.495,1.55],think:.40,readPace:1.50,crossWait:[3.6,3.4,3.4],throttle:7,accuracy:.985,lookAhead:3.7,burst:[2.9,3.0,3.3],push:.06,fuel:60,weave:6,fuelGain:[11,13,16]},{pace:[1.505,1.495,1.55],think:.30,readPace:1.55,crossWait:[3.6,3.4,3.4],throttle:7,accuracy:.95,lookAhead:3.3,burst:[2.9,3.0,3.3],push:.08,fuel:60,weave:6,fuelGain:[11,13,16]}]
   };
 
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
@@ -59,9 +59,10 @@
     return null;
   }
   // Rides: the correct branch of each route choice leaves the road for a
-  // raised ride beside it and lands back in its lane. Sunlit's three Sky
-  // Coasters escalate (gentle, classic, finale); Coastal has a Sea Jump and
-  // Stormcrest a Cliff Plunge. A layout gives, in ride metres (0..span):
+  // raised ride beside it and lands back in its lane. Each arena's rides
+  // build up through the race: Sunlit's Sky Coasters (gentle, classic,
+  // finale), Coastal's Sea Jumps (hop, jump, double jump) and Stormcrest's
+  // Cliff Plunges (drop, tunnel, plunge, finale). A layout gives, in ride metres (0..span):
   // heights above the road ([u, h] or [u, h, slope]); the sideways path;
   // course pace relative to the road ('w' marks the slow windows, solved so
   // every ride gains exactly COASTER_GAIN metres, like a shortcut); and the
@@ -85,20 +86,45 @@
       leave:[[0,0],[60,1]],leaveCentre:[[0,0],[34,0],[86,1]],back:[[0,1],[276,1],[300,0]],
       pace:[[0,1],[8,1],[26,2.1],[58,1.8],[72,1.3],[104,2.2],[124,'w'],[134,'w'],[158,1.7],[170,1.3],[184,1.6],[224,1.6],[246,'w'],[262,'w'],[282,1.4],[320,1.25],[370,1]],
       elements:[{kind:'loop',start:108,end:150,radius:9.5,shift:8,settle:34,count:2},{kind:'corkscrew',start:184,end:226,turns:2},{kind:'helix',start:236,end:272,radius:15,bank:1.15}]},
+    seaHop:{hint:'The right answer flies the Sea Jump!',title:'SEA JUMP',tagline:'THE RIGHT ANSWER FLIES',span:280,out:20,
+      heights:[[0,0],[10,0],[50,5,.22],[110,4.5,-.25],[134,3.2],[156,5.5],[178,3.6],[200,4.8],[220,4.2],[274,0],[280,0]],
+      leave:[[0,0],[44,1]],leaveCentre:[[0,0],[42,0],[90,1]],back:[[0,1],[200,1],[222,0]],
+      pace:[[0,1],[8,1],[28,2],[50,2],[70,'w'],[92,'w'],[112,1.8],[134,1.6],[156,1.3],[178,1.6],[200,1.3],[222,1.4],[250,1.2],[280,1]],
+      elements:[{kind:'air',start:51,end:109}]},
     seaJump:{hint:'The right answer flies the Sea Jump!',title:'SEA JUMP',tagline:'THE RIGHT ANSWER FLIES',span:330,out:20,
       heights:[[0,0],[10,0],[62,7,.27],[150,6,-.33],[176,3.5],[200,6.5],[222,3.8],[244,6.2],[266,4],[322,0],[330,0]],
       leave:[[0,0],[50,1]],leaveCentre:[[0,0],[46,0],[100,1]],back:[[0,1],[246,1],[270,0]],
       pace:[[0,1],[8,1],[30,2.2],[62,2.2],[86,'w'],[124,'w'],[150,1.9],[176,1.6],[200,1.3],[222,1.6],[244,1.3],[266,1.5],[300,1.25],[330,1]],
       elements:[{kind:'air',start:63,end:149},{kind:'roll',start:88,end:128}]},
+    seaFinale:{hint:'The right answer flies the Sea Jump!',title:'SEA JUMP',tagline:'THE RIGHT ANSWER FLIES',span:340,out:20,
+      heights:[[0,0],[10,0],[48,7,.3],[118,8,-.2],[134,7.4],[150,9,.35],[238,6,-.35],[256,3.6],[270,4.5],[334,0],[340,0]],
+      leave:[[0,0],[48,1]],leaveCentre:[[0,0],[42,0],[96,1]],back:[[0,1],[250,1],[268,0]],
+      pace:[[0,1],[8,1],[28,2.1],[48,2.1],[68,'w'],[98,'w'],[118,1.9],[134,1.5],[150,2],[172,'w'],[216,'w'],[238,1.9],[256,1.6],[270,1.4],[300,1.25],[340,1]],
+      elements:[{kind:'air',start:49,end:117},{kind:'roll',start:66,end:100},{kind:'air',start:151,end:237},{kind:'roll',start:170,end:218,turns:2}]},
+    cliffDrop:{hint:'The right answer drops into the Cliff Plunge!',title:'CLIFF PLUNGE',tagline:'THE RIGHT ANSWER DROPS IN',span:260,out:18,
+      heights:[[0,0],[10,0],[34,4],[70,10],[78,10.4],[104,3],[130,4],[150,4.5],[196,4.2],[254,0],[260,0]],
+      leave:[[0,0],[36,1]],leaveCentre:[[0,0],[28,0],[60,1]],back:[[0,1],[170,1],[194,0]],
+      pace:[[0,1],[8,1],[26,1.7],[38,1.2],[50,'w'],[66,'w'],[80,1.3],[104,2.2],[130,1.7],[160,1.5],[200,1.3],[230,1.15],[260,1]],
+      elements:[]},
+    cliffTunnel:{hint:'The right answer drops into the Cliff Plunge!',title:'CLIFF PLUNGE',tagline:'THE RIGHT ANSWER DROPS IN',span:300,out:18,
+      heights:[[0,0],[10,0],[40,6],[86,14],[94,14.5],[124,2.8],[136,2.8],[176,3.5],[188,4],[230,4.2],[244,4],[298,0],[300,0]],
+      leave:[[0,0],[40,1]],leaveCentre:[[0,0],[28,0],[64,1]],back:[[0,1],[230,1],[250,0]],
+      pace:[[0,1],[8,1],[26,1.7],[40,1.2],[54,'w'],[84,'w'],[96,1.2],[124,2.4],[136,2.2],[172,2],[190,1.6],[230,1.4],[270,1.2],[300,1]],
+      elements:[{kind:'tunnel',start:128,end:172}]},
     cliffPlunge:{hint:'The right answer drops into the Cliff Plunge!',title:'CLIFF PLUNGE',tagline:'THE RIGHT ANSWER DROPS IN',span:320,out:18,
       heights:[[0,0],[10,0],[40,6],[96,18],[104,18.5],[136,2.5],[150,2.5],[186,3.5],[196,4],[250,4],[262,4],[316,0],[320,0]],
       leave:[[0,0],[40,1]],leaveCentre:[[0,0],[28,0],[64,1]],back:[[0,1],[252,1],[274,0]],
       pace:[[0,1],[8,1],[26,1.7],[40,1.2],[54,'w'],[92,'w'],[104,1.2],[136,2.4],[150,2.2],[186,2],[200,1.6],[250,1.6],[270,1.4],[300,1.2],[320,1]],
-      elements:[{kind:'tunnel',start:140,end:184},{kind:'halfpipe',start:196,end:252,swing:4.5,bank:1}]}
+      elements:[{kind:'tunnel',start:140,end:184},{kind:'halfpipe',start:196,end:252,swing:4.5,bank:1}]},
+    cliffFinale:{hint:'The right answer drops into the Cliff Plunge!',title:'CLIFF PLUNGE',tagline:'THE RIGHT ANSWER DROPS IN',span:325,out:18,
+      heights:[[0,0],[10,0],[40,7],[100,22],[108,22.5],[138,2.5],[150,2.5],[196,3.5],[204,4],[262,4],[270,4],[323,0],[325,0]],
+      leave:[[0,0],[40,1]],leaveCentre:[[0,0],[28,0],[64,1]],back:[[0,1],[262,1],[282,0]],
+      pace:[[0,1],[8,1],[26,1.7],[40,1.2],[56,'w'],[96,'w'],[108,1.2],[138,2.6],[150,2.3],[196,2.1],[210,1.7],[262,1.7],[282,1.4],[300,1.2],[325,1]],
+      elements:[{kind:'tunnel',start:144,end:198},{kind:'corkscrew',start:152,end:192},{kind:'halfpipe',start:206,end:262,swing:5,bank:1.1,swerves:3}]}
   };
   for(const layout of Object.values(RIDE_LAYOUTS)){Object.values(layout).forEach(v=>Array.isArray(v)&&Object.freeze(v));Object.freeze(layout);}
-  // Ride layouts by arena: Sunlit's escalate through its route choices.
-  const RIDE_ORDER=[['gentle','classic','finale'],['seaJump'],['cliffPlunge']];
+  // Ride layouts by arena; each arena's rides build up through the race.
+  const RIDE_ORDER=[['gentle','classic','finale'],['seaHop','seaJump','seaFinale'],['cliffDrop','cliffTunnel','cliffPlunge','cliffFinale']];
   const ease=t=>{t=clamp(t,0,1);return t*t*t*(10+t*(-15+6*t));};
   // Smooth keyframes; a point with a slope ([u, v, slope]) uses a cubic
   // Hermite segment, as for a jump's takeoff and landing.

@@ -7,12 +7,12 @@ const {keepHolding}=require('./attentive-driver.cjs');
 global.window={};for(const f of ['language-bank','match-bank','repair-bank','emoji-bank','game-core'])require(path.resolve((fs.existsSync('dist/game-core.js')?'dist/':'')+f+'.js'));
 const C=window.RallyCore,{createDrivingFeel,updateDrivingFeel}=require('./driving-feel-compiled.cjs'),units=window.LANGUAGE_BANK.flatMap(g=>g.units);
 let rides=0,rivalRides=0,sims=0;
-assert.deepEqual(C.RIDE_ORDER,[['gentle','classic','finale'],['seaJump'],['cliffPlunge']]);
+assert.deepEqual(C.RIDE_ORDER,[['gentle','classic','finale'],['seaHop','seaJump','seaFinale'],['cliffDrop','cliffTunnel','cliffPlunge','cliffFinale']]);
 for(const unit of units.slice(0,12))for(const difficulty of ['relaxed','challenge'])for(let arena=0;arena<3;arena++){
  const s=C.createRace(unit,difficulty,arena,unit.id.length*7+arena),forks=s.tasks.filter(t=>t.kind==='junction'),rides=forks.filter(t=>t.coaster);
  assert.equal(rides.length,forks.length,'Every route choice hides a ride');
  rides.forEach((t,k)=>{
-  const order=C.RIDE_ORDER[arena],layout=order[Math.min(k,order.length-1)];assert.equal(t.coaster.layout,layout,'Sunlit escalates gentle, classic, finale');
+  const order=C.RIDE_ORDER[arena],layout=order[Math.min(k,order.length-1)];assert.equal(t.coaster.layout,layout,'Every arena builds its rides up through the race');
   assert.equal(t.coaster.span,C.RIDE_LAYOUTS[layout].span);assert([-1,1].includes(t.coaster.side));if(t.correctIndex!==1)assert.equal(t.coaster.side,t.correctIndex-1,'An outer-lane ride stays on its own side');
   const zone=C.taskZone(t);assert.equal(zone.reach,t.at+t.coaster.span+60);assert.equal(zone.end,t.at+150,'The road shoulders are unchanged');
   assert(!s.obstacles.some(o=>o.at>t.at-100&&o.at<zone.reach+80),'Nothing waits in the landing stretch');
@@ -39,7 +39,10 @@ assert(!C.createReviewLap(units[0],[{id:'x',kind:'light',type:'translation',prom
   for(let at=r.start;at<=r.end;at+=.5)if(C.coasterHeight(r,at)<C.COASTER_CLEAR)for(const g of C.groundRoutes(s,t))if(g.lane!==r.lane&&at<=g.end)assert(Math.abs(r.lane*3.35+C.routeOffset(r,at)-g.lane*3.35-C.routeOffset(g,at))>=3.35-1e-9,name+' crosses a road branch below the clearance');
  }
  const peak=name=>{const t={...base,coaster:{layout:name,span:C.RIDE_LAYOUTS[name].span,side:1}},r=C.makeRoute(s,t,base.correctIndex,true);let p=0;for(let at=r.start;at<=r.end;at+=1)p=Math.max(p,C.coasterHeight(r,at));return p;};
- assert(peak('finale')>peak('classic')&&peak('classic')>peak('gentle'),'Each Sunlit ride has a bigger first drop');assert(peak('cliffPlunge')>18);
+ for(const order of C.RIDE_ORDER)order.slice(1).forEach((name,k)=>assert(peak(name)>peak(order[k]),name+' is bigger than '+order[k]));assert(peak('cliffFinale')>22);
+ const kinds=name=>C.RIDE_LAYOUTS[name].elements.map(e=>e.kind+(e.turns||e.count||'')).join(',');
+ assert.equal(kinds('seaHop'),'air','The first Sea Jump is a plain hop');assert(kinds('seaFinale').split('air').length-1===2&&kinds('seaFinale').includes('roll2'),'The Sea Jump finale is a double jump with a double roll');
+ assert.equal(kinds('cliffDrop'),'','The first Cliff Plunge is a plain drop');assert.equal(kinds('cliffTunnel'),'tunnel','The second adds the tunnel');assert(kinds('cliffFinale').includes('corkscrew')&&C.RIDE_LAYOUTS.cliffFinale.elements.find(e=>e.kind==='halfpipe').swerves===3,'The Cliff Plunge finale adds a corkscrew and longer swerves');
  assert(!C.RIDE_LAYOUTS.gentle.elements.some(e=>e.kind==='loop'),'The first ride has no loop');assert(C.RIDE_LAYOUTS.classic.elements.some(e=>e.kind==='loop'));assert(C.RIDE_LAYOUTS.finale.elements.some(e=>e.kind==='loop'&&e.count===2)&&C.RIDE_LAYOUTS.finale.elements.some(e=>e.kind==='corkscrew'&&e.turns===2),'The finale doubles the loop and the corkscrew');
  // Levels: a car on the raised track never meets a car on the road below.
  const t={...base,coaster:{layout:'classic',span:340,side:base.correctIndex===1?1:base.correctIndex-1}},r=C.makeRoute(s,t,t.correctIndex,true);

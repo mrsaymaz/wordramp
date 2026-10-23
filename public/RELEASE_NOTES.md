@@ -5,13 +5,16 @@ Rides on every route choice
   (launch, drop, helix), the second adds the loop and corkscrew, and the
   finale has the biggest drop (17 m), a double loop, a double corkscrew and a
   wider helix.
-- Coastal Overpass: the Sea Jump. A ramp launch off the bridge, a long flight
-  over the sea with slow-motion hang time and a barrel roll, a landing deck
-  and wave rollers. Pylons stand in the sea; the camera films the flight from
-  the side.
-- Stormcrest Expressway: the Cliff Plunge. A slow climb up the mountainside on
-  a timber track, a steep plunge, a run through rock arches and bobsled
-  half-pipe swerves between tall walls.
+- Coastal Overpass: Sea Jumps that build up. A low hop; then a ramp launch
+  off the bridge with a long flight, slow-motion hang time and a barrel roll;
+  then the finale double jump (a floating platform launches a second, higher
+  flight with a double roll). Each lands on a deck with wave rollers. Pylons
+  stand in the sea; the camera films the flights from the side.
+- Stormcrest Expressway: Cliff Plunges that build up over its four route
+  choices. A short climb and drop; then one through rock arches; then the
+  full plunge with bobsled half-pipe swerves between tall walls; then the
+  finale with a 22 m climb, a near-vertical drop, a corkscrew inside the rock
+  arches and three bobsled swerves. Timber track and steel rails.
 - Every ride: hidden until the answer is judged, feel only (exactly 18 m, like
   a shortcut), no hits possible, rivals ride the passing track, and reduced
   motion keeps the ride without loops, rolls, helix or swerves.
@@ -35,10 +38,11 @@ Bridge Builder (road repair)
   plank, never thin air. Reduced motion: gentle slab drops, no hop or shake.
 
 Balance
-- Each ride's landing replaces one obstacle stretch per route choice. Challenge
-  rivals wait longer at crossings in Sunlit and Stormcrest, and Stormcrest's
-  charge Nitro a little slower. Held-acceleration first places: Relaxed
-  11/8/5 and Challenge 6/4/2 by arena of 12; earned Nitro still wins all 72.
+- Each ride's landing replaces one obstacle stretch per route choice.
+  Challenge rivals wait longer at crossings in every arena, and Stormcrest
+  rivals (four rides) charge Nitro a little slower. Held-acceleration first
+  places: Relaxed 11/7/5 and Challenge 6/4/2 by arena of 12; earned Nitro
+  still wins all 72.
 - The fastest honest Sunlit win is unchanged (215.6 s), so the League's
   minSeconds stays 180.
 

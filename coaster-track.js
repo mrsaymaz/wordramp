@@ -30,8 +30,8 @@ export function detour(u,side,reduced=false,elements=[]){
       // One outward horizontal turn, banked towards its centre.
       const a=2*Math.PI*ease(p);out.forward+=d.radius*Math.sin(a);out.lateral+=side*d.radius*(1-Math.cos(a));out.roll+=-side*d.bank*Math.sin(Math.PI*p)**2;
     }else if(d.kind==='halfpipe'&&p>0&&p<1){
-      // Bobsled swings: two side-to-side swerves, banked up the wall.
-      const env=Math.sin(Math.PI*p)**2,w=Math.sin(4*Math.PI*p);out.lateral+=side*d.swing*w*env;out.roll+=side*d.bank*w*env;
+      // Bobsled swings: side-to-side swerves (two by default), banked up the wall.
+      const env=Math.sin(Math.PI*p)**2,w=Math.sin(2*Math.PI*(d.swerves||2)*p);out.lateral+=side*d.swing*w*env;out.roll+=side*d.bank*w*env;
     }
   }
   return out;
