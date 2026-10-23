@@ -19,8 +19,10 @@
     // per correct answer), tighter weaving (6 m behind a slower car, not 16 m)
     // and shorter crosswalk waits, which otherwise made Stormcrest the easiest
     // arena. Challenge rivals read faster and charge Nitro faster than Relaxed.
+    // Sunlit's Sky Coaster landings replace one obstacle stretch per route
+    // choice; its Challenge rivals wait a little longer at crossings to match.
     relaxed:[{pace:[1.50,1.51,1.55],think:[1.05,.7,.35],readPace:[1.35,1.45,1.53],crossWait:[2.6,1.4,.9],throttle:5.5,accuracy:[.92,.93,.98],lookAhead:3.3,burst:2.8,push:.04,fuel:60,weave:[16,16,6],fuelGain:[10,10,13]},{pace:[1.50,1.51,1.55],think:[.9,.6,.3],readPace:[1.4,1.48,1.54],crossWait:[2.6,1.4,.9],throttle:6,accuracy:[.88,.9,.97],lookAhead:3.1,burst:2.9,push:.04,fuel:60,weave:[16,16,6],fuelGain:[10,10,13]}],
-    challenge:[{pace:[1.52,1.495,1.55],think:.40,readPace:1.50,crossWait:[3,2.8,2.2],throttle:7,accuracy:.985,lookAhead:3.7,burst:[2.9,3.0,3.3],push:.06,fuel:60,weave:6,fuelGain:[11,13,24]},{pace:[1.52,1.495,1.55],think:.30,readPace:1.55,crossWait:[3,2.8,2.2],throttle:7,accuracy:.95,lookAhead:3.3,burst:[2.9,3.0,3.3],push:.08,fuel:60,weave:6,fuelGain:[11,13,24]}]
+    challenge:[{pace:[1.50,1.495,1.55],think:.40,readPace:1.50,crossWait:[3.8,2.8,2.2],throttle:7,accuracy:.985,lookAhead:3.7,burst:[2.9,3.0,3.3],push:.06,fuel:60,weave:6,fuelGain:[11,13,24]},{pace:[1.50,1.495,1.55],think:.30,readPace:1.55,crossWait:[3.8,2.8,2.2],throttle:7,accuracy:.95,lookAhead:3.3,burst:[2.9,3.0,3.3],push:.08,fuel:60,weave:6,fuelGain:[11,13,24]}]
   };
 
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
@@ -292,11 +294,14 @@
   function raceSucceeded(s){return !!s&&s.status==='finished'&&!raceFailed(s)&&s.distance>=s.arena.length;}
   function raceOrder(s){const dnf=raceFailed(s),racers=[{id:'player',name:'YOU',at:s.distance,finishedAt:dnf?null:s.finishedAt,dnf},...s.rivals];return racers.sort((a,b)=>!!a.dnf!==!!b.dnf?(a.dnf?1:-1):a.finishedAt!=null&&b.finishedAt!=null?a.finishedAt-b.finishedAt:a.finishedAt!=null?-1:b.finishedAt!=null?1:b.at-a.at||String(a.id).localeCompare(String(b.id)));}
   function taskZone(t){const end=t.kind==='junction'?t.at+150:t.kind==='pedestrian'?t.at+84:t.kind==='repair'?t.endAt+48:t.at+48;return {id:t.id,start:t.at-100,end,reach:t.coaster?Math.max(end,t.at+t.coaster.span+60):end,task:t};}
+  // A Sky Coaster lands with a full-width shoulder, so a rival on the outer
+  // passing track touches down on asphalt, as at a task apron.
+  function landingZone(t){const at=t.at+t.coaster.span;return {id:t.id+'-landing',start:at-40,end:at+20,reach:at+20,task:t,landing:true};}
   function taskRoadZone(s,at){return s.tasks.map(taskZone).find(z=>at>=z.start-70&&at<=z.end+25);}
   const roadCache=new WeakMap();
   function roadCourse(s){
     let c=roadCache.get(s);if(c?.tasks===s.tasks&&c.revision===s.taskRevision)return c;
-    c={tasks:s.tasks,revision:s.taskRevision,zones:s.tasks.map(taskZone),forks:s.tasks.filter(t=>t.kind==='junction').map(t=>groundRoutes(s,t))};roadCache.set(s,c);return c;
+    c={tasks:s.tasks,revision:s.taskRevision,zones:[...s.tasks.map(taskZone),...s.tasks.filter(t=>t.coaster).map(landingZone)],forks:s.tasks.filter(t=>t.kind==='junction').map(t=>groundRoutes(s,t))};roadCache.set(s,c);return c;
   }
   const smoothRoad=t=>{t=clamp(t,0,1);return t*t*t*(10+t*(-15+6*t));};
   function apronWidth(s,at){let width=5.4;for(const z of roadCourse(s).zones)width=Math.max(width,5.4+6.15*Math.min(smoothRoad((at-z.start+70)/40),smoothRoad((z.end+80-at)/55)));return width;}

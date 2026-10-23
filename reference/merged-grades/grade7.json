@@ -1,7 +1,7 @@
 {
   "grade": 7,
   "cefr": "A2",
-  "note": "Wordramp 0.24.0: original lessons merged with both reviewed grade-file batches.",
+  "note": "Wordramp 0.25.0: original lessons merged with both reviewed grade-file batches.",
   "units": [
     {
       "id": "g7u1",

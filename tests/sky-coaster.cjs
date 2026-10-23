@@ -57,10 +57,12 @@ function race(difficulty,seed,wrongAtForks,nitro){
   for(const r of s.rivals)if(r.route?.coaster&&!r.counted){r.counted=r.route.id;rivalRides++;}else if(!r.route)r.counted=null;
  }
  sims++;assert.equal(s.status,'finished',`${difficulty}/${seed}/${wrongAtForks}`);assert.equal(s.collisions,0,`${difficulty}/${seed}/${wrongAtForks}/${nitro}: an attentive student finishes clean`);
+ // A rival landing on the outer track touches down on the shoulder and races on.
+ assert(s.rivals.every(r=>r.at>s.arena.length*.8),'No rival is left stranded after a coaster landing');
  const forks=s.tasks.filter(t=>t.coaster).length;assert.equal(rode,wrongAtForks?0:forks);rides+=rode;
  return s;
 }
 const seeds=Number(process.env.WORDRAMP_TEST_SEEDS)||8;
 for(const difficulty of ['relaxed','challenge'])for(let seed=1;seed<=seeds;seed++){race(difficulty,seed,false,seed%2===0);race(difficulty,seed,true,false);}
 assert(rivalRides>0,'Rivals who answer right ride the coaster too');
-console.log(`PASS: Sky Coaster only on Sunlit route choices (not review laps); exact 18 m gain with lift/drop speed; smooth joins and clear landing stretches; raised and road levels never meet; ${sims} Sunlit races: ${rides} player rides and ${rivalRides} rival rides without a single bump, wrong answers take the detour, traffic never rides.`);
+console.log(`PASS: Sky Coaster only on Sunlit route choices (not review laps); exact 18 m gain with lift/drop speed; smooth joins and clear landing stretches; raised and road levels never meet; landings keep rivals on asphalt; ${sims} Sunlit races: ${rides} player rides and ${rivalRides} rival rides without a single bump, wrong answers take the detour, traffic never rides.`);

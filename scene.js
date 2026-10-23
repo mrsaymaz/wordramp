@@ -184,7 +184,9 @@ export class RallyScene{
   prepareCourse(state){
     if(this.courseState===state&&this.courseRevision===state?.taskRevision)return;
     this.courseState=state;this.courseRevision=state?.taskRevision;this.roadReservations=[];this.forkRanges=[];this.apronRanges=[];
-    for(const t of state?.tasks||[]){const zone=window.RallyCore.taskZone(t);this.roadReservations.push({start:zone.start-80,end:zone.end+80});this.apronRanges.push({start:zone.start-70,fullStart:zone.start-30,fullEnd:zone.end+25,end:zone.end+80});if(t.kind==='junction')this.forkRanges.push(forkBounds(window.RallyCore.makeRoute(state,t,0,true,true)));}
+    for(const t of state?.tasks||[]){const zone=window.RallyCore.taskZone(t);this.roadReservations.push({start:zone.start-80,end:zone.end+80});this.apronRanges.push({start:zone.start-70,fullStart:zone.start-30,fullEnd:zone.end+25,end:zone.end+80});
+      // The same landing shoulder as the core (see landingZone).
+      if(t.coaster){const at=t.at+t.coaster.span;this.apronRanges.push({start:at-110,fullStart:at-70,fullEnd:at+45,end:at+100});}if(t.kind==='junction')this.forkRanges.push(forkBounds(window.RallyCore.makeRoute(state,t,0,true,true)));}
     const C=window.RallyCore;this.forkRoutes=(state?.tasks||[]).filter(t=>t.kind==='junction').map(t=>{const routes=C.groundRoutes(state,t);return {routes,bounds:forkBounds(routes[0])};});
     // Buildings step back on both sides of a Sky Coaster, so neither the track
     // nor the cleared side hints at the answer before it is judged.
