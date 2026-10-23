@@ -23,7 +23,7 @@
     // Challenge rivals wait longer at crossings, and Stormcrest rivals (four
     // rides) charge Nitro a little slower, to match.
     relaxed:[{pace:[1.50,1.51,1.55],think:[1.05,.7,.35],readPace:[1.35,1.45,1.53],crossWait:[2.6,1.4,.9],throttle:5.5,accuracy:[.92,.93,.98],lookAhead:3.3,burst:2.8,push:.04,fuel:60,weave:[16,16,6],fuelGain:[10,10,11]},{pace:[1.50,1.51,1.55],think:[.9,.6,.3],readPace:[1.4,1.48,1.54],crossWait:[2.6,1.4,.9],throttle:6,accuracy:[.88,.9,.97],lookAhead:3.1,burst:2.9,push:.04,fuel:60,weave:[16,16,6],fuelGain:[10,10,11]}],
-    challenge:[{pace:[1.505,1.495,1.55],think:.40,readPace:1.50,crossWait:[3.6,3.4,3.4],throttle:7,accuracy:.985,lookAhead:3.7,burst:[2.9,3.0,3.3],push:.06,fuel:60,weave:6,fuelGain:[11,13,16]},{pace:[1.505,1.495,1.55],think:.30,readPace:1.55,crossWait:[3.6,3.4,3.4],throttle:7,accuracy:.95,lookAhead:3.3,burst:[2.9,3.0,3.3],push:.08,fuel:60,weave:6,fuelGain:[11,13,16]}]
+    challenge:[{pace:[1.505,1.495,1.55],think:.40,readPace:1.50,crossWait:[3.6,3.4,3.0],throttle:7,accuracy:.985,lookAhead:3.7,burst:[2.9,3.0,3.3],push:.06,fuel:60,weave:6,fuelGain:[11,13,16]},{pace:[1.505,1.495,1.55],think:.30,readPace:1.55,crossWait:[3.6,3.4,3.0],throttle:7,accuracy:.95,lookAhead:3.3,burst:[2.9,3.0,3.3],push:.08,fuel:60,weave:6,fuelGain:[11,13,16]}]
   };
 
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
@@ -227,7 +227,7 @@
     // Sparse moving traffic; stationary driving challenges belong to the open
     // intervals between generous task approaches, never inside answer lanes.
     const patterns=[],speed=8+arenaIndex*2,reactionTime={relaxed:2.3,challenge:1.6}[difficulty];
-    const patternSpacing=(difficulty==='relaxed'?[66,48,44]:[58,46,42])[arenaIndex];let escape=0;
+    const patternSpacing=(difficulty==='relaxed'?[66,48,44]:[58,46,40])[arenaIndex];let escape=0;
     const types=['cones','barrier','crates','pothole','barrels','fallen_branch',...(arenaIndex>0?['tire_stack','road_panels']:[]),...(arenaIndex===2?['rockfall']:[])];
     // Plan every clear stretch first, then hand some of them a traffic group.
     const stretches=[];for(let i=0;i<=tasks.length;i++){const previous=tasks[i-1],next=tasks[i],start=previous?taskZone(previous).reach+80:60,end=next?taskZone(next).start-120:arena.length-60;if(end-start>=65)stretches.push({i,start,end});}

@@ -40,7 +40,9 @@ Bridge Builder (road repair)
 Balance
 - Each ride's landing replaces one obstacle stretch per route choice.
   Challenge rivals wait longer at crossings in every arena, and Stormcrest
-  rivals (four rides) charge Nitro a little slower. Held-acceleration first
+  rivals (four rides) charge Nitro a little slower. Challenge obstacle rows in
+  Stormcrest are slightly closer (40 m), so each arena still has clearly more
+  hazards than the one before. Held-acceleration first
   places: Relaxed 11/7/5 and Challenge 6/4/2 by arena of 12; earned Nitro
   still wins all 72.
 - The fastest honest Sunlit win is unchanged (215.6 s), so the League's
