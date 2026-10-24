@@ -353,7 +353,10 @@ function renderFinger(prompt,now){
   tip.hidden=!showTip;if(showTip){tip.dataset.mode=mode;tip.dataset.touch=String(touch);tip.classList.toggle('press',reduced||!!pose.press);setStyle(tip,'transform',`translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`);setText('finger-keys',KEY_HINT[prompt]||'');}
   trail.hidden=!['steer','nitro','sort'].includes(mode)||!touch;if(!trail.hidden){trail.dataset.mode=mode;trail.classList.toggle('boost',!!pose.boost||reduced);setStyle(trail,'transform',`translate(${home.x.toFixed(1)}px,${home.y.toFixed(1)}px)`);}
   const text=TIP_TEXT[prompt]?.[touch?0:1];label.hidden=!text;
-  if(text){setText('finger-label',text);const width=scene?.viewport?.width||innerWidth,lx=Math.max(130,Math.min(width-130,home.x));setStyle(label,'transform',`translate(${lx.toFixed(1)}px,${(home.y+(mode==='signs'?40:46)).toFixed(1)}px)`);}
+  if(text){setText('finger-label',text);const width=scene?.viewport?.width||innerWidth,lx=Math.max(130,Math.min(width-130,home.x));
+    // At a crosswalk the label sits under the two group signs, clear of their names.
+    const groups=mode==='sort'?[...$('road-answers').children].map(b=>parseFloat(b.style.top)).filter(Number.isFinite):[],ly=groups.length?Math.max(home.y+46,Math.max(...groups)+56):home.y+(mode==='signs'?40:46);
+    setStyle(label,'transform',`translate(${lx.toFixed(1)}px,${ly.toFixed(1)}px)`);}
 }
 function updateCoach(now){
   const el=$('coach'),dt=Math.max(0,Math.min(.25,(now-coachAt)/1000));coachAt=now;
