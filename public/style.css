@@ -750,4 +750,4 @@ body.reduced-motion .home-host,body.reduced-motion .modal-host img{animation:non
 @media(max-width:760px){#finger-label{font-size:11px;padding:7px 11px}}
 .reduced-motion .fd-hand{animation:none;left:50%;top:31%}.reduced-motion .fd-stage polyline{animation:none;stroke-dashoffset:0}.reduced-motion .ft-hand,.reduced-motion #finger-tip::before{transition:none}
 #finger-demo[data-touch="false"]{bottom:128px}
-#finger-tip[data-mode="sort"] .ft-keys{top:-104px}
+#finger-tip[data-mode="sort"] .ft-keys{left:74px;top:-40px;transform:none}#finger-tip.press[data-mode="sort"] .ft-keys{transform:translateY(3px)}
