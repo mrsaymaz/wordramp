@@ -610,4 +610,4 @@ function frame(now){let rawDt=(now-previous)/1000,dt=Math.min(rawDt,.06);previou
   const idleBehindModal=!$('modal-backdrop').hidden&&(!race||['paused','finished','failed'].includes(race.status));idleFrames=idleBehindModal?idleFrames+1:0;
   if(idleFrames%6===0)scene?.update(dt,race,mode);updateUI(now);sound.update(race,scene?.spectators?.proximity||0);if(now>toastEnd)$('toast').classList.remove('visible');if(roadFeedbackEnd&&now>roadFeedbackEnd){setText('road-feedback','');roadFeedbackEnd=0;}requestAnimationFrame(frame);}
 requestAnimationFrame(frame);setTimeout(()=>$('loading').hidden=true,500);
-window.WORDRAMP=window.WORDRIFT=window.WORDSHIFT={version:'0.27.0',ulti:Object.freeze({snapshot:grade=>league.snapshot(grade??saved.grade),enabled:league.enabled}),get race(){return race;},get settings(){return saved;},get scene(){return scene;}};
+window.WORDRAMP=window.WORDRIFT=window.WORDSHIFT={version:'0.27.1',ulti:Object.freeze({snapshot:grade=>league.snapshot(grade??saved.grade),enabled:league.enabled}),get race(){return race;},get settings(){return saved;},get scene(){return scene;}};

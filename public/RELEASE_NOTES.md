@@ -1,3 +1,12 @@
+# v0.27.1 · Rides & Bridges (fix)
+
+- Bridge Builder slabs now bend with the road and fill the whole gap: each
+  slab covers its full 16 m slot and the full road width, so no dark strips
+  flicker along the edges or between slabs on curves (most visible on
+  Stormcrest's stone slabs; Sunlit and Coastal match too). The open pit
+  follows the bend in one piece, and the words and hazard edge no longer
+  shimmer against the surface below them.
+
 # v0.27.0 · Rides & Bridges
 
 Rides on every route choice

@@ -312,24 +312,29 @@ export class RallyScene{
     // Coastal bridge it opens to the sea, with the deck's cut edges showing.
     const voidTex=canvasTexture((c,w,h)=>{const grad=c.createLinearGradient(0,0,w,0);grad.addColorStop(0,'#2b2622');grad.addColorStop(.18,'#0d0b0a');grad.addColorStop(.82,'#0d0b0a');grad.addColorStop(1,'#2b2622');c.fillStyle=grad;c.fillRect(0,0,w,h);},128,8);g.userData.textures.push(voidTex);
     const voidMat=new THREE.MeshBasicMaterial({map:voidTex,color:style.pit||0x0d0b0a});g.userData.ownMaterials.push(voidMat);
-    for(let at=task.at;at<task.at+BRIDGE_LENGTH-1e-6;at+=4){const mid=at+2,x=curveAt(mid),z=task.at-mid,r=heading(mid);
-      if(arena===1){for(const side of [-1,1]){const wall=mesh(g,'box',style.wall,x+side*5.5,-style.depth/2,z,.25,style.depth,4.05);wall.rotation.y=r;}}
-      else{const hole=new THREE.Mesh(new THREE.PlaneGeometry(10.8,4.05),voidMat);hole.rotation.set(-Math.PI/2,0,r);hole.position.set(x,-.035,z);g.add(hole);}}
+    // Gap pieces and slabs bend with the road (baked into their geometry), so
+    // their edges meet the cut road edges exactly on every curve.
+    const follow=(m,source,start,zBase=0)=>{m.updateMatrix();const shape=source.clone().applyMatrix4(m.matrix),p=shape.attributes.position;for(let i=0;i<p.count;i++)p.setX(i,p.getX(i)+curveAt(start-zBase-p.getZ(i))-curveAt(start));shape.computeVertexNormals();m.geometry=shape;m.position.set(0,0,0);m.rotation.set(0,0,0);m.scale.set(1,1,1);return m;};
+    const strip=(segments=8)=>new THREE.BoxGeometry(1,1,1,1,1,segments);
+    if(arena===1)for(let at=task.at;at<task.at+BRIDGE_LENGTH-1e-6;at+=4){const mid=at+2,x=curveAt(mid),z=task.at-mid,r=heading(mid);for(const side of [-1,1]){const wall=mesh(g,'box',style.wall,x+side*5.5,-style.depth/2,z,.25,style.depth,4.05);wall.rotation.y=r;}}
+    else{const hole=new THREE.Mesh(geo.contact,voidMat);hole.rotation.x=-Math.PI/2;hole.scale.set(10.8,BRIDGE_LENGTH,1);hole.position.set(0,-.035,-BRIDGE_LENGTH/2);g.add(hole);follow(hole,new THREE.PlaneGeometry(1,1,1,24),task.at);}
     if(arena===1)for(const z of [0,-BRIDGE_LENGTH]){const end=mesh(g,'box',style.wall,curveAt(task.at-z),-style.depth/2,z,10.8,style.depth,.3);end.rotation.y=heading(task.at-z);}
     // A hazard edge at the drop, and BRIDGE OUT signs at both road sides
     // (never across the road, so the open gap stays visible behind them).
     const hazard=canvasTexture((c,w,h)=>{for(let x=-h;x<w;x+=48){c.fillStyle='#f2c230';c.fillRect(x,0,24,h);c.fillStyle='#1d1d1d';c.fillRect(x+24,0,24,h);}},512,32);hazard.wrapS=THREE.RepeatWrapping;g.userData.textures.push(hazard);
-    const edgeMat=new THREE.MeshBasicMaterial({map:hazard});g.userData.ownMaterials.push(edgeMat);const edge=new THREE.Mesh(new THREE.PlaneGeometry(10.8,.7),edgeMat);edge.rotation.x=-Math.PI/2;edge.position.set(0,.05,.35);g.add(edge);g.userData.barriers.push(edge);
+    const edgeMat=new THREE.MeshBasicMaterial({map:hazard,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});g.userData.ownMaterials.push(edgeMat);const edge=new THREE.Mesh(new THREE.PlaneGeometry(10.8,.7),edgeMat);edge.rotation.x=-Math.PI/2;edge.position.set(0,.05,.35);g.add(edge);g.userData.barriers.push(edge);
     const tex=stripeTexture('BRIDGE OUT');g.userData.textures.push(tex);const boardMat=new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide});g.userData.ownMaterials.push(boardMat);
     for(const side of [-1,1]){const board=new THREE.Mesh(new THREE.PlaneGeometry(4.4,1.1),boardMat);board.position.set(side*7.4,2.5,4);board.rotation.y=-side*.45;g.add(board);g.userData.barriers.push(board);g.userData.barriers.push(mesh(g,'cylinder',0xd9dde0,side*7.4,1.2,4.1,.1,2.4,.1));}
-    const wordMats=task.blocks.map(word=>{const t=wordTexture(word);g.userData.textures.push(t);const m=new THREE.MeshBasicMaterial({map:t,transparent:true,color:0xb7c7d4,depthWrite:false});g.userData.ownMaterials.push(m);return m;});
-    const makeSlab=(j,word)=>{const slab=new THREE.Group(),at=task.at+j*BRIDGE_SLOT+8;slab.position.set(curveAt(at),.12,-j*BRIDGE_SLOT);slab.rotation.y=heading(at);
-      // Coastal slots are bascule spans: two leaves hinged at the slot ends.
-      const near=new THREE.Group(),far=new THREE.Group();far.position.z=-15.8;slab.add(near,far);slab.userData.leaves=arena===1?[near,far]:null;
-      if(arena===1){mesh(near,'box',style.slab,0,-.35,-3.95,10.4,.5,7.9);mesh(far,'box',style.slab,0,-.35,3.95,10.4,.5,7.9);for(const leaf of [near,far])mesh(leaf,'box',0x26aebc,0,-.05,leaf===near?-7.85:7.85,10.4,.12,.18);}
-      else mesh(near,'box',style.slab,0,-.35,-7.9,10.4,.5,15.8);
-      const face=new THREE.Mesh(new THREE.PlaneGeometry(9.4,2.94),word);face.rotation.x=-Math.PI/2;face.position.set(0,-.07,arena===1?-4.2:-7.9);near.add(face);slab.userData.face=face;
-      if(j===task.blocks.length-1){const kick=mesh(far,'box',0xf1c35a,0,-.05,1.2,10.4,.3,2.6);kick.rotation.x=.16;}
+    const wordMats=task.blocks.map(word=>{const t=wordTexture(word);g.userData.textures.push(t);const m=new THREE.MeshBasicMaterial({map:t,transparent:true,color:0xb7c7d4,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});g.userData.ownMaterials.push(m);return m;});
+    const makeSlab=(j,word)=>{const slab=new THREE.Group(),start=task.at+j*BRIDGE_SLOT,half=BRIDGE_SLOT/2;slab.position.set(curveAt(start),.12,-j*BRIDGE_SLOT);slab.userData.mid=new THREE.Vector3(curveAt(start+half)-curveAt(start),0,-half);
+      // Each slab fills its whole 16 m slot and the full road width. Coastal
+      // slots are bascule spans: two leaves hinged at the slot ends.
+      const near=new THREE.Group(),far=new THREE.Group();far.position.z=-BRIDGE_SLOT;slab.add(near,far);slab.userData.leaves=arena===1?[near,far]:null;
+      const part=(leaf,color,y,z,sy,sz,segments)=>follow(mesh(leaf,'box',color,0,y,z,10.8,sy,sz),strip(segments),start,leaf===far?-BRIDGE_SLOT:0);
+      if(arena===1){part(near,style.slab,-.35,-half/2,.5,half,4);part(far,style.slab,-.35,half/2,.5,half,4);for(const leaf of [near,far])part(leaf,0x26aebc,-.05,leaf===near?-half+.09:half-.09,.12,.18,1);}
+      else part(near,style.slab,-.35,-half,.5,BRIDGE_SLOT,8);
+      const face=new THREE.Mesh(new THREE.PlaneGeometry(9.4,2.94),word);face.rotation.x=-Math.PI/2;face.position.set(0,-.07,arena===1?-4.2:-half);near.add(face);follow(face,new THREE.PlaneGeometry(1,1,1,2).scale(9.4,2.94,1),start);slab.userData.face=face;
+      if(j===task.blocks.length-1){const kick=mesh(far,'box',0xf1c35a,0,-.05,1.2,10.8,.3,2.6);kick.rotation.x=.16;follow(kick,strip(2),start,-BRIDGE_SLOT);}
       g.add(slab);return slab;};
     const slabs=task.blocks.map((_,j)=>makeSlab(j,wordMats[j]));
     // The bouncing slab of a wrong block (its word is set when it appears).
@@ -367,10 +372,10 @@ export class RallyScene{
     bridge.slabs.forEach((slab,j)=>{
       if(j>=chosen){if(this.index===1){slab.visible=true;this.placeSlab(bridge,slab,0,reduced);slab.userData.face.visible=false;}else slab.visible=false;return;}
       const p=THREE.MathUtils.clamp((this.clock-bridge.placedAt[j])/duration,0,1);slab.visible=true;slab.userData.face.visible=true;this.placeSlab(bridge,slab,p,reduced);
-      if(p>=1&&!bridge.seated?.[j]){(bridge.seated||=[])[j]=true;if(this.index===2&&bridge.placedAt[j]>-Infinity){this.onCue?.('slam');if(bridge.dust){bridge.dust.at=this.clock;bridge.dust.mesh.position.copy(slab.position).add(new THREE.Vector3(0,.4,-7.9));}if(!reduced)this.shake=.35;}}
+      if(p>=1&&!bridge.seated?.[j]){(bridge.seated||=[])[j]=true;if(this.index===2&&bridge.placedAt[j]>-Infinity){this.onCue?.('slam');if(bridge.dust){bridge.dust.at=this.clock;bridge.dust.mesh.position.copy(slab.position).add(slab.userData.mid).y+=.4;}if(!reduced)this.shake=.35;}}
     });
     // The crane follows the slab it is lowering.
-    if(bridge.crane){const c=bridge.crane,j=Math.max(0,Math.min(2,chosen-1)),slab=bridge.slabs[j],target=Math.atan2(c.side*(slab.position.z-7.9-c.crane.position.z),-c.side*(slab.position.x-c.crane.position.x));c.yaw=THREE.MathUtils.damp(c.yaw,chosen?target:0,6,dt);c.jib.rotation.y=c.yaw;
+    if(bridge.crane){const c=bridge.crane,j=Math.max(0,Math.min(2,chosen-1)),slab=bridge.slabs[j],mid=slab.position.clone().add(slab.userData.mid),target=Math.atan2(c.side*(mid.z-c.crane.position.z),-c.side*(mid.x-c.crane.position.x));c.yaw=THREE.MathUtils.damp(c.yaw,chosen?target:0,6,dt);c.jib.rotation.y=c.yaw;
       const lowering=chosen&&this.clock-bridge.placedAt[j]<duration+.15&&slab.position.y>.2;c.cable.visible=!!lowering;if(lowering){const tip=new THREE.Vector3(-c.side*17,16,0).applyAxisAngle(new THREE.Vector3(0,1,0),c.yaw).add(c.crane.position),top=slab.position.y+.3,length=Math.max(.1,tip.y-top);c.cable.position.set(tip.x-c.crane.position.x,top+length/2,tip.z-c.crane.position.z);c.cable.scale.y=length;}}
     // A wrong block: its slab drops short, wobbles and swings back out.
     const wrong=t.lastWrong;if(wrong&&wrong.count!==bridge.lastWrong){bridge.lastWrong=wrong.count;bridge.wrongAt=this.clock;const ghost=bridge.ghost,m=ghost.userData.face.material;m.map=bridge.wordMats[wrong.block].map;m.needsUpdate=true;bridge.wrongSlot=Math.min(2,wrong.slot);}
@@ -389,7 +394,7 @@ export class RallyScene{
     // under its own wheels, so it never floats over the open gap.
     let used=0;const actors=[...state.rivals,...state.obstacles.filter(o=>o.type==='traffic'&&!o.dormant)];
     for(const o of actors){if(used>=bridge.planks.length)break;const slot=Math.floor((o.at-t.at)/BRIDGE_SLOT);if(o.at<t.at-2.3||o.at>t.at+BRIDGE_LENGTH+2.3||Math.abs(o.lanePos??o.lane)>1.3)continue;
-      for(const k of [slot,Math.floor((o.at+2.3-t.at)/BRIDGE_SLOT)]){if(k<0||k>2||k<chosen||used>=bridge.planks.length)continue;const plank=bridge.planks[used++],slab=bridge.slabs[k];plank.visible=true;plank.position.set(window.RallyCore.actorX(state,o)-this.curve(t.at),.01,slab.position.z-7.9);plank.rotation.y=slab.rotation.y;}}
+      for(const k of [slot,Math.floor((o.at+2.3-t.at)/BRIDGE_SLOT)]){if(k<0||k>2||k<chosen||used>=bridge.planks.length)continue;const plank=bridge.planks[used++],slab=bridge.slabs[k];plank.visible=true;plank.position.set(window.RallyCore.actorX(state,o)-this.curve(t.at),.01,slab.position.z-8);plank.rotation.y=-Math.atan((this.curve(o.at+1)-this.curve(o.at-1))/2);}}
     for(let i=used;i<bridge.planks.length;i++)bridge.planks[i].visible=false;
   }
   // The kick ramp's hop for a car at course position at (feel only).

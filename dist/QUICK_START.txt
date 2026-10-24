@@ -1,5 +1,5 @@
 WORDRAMP — by Mr. Saymaz
-v0.27.0 · Rides & Bridges
+v0.27.1 · Rides & Bridges
 
 Wordramp is the new name of Wordrift. Saved progress, stars and arena wins
 carry over unchanged.

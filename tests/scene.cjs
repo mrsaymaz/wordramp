@@ -239,6 +239,12 @@ for(const arena of [0,1,2]){
  for(const id of [0,1,2]){assert(['placed','solved'].includes(C.placeRepairBlock(s,id)));scene.update(.05,s,'race');assert(bridge.slabs[id].visible);for(let i=0;i<6;i++)scene.update(.1,s,'race');assert(Math.abs(bridge.slabs[id].position.y-.12)<1e-6,'Slab '+id+' is in place');}
  if(arena===1)assert(bridge.slabs.every(m=>m.userData.leaves.every(l=>Math.abs(l.rotation.x)<1e-6)),'The drawbridge leaves are down');
  assert(task.solved);scene.update(.05,s,'race');assert(g.userData.barriers.every(m=>!m.visible),'BRIDGE OUT clears once built');
+ // The built span follows the road's bend: slab sides sit on the road edges
+ // and the slabs cover the whole gap end to end (no dark strips or seams).
+ {g.updateMatrixWorld(true);const inverse=g.matrixWorld.clone().invert(),v=new bridge.slabs[0].position.constructor(),base=scene.curve(task.at);let worst=0,near=0,far=0;
+  for(const slab of bridge.slabs)slab.traverse(m=>{if(!m.isMesh||m===slab.userData.face||m.geometry.attributes.position.count<40)return;const p=m.geometry.attributes.position;
+   for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i).applyMatrix4(m.matrixWorld).applyMatrix4(inverse);const lateral=v.x-(scene.curve(task.at-v.z)-base);if(Math.abs(lateral)>5)worst=Math.max(worst,Math.abs(Math.abs(lateral)-5.4));near=Math.max(near,v.z);far=Math.min(far,v.z);}});
+  assert(worst<.01,`Slab edges meet the road edges (off by ${worst.toFixed(3)} m)`);assert(Math.abs(near)<.01&&Math.abs(far+48)<.01,`The slabs span the whole gap (${near.toFixed(2)} to ${far.toFixed(2)})`);}
  // Driving over the sentence lights each word in turn; the kick ramp hops.
  const cues=[];scene.onCue=n=>cues.push(n);
  for(const u of [8,24,40]){s.distance=task.at+u;scene.update(.05,s,'race');}
@@ -248,7 +254,7 @@ for(const arena of [0,1,2]){
  // A rival reaching the open gap first rides a plank, never thin air.
  const s2=C.createRace(window.LANGUAGE_BANK[0].units[0],'relaxed',arena,43),t2=s2.tasks.find(t=>t.kind==='repair');s2.status='task';s2.task=t2;s2.taskIndex=s2.tasks.indexOf(t2);s2.distance=t2.at-30;
  const r=s2.rivals[0];r.at=t2.at+20;r.lanePos=r.lane=0;scene.update(.05,s2,'race');const b2=scene.gates.get(t2.id).userData.bridge;
- assert(b2.planks.some(p=>p.visible&&Math.abs(p.position.z-(b2.slabs[1].position.z-7.9))<1e-6),'A plank under the rival');
+ assert(b2.planks.some(p=>p.visible&&Math.abs(p.position.z-(b2.slabs[1].position.z-8))<1e-6),'A plank under the rival');
  r.at=t2.at+80;scene.update(.05,s2,'race');assert(b2.planks.every(p=>!p.visible),'and gone once it has passed');
 }
 console.log('PASS: Bridge Builder in all three arenas: a real gap without asphalt, BRIDGE OUT until built, slabs drop in one by one within half a second (drawbridge leaves fold down in Coastal), a wrong slab wobbles out, words light up under the wheels with their notes, a kick-ramp hop (none with reduced motion) and planks under cars that reach the open gap first.');

@@ -1,4 +1,4 @@
-/* Wordramp v0.27.0 — deterministic gameplay and question adapter. */
+/* Wordramp v0.27.1 — deterministic gameplay and question adapter. */
 (function(root){
   'use strict';
   const ARENAS=[
