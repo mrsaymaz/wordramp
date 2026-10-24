@@ -184,8 +184,13 @@ export function practiceTick(p,dt){
 }
 // First-race coach: one prompt at a time, only on the open road.
 // The Nitro prompt rests after 12 s on screen in one race (it returns next race).
+// The first time each kind of English task appears, its finger tip shows how
+// to answer (never which answer) until the task is answered.
+export const TASK_TIPS=['light','junction','repair','pedestrian'];
 export function coachPrompt(race,coach,canNitro=false,run=null){
-  if(!race||race.reviewLap||!coach||race.status!=='driving')return null;
+  if(!race||race.reviewLap||!coach)return null;
+  const t=race.task;if(race.status==='task'&&t&&coach.tasks?.[t.kind]===false&&!t.completed&&!t.solved)return 'task-'+t.kind;
+  if(race.status!=='driving')return null;
   if(!coach.drive)return race.accelerating?null:'drive';
   if(!coach.steer)return 'steer';
   if(!coach.nitro&&(canNitro||race.nitro>0)&&!(run?.nitroTime>=12))return 'nitro';
@@ -194,14 +199,32 @@ export function coachPrompt(race,coach,canNitro=false,run=null){
 // `coach` holds the saved lessons (drive / steer / nitro); `run` is this
 // race's scratch. Returns true when a lesson was just learned.
 export function coachProgress(race,coach,run,dt,prompt){
-  if(!race||!coach||!run)return false;const before=[coach.drive,coach.steer,coach.nitro].join();
+  if(!race||!coach||!run)return false;const state=()=>[coach.drive,coach.steer,coach.nitro,...TASK_TIPS.map(k=>coach.tasks?.[k])].join(),before=state();
+  if(prompt?.startsWith('task-'))run.shownTask={id:race.task.id,kind:race.task.kind};
+  else if(run.shownTask&&(race.status!=='task'||race.task?.id!==run.shownTask.id||race.task.completed||race.task.solved)){if(coach.tasks)coach.tasks[run.shownTask.kind]=true;run.shownTask=null;}
   if(race.status==='driving'&&race.accelerating){run.held=(run.held||0)+dt;if(run.held>=1.5)coach.drive=true;}
   if(run.lane!=null&&race.lane!==run.lane&&coach.drive)coach.steer=true;run.lane=race.lane;
   if(prompt==='steer'){run.steerTime=(run.steerTime||0)+dt;if(run.steerTime>=10)coach.steer=true;}
   if(prompt==='nitro')run.nitroTime=(run.nitroTime||0)+dt;
   if(race.nitroHeld&&race.nitro>0)coach.nitro=true;
-  return [coach.drive,coach.steer,coach.nitro].join()!==before;
+  return state()!==before;
 }
+// Where the tip finger is, `t` seconds into its loop: an offset from its
+// anchor (the car or the current word), whether it is pressing, and for the
+// answer signs which sign it is on. The sign tour gives every sign the same
+// time and the same tap, so it never hints at an answer.
+const glide=(t,a,b)=>{const p=Math.max(0,Math.min(1,(t-a)/(b-a)));return p*p*(3-2*p);};
+export const FINGER_CYCLE={drive:2.4,steer:3.2,nitro:3.4,signs:4.5,sort:3.2};
+export function fingerPose(mode,t){
+  const cycle=FINGER_CYCLE[mode]||3;t=((t%cycle)+cycle)%cycle;
+  if(mode==='drive')return {dx:0,dy:0,press:t>=.3&&t<1.9};
+  if(mode==='steer')return {dx:-70*glide(t,.45,.9)+140*glide(t,1.35,1.95)-70*glide(t,2.4,2.8),dy:0,press:t>=.2&&t<3};
+  if(mode==='nitro')return {dx:0,dy:-95*glide(t,.5,1.3)+50*glide(t,2,2.5),press:t>=.2&&t<3.1,boost:t>=.9&&t<2.2};
+  if(mode==='sort')return {dx:-60*glide(t,.4,.9)+60*glide(t,1.1,1.45)+60*glide(t,1.7,2.2)-60*glide(t,2.5,2.9),dy:0,press:(t>=.2&&t<1.45)||(t>=1.6&&t<2.95)};
+  if(mode==='signs'){const index=Math.floor(t/1.5),u=t-index*1.5;return {index,from:(index+2)%3,mix:glide(u,0,.4),dx:0,dy:0,press:u>=.55&&u<.95};}
+  return {dx:0,dy:0,press:false};
+}
+
 // The self-playing demo shown until the player first touches the pad: a 4 s
 // loop of the same moves (the demo hand's CSS animation follows this script).
 export const DEMO_CYCLE=4;

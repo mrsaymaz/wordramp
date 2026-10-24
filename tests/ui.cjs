@@ -52,7 +52,7 @@ window.visualViewport.height=396;for(const f of window.visualViewport.listeners.
 window.visualViewport.scale=2;window.visualViewport.height=198;for(const f of window.visualViewport.listeners.resize)f();assert.equal(document.documentElement.style['--play-height'],'396px','Pinch zoom must not rebuild the game at half its size');
 window.visualViewport.scale=1;window.visualViewport.height=788;for(const f of window.visualViewport.listeners.resize)f();assert.equal(document.documentElement.style['--play-height'],'788px');assert(!document.body.classList.contains('short-viewport'));
 window.visualViewport.width=568;window.visualViewport.height=242;for(const f of window.visualViewport.listeners.resize)f();assert(document.body.classList.contains('compact-landscape'),'Short landscape uses visible dimensions even if CSS/window height remains larger');window.visualViewport.width=390;window.visualViewport.height=788;for(const f of window.visualViewport.listeners.resize)f();assert(!document.body.classList.contains('compact-landscape'));
-assert.deepEqual(window.WORDRAMP.settings.tutorial,{done:true,drive:true,steer:true,nitro:true},'Players who saw the old welcome guide skip the Driving School and coach');
+assert.deepEqual(window.WORDRAMP.settings.tutorial,{done:true,drive:true,steer:true,nitro:true,tasks:{light:true,junction:true,repair:true,pedestrian:true}},'Players who saw the old welcome guide skip the Driving School and coach');
 assert(el('start').disabled,'A pupil explicitly chooses a team before racing');
 assert.equal(document.querySelectorAll('[data-diff]').length,2);
 // The reference layout keeps arenas first, four visible team cards, then

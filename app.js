@@ -1,7 +1,7 @@
 import {createLeague,leagueApi,LEAGUE_TEAMS,strengthLabel,hoursLabel} from './league.js';
 import {TEAMS,teamById,newIdentity,ultiWinStatus,ULTI_MIN_STARS,ULTI_MIN_RELAXED_ACCURACY,isFinishEligible} from './teams-ulti.js';
 import {Sound} from './audio.js';
-import {normalisePreferences,roadGesture,createTouchDrive,touchDriveGesture,TUTORIAL_STEPS,PRACTICE_GOALS,createPractice,practiceDone,practicePress,practiceMove,practiceRelease,practiceKey,practiceTick,practiceDemo,coachPrompt,coachProgress,touchContentBottom,displaySpeed,raceHudContext,GRADE_LEVELS,lessonSummary} from './presentation.js';
+import {normalisePreferences,roadGesture,createTouchDrive,touchDriveGesture,TASK_TIPS,fingerPose,TUTORIAL_STEPS,PRACTICE_GOALS,createPractice,practiceDone,practicePress,practiceMove,practiceRelease,practiceKey,practiceTick,practiceDemo,coachPrompt,coachProgress,touchContentBottom,displaySpeed,raceHudContext,GRADE_LEVELS,lessonSummary} from './presentation.js';
 import {RallyScene} from './scene.js';
 import {laneLayout,strokeHits,roadVerticalLayout,visibleRivalLabels,wordFontSize,categoryTitle} from './road-layout.js';
 import {normaliseProgress,arenaUnlocked,recordArenaWin,recordLearning,finishUnitArena,masteryStats,garageTier,equip,resolvedLook} from './progression.js';
@@ -27,6 +27,7 @@ normaliseProgress(saved);
 // Driving School and the first-race coach. Players from before the tutorial
 // (who saw the welcome guide) skip both.
 if(!saved.tutorial||typeof saved.tutorial!=='object'){const known=!!saved.crosswalkTutorial;saved.tutorial={done:known,drive:known,steer:known,nitro:known};}
+if(!saved.tutorial.tasks||typeof saved.tutorial.tasks!=='object'){const known=!!(saved.tutorial.drive&&saved.tutorial.steer&&saved.tutorial.nitro);saved.tutorial.tasks=Object.fromEntries(TASK_TIPS.map(k=>[k,known]));}
 if(!C.DIFFICULTIES[saved.difficulty])saved.difficulty='relaxed';
 let selectedArena=0,race=null,scene,mode='home',lastStatus='',lastTask='',lastResult=null,toastEnd=0,modalFocus=null,autoResume=false;
 let settledAnswers=0,latestUnlock=0;
@@ -324,18 +325,51 @@ const help=()=>tutorial(false);
 // First-race coach: hold to drive, then change lanes, then (once fuel allows)
 // Nitro. Each prompt goes away for good once the move is done.
 const COACH_TEXT={drive:[['HOLD THE ROAD TO DRIVE','Keep your thumb down'],['HOLD ↑ TO DRIVE','or hold the speed button']],steer:[['SWIPE ← → TO CHANGE LANES','Keep your thumb down while you swipe'],['PRESS ← → TO CHANGE LANES','or A / D']],nitro:[['NITRO READY! SLIDE YOUR THUMB UP','Slide down to save the rest'],['NITRO READY! HOLD SPACE','or hold the NITRO button']]};
+// Finger tips: a finger on the car (hold, swipe, slide up) and, the first
+// time each English task appears, on its signs or word. Computers see keys.
+const TIP_TEXT={'task-light':['TAP YOUR ANSWER · OR STEER INTO IT','STEER ← → · OR PRESS 1 2 3'],'task-junction':['TAP A SIGN · OR STEER INTO IT','STEER ← → · OR PRESS 1 2 3'],'task-pedestrian':['SWIPE THE WORD INTO ITS GROUP','PRESS ← OR → FOR EACH WORD']};
+const FINGER_MODE={drive:'drive',steer:'steer',nitro:'nitro','task-light':'signs','task-junction':'signs','task-pedestrian':'sort'};
+const KEY_HINT={drive:'↑',steer:'← →',nitro:'SPACE','task-pedestrian':'← →'};
 let coachRun=null,coachAt=0;
+function hideFinger(){for(const id of ['finger-tip','finger-trail','finger-label','finger-demo'])$(id).hidden=true;}
+function renderFinger(prompt,now){
+  const touch=touchControls,reduced=preferences().reduced,tip=$('finger-tip'),trail=$('finger-trail'),label=$('finger-label'),demo=$('finger-demo');
+  // The tip steps aside as soon as the player starts on the task.
+  if(prompt.startsWith('task-')&&coachRun.touched===race.task?.id){hideFinger();return;}
+  if(prompt==='task-repair'){tip.hidden=trail.hidden=label.hidden=true;demo.dataset.touch=String(touch);demo.hidden=false;return;}
+  demo.hidden=true;
+  const mode=FINGER_MODE[prompt];let anchors=[];
+  // On a sign the fingertip rests near its lower edge, so the word stays readable.
+  if(mode==='signs')anchors=[...$('road-answers').children].map(b=>({x:parseFloat(b.style.left),y:parseFloat(b.style.top)+30}));
+  else if(mode==='sort'){const b=[...$('pedestrian-words').children].find(w=>!w.hidden&&!w.disabled);if(b)anchors=[{x:parseFloat(b.style.left),y:parseFloat(b.style.top)+20}];}
+  else{const b=scene?.carScreenBounds?.();if(b)anchors=[{x:(b.left+b.right)/2,y:b.top+(b.bottom-b.top)*.45}];}
+  if(!anchors.length||(mode==='signs'&&anchors.length!==3)||anchors.some(a=>!Number.isFinite(a.x)||!Number.isFinite(a.y))){hideFinger();return;}
+  if(coachRun.mode!==prompt){coachRun.mode=prompt;coachRun.since=now;}
+  const pose=fingerPose(mode,(now-coachRun.since)/1000),home=mode==='signs'?anchors[1]:anchors[0];
+  // Every sign gets the same visit and tap; reduced motion shows no tour.
+  let x=home.x+(reduced?0:pose.dx),y=home.y+(reduced?0:pose.dy);
+  if(mode==='signs'){const a=anchors[pose.index],f=anchors[pose.from];x=f.x+(a.x-f.x)*pose.mix;y=f.y+(a.y-f.y)*pose.mix;}
+  const showTip=touch?!(mode==='signs'&&reduced):mode!=='signs';
+  tip.hidden=!showTip;if(showTip){tip.dataset.mode=mode;tip.dataset.touch=String(touch);tip.classList.toggle('press',reduced||!!pose.press);setStyle(tip,'transform',`translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`);setText('finger-keys',KEY_HINT[prompt]||'');}
+  trail.hidden=!['steer','nitro','sort'].includes(mode)||!touch;if(!trail.hidden){trail.dataset.mode=mode;trail.classList.toggle('boost',!!pose.boost||reduced);setStyle(trail,'transform',`translate(${home.x.toFixed(1)}px,${home.y.toFixed(1)}px)`);}
+  const text=TIP_TEXT[prompt]?.[touch?0:1];label.hidden=!text;
+  if(text){setText('finger-label',text);const width=scene?.viewport?.width||innerWidth,lx=Math.max(130,Math.min(width-130,home.x));setStyle(label,'transform',`translate(${lx.toFixed(1)}px,${(home.y+(mode==='signs'?40:46)).toFixed(1)}px)`);}
+}
 function updateCoach(now){
   const el=$('coach'),dt=Math.max(0,Math.min(.25,(now-coachAt)/1000));coachAt=now;
-  if(!race||!$('modal-backdrop').hidden||mode!=='race'){el.hidden=true;return;}
+  if(!race||!$('modal-backdrop').hidden||mode!=='race'){el.hidden=true;hideFinger();return;}
   if(coachRun?.race!==race)coachRun={race};
   const before=coachPrompt(race,saved.tutorial,C.canNitro(race),coachRun);
   if(coachProgress(race,saved.tutorial,coachRun,dt,before))persist();
   const prompt=coachPrompt(race,saved.tutorial,C.canNitro(race),coachRun);
-  if(!prompt){el.hidden=true;el.dataset.prompt='';return;}
+  if(!prompt){el.hidden=true;el.dataset.prompt='';hideFinger();return;}
+  renderFinger(prompt,now);
+  // The caption pill is for driving tips; task tips label their own finger.
+  if(!COACH_TEXT[prompt]){el.hidden=true;return;}
   const [text,sub]=COACH_TEXT[prompt][touchControls?0:1];el.hidden=false;
   if(el.dataset.prompt!==prompt||el.dataset.touch!==String(touchControls)){el.dataset.prompt=prompt;el.dataset.touch=String(touchControls);setText('coach-text',text);setText('coach-sub',sub);}
 }
+document.addEventListener('pointerdown',()=>{if(coachRun&&race?.status==='task'&&race.task)coachRun.touched=race.task.id;},{capture:true});
 function begin(reviewItems=null){
   if(!teamById(saved.teamId)){goHome();return;}
   if(!Array.isArray(reviewItems)&&!arenaOpen(selectedArena)){goHome();toast('Finish first to unlock the next arena.');return;}
@@ -679,6 +713,7 @@ $('world').addEventListener('lostpointercapture',e=>{if(heldRoadNitroId===e.poin
 document.addEventListener('keydown',e=>{
   if(['SELECT','INPUT'].includes(document.activeElement.tagName))return;
   if(practiceKeys(e,true))return;
+  if(coachRun&&race?.status==='task'&&race.task&&/^([1-3]|Arrow(Left|Right)|[adAD])$/.test(e.key))coachRun.touched=race.task.id;
   if(!$('modal-backdrop').hidden){
     if(e.key==='Tab'){let focusable=[...$('modal').querySelectorAll('button:not(:disabled),select,summary,[tabindex="0"]')],first=focusable[0],last=focusable.at(-1);if(e.shiftKey&&(document.activeElement===first||document.activeElement===$('modal'))){last?.focus();e.preventDefault();}else if(!e.shiftKey&&document.activeElement===last){first?.focus();e.preventDefault();}}
     if(e.key==='Escape'&&$('lesson-cancel')){$('lesson-cancel').click();return;}if(e.key==='Escape'&&$('settings-done')){$('settings-done').click();return;}if(e.key==='Escape'&&race?.status==='paused'){$('resume')?.click();if(!$('resume')&&$('help-done'))$('help-done').click();}return;

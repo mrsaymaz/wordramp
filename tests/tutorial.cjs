@@ -41,4 +41,27 @@ assert.deepEqual(P.TUTORIAL_STEPS,['drive','steer','nitro','tasks','race']);
  const next={};assert.equal(P.coachPrompt(race,coach,true,next),'nitro','and returns next race');race.nitro=3;race.nitroHeld=true;P.coachProgress(race,coach,next,.05,'nitro');assert(coach.nitro);assert.equal(P.coachPrompt(race,coach,true,next),null);
  race.reviewLap=true;assert.equal(P.coachPrompt(race,{drive:false},true),null,'No coach on review laps');}
 {const coach={drive:true,steer:false,nitro:false},runState={};const race={status:'driving',lane:0,accelerating:true,nitro:0};for(let t=0;t<10;t+=.5)P.coachProgress(race,coach,runState,.5,'steer');assert(coach.steer,'The lane prompt gives up after 10 s');}
+// Task tips: the first time each kind of English task appears its finger tip
+// shows how to answer, until that task is answered; then never again.
+{const coach={drive:true,steer:true,nitro:true,tasks:Object.fromEntries(P.TASK_TIPS.map(k=>[k,false]))},runState={};
+ const task={id:'t1',kind:'light',completed:false};const race={status:'task',task,lane:0,nitro:0};
+ assert.deepEqual(P.TASK_TIPS,['light','junction','repair','pedestrian']);
+ assert.equal(P.coachPrompt(race,coach),'task-light');P.coachProgress(race,coach,runState,.05,'task-light');assert(!coach.tasks.light,'Still learning while the task is open');
+ task.completed=true;assert.equal(P.coachPrompt(race,coach),null);assert(P.coachProgress(race,coach,runState,.05,null));assert(coach.tasks.light,'Learned once answered');
+ const next={id:'t2',kind:'light',completed:false};race.task=next;assert.equal(P.coachPrompt(race,coach),null,'Shown once per kind');
+ race.task={id:'t3',kind:'repair',solved:false};assert.equal(P.coachPrompt(race,coach),'task-repair');P.coachProgress(race,coach,runState,.05,'task-repair');race.task.solved=true;P.coachProgress(race,coach,runState,.05,null);assert(coach.tasks.repair,'A built bridge counts');
+ race.task={id:'t4',kind:'pedestrian'};race.reviewLap=true;assert.equal(P.coachPrompt(race,coach),null,'No tips on review laps');
+ assert.equal(P.coachPrompt({status:'task',task:{id:'x',kind:'junction'}},{drive:true,steer:true,nitro:true}),null,'Players without task tips (older saves) see none');}
+// The sign tour never hints at an answer: over a whole loop every sign gets
+// the same time under the finger and the same tap.
+{const dwell=[0,0,0],taps=[0,0,0],dt=.001;for(let t=0;t<P.FINGER_CYCLE.signs;t+=dt){const p=P.fingerPose('signs',t);if(p.mix>=1){dwell[p.index]+=dt;if(p.press)taps[p.index]+=dt;}}
+ for(const k of [1,2])assert(Math.abs(dwell[k]-dwell[0])<.01&&Math.abs(taps[k]-taps[0])<.01,`Equal visits ${dwell.map(d=>d.toFixed(3))} / taps ${taps.map(d=>d.toFixed(3))}`);
+ for(let t=0;t<9;t+=.37){const p=P.fingerPose('signs',t);assert(p.index>=0&&p.index<3&&p.from===(p.index+2)%3);}}
+// Driving fingers: hold presses in place; the swipe and the word flick reach
+// both sides equally; the Nitro finger slides up, then down to save.
+{let min=0,max=0,pressed=false;for(let t=0;t<3.2;t+=.01){const p=P.fingerPose('steer',t);min=Math.min(min,p.dx);max=Math.max(max,p.dx);}assert(min<-60&&max>60&&Math.abs(min+max)<1);
+ min=0;max=0;for(let t=0;t<3.2;t+=.01){const p=P.fingerPose('sort',t);min=Math.min(min,p.dx);max=Math.max(max,p.dx);}assert(min<-50&&max>50&&Math.abs(min+max)<1,'The word flick shows both groups equally');
+ for(let t=0;t<2.4;t+=.01){const p=P.fingerPose('drive',t);assert(p.dx===0&&p.dy===0);pressed||=p.press;}assert(pressed);
+ const up=P.fingerPose('nitro',1.6),saved=P.fingerPose('nitro',2.8);assert(up.dy<-90&&up.boost&&up.press);assert(saved.dy>up.dy&&!saved.boost&&saved.press,'Slides back down to save the rest');}
+console.log('PASS: finger tips: one tip per English task kind until answered, never on review laps; the sign tour gives each sign equal time and taps; swipes and word flicks show both sides equally; the Nitro finger slides up then down to save.');
 console.log('PASS: Driving School practice pad (hold, swipe, slide-up Nitro levels and saving, keyboard keys, self-playing demo) and the first-race coach (order, quiet during tasks and countdown, Nitro only with fuel, rests after 12 s, saved once learned).');

@@ -707,15 +707,46 @@ body.reduced-motion .home-host,body.reduced-motion .modal-host img{animation:non
 .coach-copy{display:flex;flex-direction:column;gap:2px}
 #coach-text{color:var(--gold);font-weight:950;font-size:15px;letter-spacing:.6px;line-height:1.2}
 #coach-sub{color:#d5e3ee;font-size:12px}
-.coach-hand{position:relative;width:30px;height:38px;flex:none;animation:2s ease-in-out infinite both}
-.coach-hand svg{width:100%;height:100%;fill:#fff;stroke:#16293a;stroke-width:2;stroke-linejoin:round}
-#coach[data-touch="false"] .coach-hand{display:none}
-#coach[data-prompt="drive"] .coach-hand{animation-name:coach-press}
-#coach[data-prompt="steer"] .coach-hand{animation-name:coach-swipe}
-#coach[data-prompt="nitro"] .coach-hand{animation-name:coach-slide}
-@keyframes coach-press{0%,100%{transform:scale(1)}20%,70%{transform:scale(.86)}}
-@keyframes coach-swipe{0%,100%{transform:translateX(0) scale(.9)}25%{transform:translateX(-9px) scale(.9)}75%{transform:translateX(9px) scale(.9)}}
-@keyframes coach-slide{0%,15%{transform:translateY(8px) scale(.9)}60%,85%{transform:translateY(-8px) scale(.9)}100%{transform:translateY(8px) scale(.9)}}
 @keyframes coach-in{from{opacity:0;transform:translateY(8px)}}
 @media(max-width:760px){#coach{top:22%}#coach-text{font-size:13px}}
-.reduced-motion .coach-hand,.reduced-motion #coach{animation:none}
+.reduced-motion #coach{animation:none}
+/* Finger tips on the road (first race and first time for each task) */
+#finger-tip,#finger-trail,#finger-label{position:absolute;left:0;top:0;pointer-events:none;z-index:8}
+#finger-tip[hidden],#finger-trail[hidden],#finger-label[hidden],#finger-demo[hidden]{display:none}
+.ft-hand{position:absolute;left:-27px;top:-5px;width:54px;height:70px;transform-origin:50% 8%;transition:transform .12s}
+.ft-hand svg,.fd-hand svg{width:100%;height:100%;fill:#fff;stroke:#13283b;stroke-width:2.2;stroke-linejoin:round;filter:drop-shadow(0 6px 10px #000a)}
+#finger-tip.press .ft-hand{transform:scale(.86)}
+#finger-tip::before{content:"";position:absolute;left:-19px;top:-19px;width:38px;height:38px;border-radius:50%;border:3px solid #ffffffd0;opacity:0;transform:scale(.4);transition:opacity .2s,transform .35s}
+#finger-tip.press::before{opacity:.9;transform:scale(1)}
+#finger-tip[data-touch="false"] .ft-hand,#finger-tip[data-touch="false"]::before,#finger-tip[data-touch="true"] .ft-keys{display:none}
+.ft-keys{position:absolute;left:0;top:-58px;transform:translateX(-50%);padding:6px 12px;border-radius:9px;background:#0b2033;border:2px solid #ffd66b;border-bottom-width:5px;color:#fff;font:900 16px/1.2 Inter,ui-sans-serif,sans-serif;white-space:nowrap;box-shadow:0 8px 18px #0008;transition:transform .1s,border-bottom-width .1s}
+#finger-tip.press .ft-keys{transform:translate(-50%,3px);border-bottom-width:2px}
+#finger-trail::before,#finger-trail::after{content:"";position:absolute;opacity:.85}
+#finger-trail[data-mode="steer"]::before,#finger-trail[data-mode="sort"]::before{left:-96px;top:-12px;width:192px;height:24px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 24'%3E%3Cpath d='M30 4 18 12l12 8M162 4l12 8-12 8M22 12h148' fill='none' stroke='%23ffd66b' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round' stroke-dasharray='1 9'/%3E%3Cpath d='M30 4 18 12l12 8M162 4l12 8-12 8' fill='none' stroke='%23ffd66b' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
+#finger-trail[data-mode="nitro"]::before{left:-5px;top:-112px;width:10px;height:112px;border-radius:5px;background:linear-gradient(0deg,#ffd66b00,#ffd66b 35%,#fff7c2);opacity:.75}
+#finger-trail[data-mode="nitro"]::after{left:-13px;top:-128px;width:26px;height:20px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 20'%3E%3Cpath d='M3 17 13 5l10 12' fill='none' stroke='%23fff7c2' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
+#finger-trail.boost[data-mode="nitro"]::before{background:linear-gradient(0deg,#ff5a2a00,#ff8a2a 30%,#ffd66b 70%,#fff7c2);opacity:1;box-shadow:0 0 16px #ffb238}
+#finger-label{transform-origin:0 0;white-space:nowrap}
+#finger-label{margin-left:0;padding:8px 14px;border-radius:12px;background:#0d1f31eb;border:1px solid #ffd66b80;color:var(--gold);font-weight:950;font-size:13px;letter-spacing:.6px;box-shadow:0 8px 22px #0008;translate:-50% 0}
+#finger-demo{position:absolute;left:50%;bottom:max(18px,calc(env(safe-area-inset-bottom) + 12px));translate:-50% 0;z-index:8;width:min(260px,72%);padding:10px 12px 11px;border-radius:16px;background:#0d1f31f0;border:1px solid #ffd66b80;box-shadow:0 12px 30px #000a;pointer-events:none;text-align:center}
+#finger-demo>b{display:block;font-size:10px;letter-spacing:2px;color:#9fc0d6;margin-bottom:4px}
+#finger-demo small{display:block;margin-top:6px;font-size:12px;font-weight:800;color:var(--gold);line-height:1.35}
+#finger-demo[data-touch="true"] .fd-keys,#finger-demo[data-touch="false"] .fd-touch,#finger-demo[data-touch="false"] .fd-hand{display:none}
+.fd-stage{position:relative;height:96px}
+.fd-stage svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.fd-stage polyline{fill:none;stroke:var(--green);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:205;stroke-dashoffset:205;vector-effect:non-scaling-stroke;animation:fd-line 3.6s linear infinite}
+#finger-demo[data-touch="false"] polyline{animation:fd-line-keys 3.6s steps(1,end) infinite}
+.fd-block{position:absolute;translate:-50% -50%;padding:6px 9px;border-radius:7px;background:#2d465e;border:2px solid #d5e4ee;color:#fff;font-weight:900;font-size:13px}
+.fd-block kbd{display:none;position:absolute;left:50%;top:100%;translate:-50% 4px;padding:0 6px;border-radius:5px;background:#0b2033;border:1px solid #7fa3bd;font:800 11px/1.5 Inter,sans-serif;color:#fff}
+#finger-demo[data-touch="false"] .fd-block kbd{display:block}
+#finger-demo[data-touch="false"] .fd-block:nth-of-type(2) kbd{animation:fd-key 3.6s infinite}
+#finger-demo[data-touch="false"] .fd-block:nth-of-type(3) kbd{animation:fd-key 3.6s 1.2s infinite}
+#finger-demo[data-touch="false"] .fd-block:nth-of-type(1) kbd{animation:fd-key 3.6s 2.4s infinite}
+.fd-hand{position:absolute;width:30px;height:39px;margin:-2px 0 0 -15px;animation:fd-hand 3.6s ease-in-out infinite}
+@keyframes fd-line{0%,8%{stroke-dashoffset:205}38%{stroke-dashoffset:132}75%,92%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}}
+@keyframes fd-line-keys{0%{stroke-dashoffset:205}33%{stroke-dashoffset:132}66%,100%{stroke-dashoffset:0}}
+@keyframes fd-key{0%,25%{background:#2f7a5b;border-color:var(--green)}33%,100%{background:#0b2033}}
+@keyframes fd-hand{0%,8%{left:50%;top:31%;opacity:1}38%{left:83%;top:60%}75%,92%{left:17%;top:60%;opacity:1}100%{left:17%;top:60%;opacity:0}}
+@media(max-width:760px){#finger-label{font-size:11px;padding:7px 11px}}
+.reduced-motion .fd-hand{animation:none;left:50%;top:31%}.reduced-motion .fd-stage polyline{animation:none;stroke-dashoffset:0}.reduced-motion .ft-hand,.reduced-motion #finger-tip::before{transition:none}
+#finger-demo[data-touch="false"]{bottom:128px}
