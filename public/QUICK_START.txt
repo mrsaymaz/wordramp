@@ -19,7 +19,12 @@ keys (hold Up, Left/Right or A/D, hold Space, N). Until the player touches a
 pad, it plays the move by itself. During the first race, a small coach says
 HOLD THE ROAD TO DRIVE, then SWIPE TO CHANGE LANES, then (once there is
 30 fuel) NITRO READY! SLIDE YOUR THUMB UP. Each prompt disappears for good
-once the player has done it. The ? button (and Help in Pause) reopens the
+once the player has done it. A finger on the car shows each move (press,
+swipe, slide up). The first time each English task appears, a tip shows how
+to answer without showing which answer: the finger visits every sign
+equally (Green Light, Shortcut), a practice card draws through a made-up
+sentence (Bridge Out), or the finger flicks the word both ways (Crosswalk).
+Tips step aside at the first touch. The ? button (and Help in Pause) reopens the
 Driving School at any time; ALL RULES on its last step shows the full rules.
 Players who already saw the old welcome guide skip it automatically.
 

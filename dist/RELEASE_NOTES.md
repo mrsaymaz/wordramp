@@ -19,7 +19,23 @@ A short tutorial for first-time players
   PRESS ← → / HOLD SPACE on computers). Prompts never show during English
   tasks, the countdown or review laps, and each one stops for good once the
   move is done. The Nitro prompt rests after 12 seconds in a race.
-- Players who already saw the old welcome guide skip both automatically.
+
+Finger tips on the road
+- In the first race a finger appears on the car: it presses to show holding
+  to drive, swipes left and right for lanes, and (once 30 fuel is earned)
+  slides up with a flame trail for Nitro, then back down to save the rest.
+- The first time each kind of English task appears, a tip shows how to
+  answer, never which answer: on Green Light and Shortcut the finger visits
+  every sign for the same time with the same tap; on Bridge Out a small
+  practice card draws one line through a made-up sentence (I → like →
+  apples.) with its blocks out of order; on Crosswalk the finger flicks the
+  word left and right equally.
+- Computers see the keys instead (↑, ← →, SPACE on the car; 1 2 3 and
+  ← → labels at the tasks; the practice card shows the keys 2, 3, 1).
+- A tip steps aside at the first touch or key, and each kind is shown once.
+
+- Players who already saw the old welcome guide skip the Driving School,
+  the coach and the finger tips automatically.
 - Race rules, scoring, balance and the League connection are unchanged.
 
 # v0.27.1 · Rides & Bridges (fix)
