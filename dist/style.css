@@ -631,3 +631,91 @@ body.reduced-motion .home-host,body.reduced-motion .modal-host img{animation:non
 .league-help{margin:6px 0;font-size:13px;line-height:1.45}
 .league-result{margin:10px 0 0;padding:9px 12px;border-radius:10px;background:#ffffff10;font-size:13px;line-height:1.4}.league-result.good{background:#5fd39a26;color:#c9f5dd;font-weight:800}.league-result.pending{opacity:.75}
 @media(max-width:400px){.team-links button{font-size:9px;padding:5px 7px}}
+/* Driving School (first-run tutorial) */
+#modal.tutorial-modal{width:min(520px,100%)}
+#modal.tutorial-modal .modal-host{float:right;width:84px;height:106px;margin:-10px -8px 4px 10px}
+.tutorial-modal h2{margin:4px 0 8px}
+.tutorial-lead{margin:0 0 14px;line-height:1.5;color:#dbe8f2}
+.tutorial-note{clear:both;margin:10px 0 0;font-size:13px;line-height:1.45;color:var(--muted)}
+#modal kbd{display:inline-block;min-width:24px;padding:2px 7px;margin:0 1px;border-radius:6px;background:#0b2033;border:1px solid #7fa3bd66;border-bottom-width:3px;font:800 12px/1.3 Inter,ui-sans-serif,sans-serif;color:#f3f7ff;text-align:center}
+.practice-pad{clear:both;position:relative;height:210px;border-radius:18px;overflow:hidden;background:linear-gradient(180deg,#22384b,#16293a);border:1px solid #8fb4cc40;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;outline:none;--pp-offset:0px;--pp-speed:0}
+.practice-pad:focus-visible{box-shadow:0 0 0 3px var(--gold)}
+.practice-pad.held{cursor:grabbing}
+.pp-road{position:absolute;inset:0 16%;background:linear-gradient(90deg,#d9e2ea 0 3px,transparent 3px calc(100% - 3px),#d9e2ea calc(100% - 3px)),#2c3d4e}
+.pp-lines{position:absolute;inset:0;background:repeating-linear-gradient(180deg,#e8eef4 0 22px,transparent 22px 64px) 33.33% var(--pp-offset)/3px 64px no-repeat,repeating-linear-gradient(180deg,#e8eef4 0 22px,transparent 22px 64px) 66.66% var(--pp-offset)/3px 64px no-repeat;background-repeat:repeat-y;opacity:.85}
+.pp-car{position:absolute;bottom:26px;left:calc(50% - 17px);width:34px;height:58px;border-radius:12px 12px 9px 9px;background:linear-gradient(180deg,#5fa8ff,#2f6fd6);box-shadow:0 6px 12px #0007,inset 0 -6px #1f4f9e;transition:left .2s cubic-bezier(.3,.7,.3,1)}
+.pp-car::before{content:"";position:absolute;left:6px;right:6px;top:13px;height:14px;border-radius:5px 5px 3px 3px;background:#bfe1ff}
+.pp-car::after{content:"";position:absolute;left:8px;right:8px;top:100%;height:0;border-radius:0 0 50% 50%;background:linear-gradient(180deg,#fff7c2,#ffb238 40%,#ff5a2a00);transition:height .15s}
+.practice-pad[data-lane="-1"] .pp-car{left:calc(16.66% - 17px)}
+.practice-pad[data-lane="1"] .pp-car{left:calc(83.33% - 17px)}
+.practice-pad[data-level="1"] .pp-car::after{height:18px}
+.practice-pad[data-level="2"] .pp-car::after{height:28px}
+.practice-pad[data-level="3"] .pp-car::after{height:38px}
+.pp-gauges{position:absolute;left:10px;right:10px;top:10px;display:flex;justify-content:space-between;align-items:center;gap:8px;pointer-events:none;font-size:10px;font-weight:800;letter-spacing:1px;color:#cfe0ee}
+.pp-speed,.pp-fuel,.pp-nitro{padding:5px 8px;border-radius:9px;background:#0d1c2ad9}
+.pp-speed b{font-size:22px;color:#fff;letter-spacing:0;margin-right:2px}
+.pp-nitro{display:flex;gap:3px}.pp-nitro i{width:16px;height:8px;border-radius:3px;background:#ffffff26}
+.practice-pad[data-level="1"] .pp-nitro i:nth-child(-n+1),.practice-pad[data-level="2"] .pp-nitro i:nth-child(-n+2),.practice-pad[data-level="3"] .pp-nitro i{background:#ffb238;box-shadow:0 0 8px #ffb238}
+.pp-fuel b{color:var(--gold);font-size:14px}
+.pp-hand{position:absolute;left:calc(50% - 20px);top:58%;width:40px;height:52px;pointer-events:none;animation:4s linear infinite both}
+.pp-hand svg{width:100%;height:100%;fill:#fff;stroke:#16293a;stroke-width:2;stroke-linejoin:round;filter:drop-shadow(0 4px 6px #0008)}
+.pp-hand::before{content:"";position:absolute;left:4px;top:-4px;width:24px;height:24px;border-radius:50%;border:2px solid #fff;opacity:0;animation:inherit;animation-name:pp-ripple}
+.pp-hand-drive{animation-name:pp-hold}
+.pp-hand-steer{animation-name:pp-swipe}
+.pp-hand-nitro{animation-name:pp-slide}
+.practice-pad.tried .pp-hand,.practice-pad.tried .pp-keys{animation:none;opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}.practice-pad.tried .pp-hand::before{animation:none}
+@keyframes pp-hold{0%,8%{transform:translate(0,14px);opacity:0}10%{transform:translate(0,0) scale(1);opacity:1}14%,62%{transform:translate(0,0) scale(.9)}66%{transform:translate(0,-6px) scale(1);opacity:1}80%,100%{transform:translate(0,-6px);opacity:0}}
+@keyframes pp-swipe{0%,5%{transform:translate(0,14px);opacity:0}8%{transform:translate(0,0) scale(1);opacity:1}11%,22%{transform:translate(0,0) scale(.9)}25%,42%{transform:translate(-62px,0) scale(.9)}45%,62%{transform:translate(0,0) scale(.9)}65%,82%{transform:translate(62px,0) scale(.9)}85%,93%{transform:translate(0,0) scale(.9);opacity:1}100%{transform:translate(0,-6px);opacity:0}}
+@keyframes pp-slide{0%,5%{transform:translate(0,14px);opacity:0}8%{transform:translate(0,0) scale(1);opacity:1}11%,24%{transform:translate(0,0) scale(.9)}30%,44%{transform:translate(0,-46px) scale(.9)}48%,66%{transform:translate(0,-84px) scale(.9)}72%,86%{transform:translate(0,-40px) scale(.9);opacity:1}92%,100%{transform:translate(0,-46px);opacity:0}}
+@keyframes pp-ripple{0%,12%{opacity:0;transform:scale(.4)}16%{opacity:.9;transform:scale(.6)}30%{opacity:0;transform:scale(1.6)}100%{opacity:0}}
+.pp-keys{position:absolute;left:0;right:0;bottom:96px;display:flex;justify-content:center;gap:6px;pointer-events:none}
+.pp-keys kbd{transition:transform .1s,background .1s}
+.practice-pad.held .pp-keys kbd{transform:translateY(2px);background:#2d5f86;border-bottom-width:1px}
+.pp-goals{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:#dbe8f2}
+.pp-goals li{display:flex;align-items:center;gap:7px}
+.pp-goals li::before{content:"";width:16px;height:16px;border-radius:50%;border:2px solid #8fb4cc80;flex:none;transition:.2s}
+.pp-goals li.done{color:var(--green)}
+.pp-goals li.done::before{border-color:var(--green);background:var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.6 2.5L12 5.5' fill='none' stroke='%23102638' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/100% no-repeat}
+.tutorial-tasks{clear:both;display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.tutorial-task{display:flex;gap:10px;align-items:flex-start;padding:11px;background:#0b243755;border:1px solid var(--line);border-radius:12px}
+.tutorial-task b{display:block;color:#e9ce94;letter-spacing:1px;font-size:10px;margin-bottom:3px}
+.tutorial-task span{display:block;font-size:12px;color:var(--muted);line-height:1.35}
+.tutorial-task p{margin:5px 0 0;font-size:13px;line-height:1.4;color:#eef4fa}
+.task-icon{width:44px;height:44px;flex:none}
+.task-icon .ti-dark{fill:#0d1c2a;stroke:#8fb4cc80;stroke-width:1.5}.task-icon .ti-dim{fill:#5a6b78}.task-icon .ti-go{fill:var(--green)}
+.task-icon .ti-sign{fill:#2d465e;stroke:#9fc0d6;stroke-width:1.5}.task-icon .ti-right{fill:#2f7a5b;stroke:var(--green)}
+.task-icon .ti-road{fill:none;stroke:#4d6478;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+.task-icon .ti-path{fill:none;stroke:var(--gold);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:4 4}
+.task-icon .ti-person{fill:none;stroke:#9fc0d6;stroke-width:3;stroke-linecap:round}
+.task-icon .ti-stripes{fill:#e8eef4;opacity:.25}
+.tutorial-tiles{clear:both;display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+.tutorial-tiles>div{padding:12px;background:#0b243755;border:1px solid var(--line);border-radius:12px}
+.tutorial-tiles b{display:block;color:#e9ce94;letter-spacing:1px;font-size:10px;margin-bottom:5px}
+.tutorial-tiles span{font-size:13px;line-height:1.4;color:#eef4fa}
+.tutorial-dots{display:flex;justify-content:center;gap:7px;margin:16px 0 4px}
+.tutorial-dots i{width:8px;height:8px;border-radius:50%;background:#ffffff2e}.tutorial-dots i.past{background:#7ce9b499}.tutorial-dots i.on{width:22px;border-radius:5px;background:var(--gold)}
+.tutorial-actions{display:flex;gap:9px;margin-top:10px}
+.tutorial-actions .primary{flex:1.6;max-width:none}
+#tutorial-next.ready{animation:tutorial-ready 1.2s ease-in-out infinite}
+@keyframes tutorial-ready{50%{box-shadow:0 5px 0 #aa782f,0 0 0 6px #ffd66b55,0 12px 25px #0002}}
+@media(max-width:560px){.tutorial-tasks,.tutorial-tiles{grid-template-columns:1fr}#modal.tutorial-modal .modal-host{display:none}.practice-pad{height:190px}.tutorial-task{padding:9px}}
+@media(orientation:landscape) and (max-height:600px){#modal.tutorial-modal{padding:16px 22px}#modal.tutorial-modal .modal-host{display:none}.tutorial-modal h2{font-size:22px;margin:2px 0 4px}.tutorial-lead{font-size:13px;margin-bottom:8px}.pp-goals{margin-top:6px}.tutorial-dots{margin:8px 0 0}.tutorial-actions{margin-top:6px}.tutorial-actions button{padding-block:11px}.practice-pad{height:118px}.practice-pad~.tutorial-note,.tutorial-task span{display:none}.tutorial-task p{margin:0}.tutorial-tasks{grid-template-columns:1fr 1fr}.tutorial-tiles{grid-template-columns:1fr 1fr 1fr}}
+.reduced-motion .pp-hand{animation:none;opacity:1;transform:scale(.9)}.reduced-motion .pp-hand::before{animation:none}.reduced-motion #tutorial-next.ready{animation:none}.reduced-motion .pp-car{transition:none}
+/* First-race coach */
+#coach{position:absolute;left:16px;right:16px;margin-inline:auto;width:fit-content;top:27%;z-index:7;display:flex;align-items:center;gap:12px;padding:10px 18px 10px 12px;border-radius:16px;background:#0d1f31e6;border:1px solid #ffd66b66;box-shadow:0 10px 30px #0008;pointer-events:none;max-width:min(92%,440px);animation:coach-in .3s ease-out}
+#coach[hidden]{display:none}
+.coach-copy{display:flex;flex-direction:column;gap:2px}
+#coach-text{color:var(--gold);font-weight:950;font-size:15px;letter-spacing:.6px;line-height:1.2}
+#coach-sub{color:#d5e3ee;font-size:12px}
+.coach-hand{position:relative;width:30px;height:38px;flex:none;animation:2s ease-in-out infinite both}
+.coach-hand svg{width:100%;height:100%;fill:#fff;stroke:#16293a;stroke-width:2;stroke-linejoin:round}
+#coach[data-touch="false"] .coach-hand{display:none}
+#coach[data-prompt="drive"] .coach-hand{animation-name:coach-press}
+#coach[data-prompt="steer"] .coach-hand{animation-name:coach-swipe}
+#coach[data-prompt="nitro"] .coach-hand{animation-name:coach-slide}
+@keyframes coach-press{0%,100%{transform:scale(1)}20%,70%{transform:scale(.86)}}
+@keyframes coach-swipe{0%,100%{transform:translateX(0) scale(.9)}25%{transform:translateX(-9px) scale(.9)}75%{transform:translateX(9px) scale(.9)}}
+@keyframes coach-slide{0%,15%{transform:translateY(8px) scale(.9)}60%,85%{transform:translateY(-8px) scale(.9)}100%{transform:translateY(8px) scale(.9)}}
+@keyframes coach-in{from{opacity:0;transform:translateY(8px)}}
+@media(max-width:760px){#coach{top:22%}#coach-text{font-size:13px}}
+.reduced-motion .coach-hand,.reduced-motion #coach{animation:none}

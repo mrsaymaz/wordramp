@@ -1,8 +1,27 @@
 WORDRAMP — by Mr. Saymaz
-v0.27.1 · Rides & Bridges
+v0.28.0 · Driving School
 
 Wordramp is the new name of Wordrift. Saved progress, stars and arena wins
 carry over unchanged.
+
+DRIVING SCHOOL (FIRST-TIME PLAYERS)
+The first START opens a five-step Driving School (SKIP is always there):
+1. Hold to drive: a practice pad shows a thumb holding the road, then the
+   player holds it too and lets go to slow down.
+2. Swipe to change lanes: swipe left and right without lifting.
+3. Slide up for Nitro: slide higher for level 2 and 3 (30 practice fuel
+   each), then slide down or let go to save the rest.
+4. Answer with your car: Green Light, Shortcut, Bridge Out and Crosswalk,
+   each in one picture and two lines.
+5. Win the race: fuel, three bumps, and finishing first.
+The pads use the race's own touch gestures; on a computer they use the race
+keys (hold Up, Left/Right or A/D, hold Space, N). Until the player touches a
+pad, it plays the move by itself. During the first race, a small coach says
+HOLD THE ROAD TO DRIVE, then SWIPE TO CHANGE LANES, then (once there is
+30 fuel) NITRO READY! SLIDE YOUR THUMB UP. Each prompt disappears for good
+once the player has done it. The ? button (and Help in Pause) reopens the
+Driving School at any time; ALL RULES on its last step shows the full rules.
+Players who already saw the old welcome guide skip it automatically.
 
 RIDES (EVERY ROUTE CHOICE)
 A billboard before each route choice promises a ride. Steer into the right

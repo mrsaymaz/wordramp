@@ -135,3 +135,80 @@ const LESSON_SUMMARIES=Object.freeze({
   g8u12:'Describing pets, their daily needs and responsible care.'
 });
 export function lessonSummary(unit){return LESSON_SUMMARIES[unit.id]||unit.targetLanguage?.slice(0,2).join(' · ')||'Practise this unit’s vocabulary and useful everyday English.';}
+
+// Driving School: five short steps for first-time players. The practice pad
+// uses the race's own touch gesture reader, so hold / swipe / slide feel the
+// same in the lesson as on the road. Keyboards practise with the race keys.
+export const TUTORIAL_STEPS=['drive','steer','nitro','tasks','race'];
+export const PRACTICE_GOALS={drive:['hold','coast'],steer:['left','right'],nitro:['boost','save']};
+export const PRACTICE_FUEL=90,PRACTICE_COST=30;
+export function createPractice(step){
+  return {step,speed:0,lane:0,held:false,heldFor:0,gesture:null,boost:false,level:0,charges:0,fuel:PRACTICE_FUEL,keyBoost:false,goals:Object.fromEntries((PRACTICE_GOALS[step]||[]).map(g=>[g,false]))};
+}
+export const practiceDone=p=>Object.values(p.goals).every(Boolean);
+const practiceSteer=(p,direction)=>{if(!direction)return;const lane=Math.max(-1,Math.min(1,p.lane+direction));if(lane!==p.lane){p.lane=lane;const goal=direction<0?'left':'right';if(goal in p.goals)p.goals[goal]=true;}};
+// A boost needs a bought charge: each new level costs 30 practice fuel; a
+// saved charge resumes free.
+function practiceBoost(p,on,level=1){
+  if(p.step!=='nitro')return;
+  if(!on){if(p.boost)p.goals.save=true;p.boost=false;p.level=0;return;}
+  while(p.charges<level&&p.fuel>=PRACTICE_COST){p.fuel-=PRACTICE_COST;p.charges++;}
+  p.level=Math.min(level,p.charges);p.boost=p.level>0;if(p.boost)p.goals.boost=true;
+}
+export function practicePress(p,x,y){p.held=true;p.gesture=createTouchDrive(x,y);}
+export function practiceMove(p,x,y){
+  if(!p.held||!p.gesture)return;const a=touchDriveGesture(p.gesture,x,y);practiceSteer(p,a.steer);
+  if(a.boost&&(a.boostChanged||a.levelChanged))practiceBoost(p,true,a.level);else if(a.boostChanged&&!a.boost)practiceBoost(p,false);
+}
+export function practiceRelease(p){if(!p.held)return;p.held=false;p.gesture=null;if(p.boost)practiceBoost(p,false);}
+// Keys: hold ↑ to drive, ← → / A D to steer, hold Space for Nitro (release
+// saves the charge), N loads another level.
+export function practiceKey(p,key,down){
+  const k=key.length===1?key.toLowerCase():key;
+  if(k==='ArrowUp'){if(down)p.held=true;else practiceRelease(p);return true;}
+  if(down&&(k==='ArrowLeft'||k==='a')){practiceSteer(p,-1);return true;}
+  if(down&&(k==='ArrowRight'||k==='d')){practiceSteer(p,1);return true;}
+  if(k===' '){p.keyBoost=down;practiceBoost(p,down,Math.max(1,p.charges));return true;}
+  if(down&&k==='n'){if(p.step==='nitro'&&p.charges<3&&p.fuel>=PRACTICE_COST){p.fuel-=PRACTICE_COST;p.charges++;if(p.boost)practiceBoost(p,true,p.charges);}return true;}
+  return false;
+}
+// Display speed: 90 km/h held, up to 200 with three Nitro levels, coasting
+// down when released.
+export function practiceTick(p,dt){
+  const driving=p.held||p.keyBoost;if(driving)p.heldFor+=dt;
+  if(p.heldFor>=1.2&&'hold' in p.goals)p.goals.hold=true;
+  if(p.goals.hold&&!driving&&'coast' in p.goals)p.goals.coast=true;
+  const target=p.boost?[90,140,170,200][p.level]:driving?90:0;
+  p.speed+=(target-p.speed)*Math.min(1,dt*(target>p.speed?2.4:1.1));
+  return p;
+}
+// First-race coach: one prompt at a time, only on the open road.
+// The Nitro prompt rests after 12 s on screen in one race (it returns next race).
+export function coachPrompt(race,coach,canNitro=false,run=null){
+  if(!race||race.reviewLap||!coach||race.status!=='driving')return null;
+  if(!coach.drive)return race.accelerating?null:'drive';
+  if(!coach.steer)return 'steer';
+  if(!coach.nitro&&(canNitro||race.nitro>0)&&!(run?.nitroTime>=12))return 'nitro';
+  return null;
+}
+// `coach` holds the saved lessons (drive / steer / nitro); `run` is this
+// race's scratch. Returns true when a lesson was just learned.
+export function coachProgress(race,coach,run,dt,prompt){
+  if(!race||!coach||!run)return false;const before=[coach.drive,coach.steer,coach.nitro].join();
+  if(race.status==='driving'&&race.accelerating){run.held=(run.held||0)+dt;if(run.held>=1.5)coach.drive=true;}
+  if(run.lane!=null&&race.lane!==run.lane&&coach.drive)coach.steer=true;run.lane=race.lane;
+  if(prompt==='steer'){run.steerTime=(run.steerTime||0)+dt;if(run.steerTime>=10)coach.steer=true;}
+  if(prompt==='nitro')run.nitroTime=(run.nitroTime||0)+dt;
+  if(race.nitroHeld&&race.nitro>0)coach.nitro=true;
+  return [coach.drive,coach.steer,coach.nitro].join()!==before;
+}
+// The self-playing demo shown until the player first touches the pad: a 4 s
+// loop of the same moves (the demo hand's CSS animation follows this script).
+export const DEMO_CYCLE=4;
+export function practiceDemo(step,t){
+  t=((t%DEMO_CYCLE)+DEMO_CYCLE)%DEMO_CYCLE;
+  if(step==='drive')return {held:t>=.4&&t<2.6,lane:0,level:0};
+  if(step==='steer')return {held:t>=.3&&t<3.8,lane:t<1?0:t<1.8?-1:t<2.6?0:t<3.4?1:0,level:0};
+  if(step==='nitro')return {held:t>=.3&&t<3.6,lane:0,level:t>=1.2&&t<2.8?(t<1.9?1:2):0};
+  return {held:false,lane:0,level:0};
+}

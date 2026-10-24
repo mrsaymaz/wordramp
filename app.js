@@ -1,7 +1,7 @@
 import {createLeague,leagueApi,LEAGUE_TEAMS,strengthLabel,hoursLabel} from './league.js';
 import {TEAMS,teamById,newIdentity,ultiWinStatus,ULTI_MIN_STARS,ULTI_MIN_RELAXED_ACCURACY,isFinishEligible} from './teams-ulti.js';
 import {Sound} from './audio.js';
-import {normalisePreferences,roadGesture,createTouchDrive,touchDriveGesture,touchContentBottom,displaySpeed,raceHudContext,GRADE_LEVELS,lessonSummary} from './presentation.js';
+import {normalisePreferences,roadGesture,createTouchDrive,touchDriveGesture,TUTORIAL_STEPS,PRACTICE_GOALS,createPractice,practiceDone,practicePress,practiceMove,practiceRelease,practiceKey,practiceTick,practiceDemo,coachPrompt,coachProgress,touchContentBottom,displaySpeed,raceHudContext,GRADE_LEVELS,lessonSummary} from './presentation.js';
 import {RallyScene} from './scene.js';
 import {laneLayout,strokeHits,roadVerticalLayout,visibleRivalLabels,wordFontSize,categoryTitle} from './road-layout.js';
 import {normaliseProgress,arenaUnlocked,recordArenaWin,recordLearning,finishUnitArena,masteryStats,garageTier,equip,resolvedLook} from './progression.js';
@@ -24,6 +24,9 @@ try{let raw=localStorage.getItem(STORAGE);if(raw)saved={...saved,...JSON.parse(r
 if(!BANK.some(g=>g.grade===saved.grade))saved.grade=5;
 if(!saved.progress||typeof saved.progress!=='object')saved.progress={};
 normaliseProgress(saved);
+// Driving School and the first-race coach. Players from before the tutorial
+// (who saw the welcome guide) skip both.
+if(!saved.tutorial||typeof saved.tutorial!=='object'){const known=!!saved.crosswalkTutorial;saved.tutorial={done:known,drive:known,steer:known,nitro:known};}
 if(!C.DIFFICULTIES[saved.difficulty])saved.difficulty='relaxed';
 let selectedArena=0,race=null,scene,mode='home',lastStatus='',lastTask='',lastResult=null,toastEnd=0,modalFocus=null,autoResume=false;
 let settledAnswers=0,latestUnlock=0;
@@ -233,15 +236,105 @@ function clearAcceleration(){
   if(worldId!=null&&$('world').hasPointerCapture?.(worldId))$('world').releasePointerCapture(worldId);
   if(race){C.setAccelerating(race,false);C.setNitroHeld(race,false);}
 }
-function showModal(html){pendingToast=null;toastEnd=0;$('toast').classList.remove('visible');clearAcceleration();if(connection.pointerId!==null)endStroke({pointerId:connection.pointerId});$('modal').classList.remove('finish-modal','dnf-result');$('modal').classList.remove('lessons-modal');modalFocus=document.activeElement;$('modal').innerHTML=html;$('modal-backdrop').hidden=false;setTimeout(()=>$('modal').focus(),0);}
+function showModal(html){pendingToast=null;toastEnd=0;$('toast').classList.remove('visible');clearAcceleration();if(connection.pointerId!==null)endStroke({pointerId:connection.pointerId});$('modal').classList.remove('finish-modal','dnf-result','tutorial-modal');$('modal').classList.remove('lessons-modal');modalFocus=document.activeElement;$('modal').innerHTML=html;$('modal-backdrop').hidden=false;setTimeout(()=>$('modal').focus(),0);}
 function closeModal(){$('modal-backdrop').hidden=true;$('modal').classList.remove('lessons-modal');$('modal').innerHTML='';modalFocus?.focus?.();}
-function help(startAfter=false){
+function rules(startAfter=false){
   const driveHelp=(touchControls?'Hold anywhere on the road to accelerate. Keep your thumb down and swipe left or right to change lanes. You can swipe again without lifting.':'Swipe the road, tap the arrows, or use ← → / A D. Hold your car or the speed button to accelerate. On a computer, hold ↑.')+' Release acceleration and Nitro to coast and brake for traffic.';
   const boostHelp=touchControls?'Slide your driving thumb forward to use Nitro, then hold it there. Slide down to save the remaining charge and keep regular acceleration. Slide farther forward for a second or third charge, up to three levels. Each new charge costs 30 fuel; resuming a saved charge is free. Lifting your thumb releases acceleration and Nitro. Fuel and Nitro status sit beside your race position.':'Hold NITRO or Space to boost; release to save the remaining charge. An upward swipe also boosts while your finger stays down. A new charge costs 30 fuel. Tap +30 or press N to stack up to three levels. Holding acceleration also uses a loaded charge. Regular acceleration displays up to 90 km/h; maximum Nitro displays 200 km/h.';
   const returnHelp=touchControls?'After choosing, keep holding the road to return to normal pace sooner.':'After choosing, hold your car, the speed button or ↑ to return to normal pace sooner.';
   if(race&&!['finished','failed','paused'].includes(race.status))autoResume=C.pause(race);
   showModal(`${host('point')}<span class="modal-kicker">WELCOME TO WORDRAMP</span><h2 id="modal-title">Your team.<br>Your open road.</h2><div class="help-step"><span class="step-num">1</span><div><strong>Find your line.</strong><p>${driveHelp}</p></div></div><div class="help-step"><span class="step-num">2</span><div><strong>Read the road.</strong><p>Steer towards the correct full-text answer, or tap its sign. Rivals match your progress during every English task, even if you hold acceleration. Correct exits protect your speed recovery too. Lights and forks enter slow motion close to the signs. Steering stays active. ${returnHelp} Already holding? Keep holding. The answer locks at the road line.</p></div></div><div class="help-task-grid"><div><b>GREEN LIGHT</b><span>Read in slow motion, then steer into the matching answer to turn the light green.</span></div><div><b>BRIDGE OUT</b><span>Release the car: autopilot holds your entry speed and lane while the world slows into a green-gold focus effect. Connect the three blocks in sentence order: each one drops its word slab into the gap with a note, and a wrong block bounces back out. Then drive over your sentence as each word lights up, with a small hop at the end. Extra thinking time safely freezes the approach before the gap. A held Up key or driving touch resumes automatically after autopilot.</span></div><div><b>SHORTCUT</b><span>Choose a sign in close-range slow motion. The right lane leads into a visible shortcut and a ride: the Sky Coaster in Sunlit, the Sea Jump on the Coastal Overpass and the Cliff Plunge in Stormcrest.</span></div><div><b>CROSSWALK</b><span>Sort each visitor’s word while autopilot approaches in slow motion. Clear the crossing before you arrive; all cars wait if anyone is still on the road.</span></div></div><div class="help-step"><span class="step-num">3</span><div><strong>Earn your next boost.</strong><p>First-try English answers earn fuel. Every third adds a streak bonus. ${boostHelp}</p></div></div><div class="help-step"><span class="step-num">4</span><div><strong>Look after your car.</strong><p>Three small marks below the clock show your remaining hits. Each driving bump damages the car; the third ends the race. Change lanes into clear gaps. Every new race starts fully repaired.</p></div></div><p class="save-note">Choose Slytherin, Hufflepuff, Gryffindor or Ravenclaw in the garage. ${league.enabled?`A first-place finish with ${Math.round(ULTI_MIN_RELAXED_ACCURACY*100)}% of tasks right first time on Relaxed, or ${ULTI_MIN_STARS}+ stars on Challenge, adds Ulti points to your team in Mr. Saymaz's English League. Tap LEAGUE in the garage to see the team pools. `:''}Plan about five minutes per arena, with 12–16 checkpoints and longer open-road stretches. Holding acceleration and using Nitro can shorten your run. Your stars reward accurate English and clean driving. Your racing position is separate. All cars wait for pedestrians to reach the sidewalk.</p><details><summary>Race rules & keyboard shortcuts</summary><p>Finish first to unlock the next arena for this unit and difficulty. Stars still reward your English at every finishing position. Wrong answers cost 1.5 seconds and never damage your car. Each separate driving impact costs ${C.DIFFICULTIES[saved.difficulty].penalty} seconds and one condition mark. Three hits end the race. A cracked windscreen warns after the first hit; a loose bonnet and smoke mean one hit left. Rivals can close the gap while you recover, using their normal driving. Autopilot protects your car and reading time. Relaxed gives 3 seconds of impact protection; Challenge gives 2. Each retry starts fully repaired. Correct shortcuts add 3 seconds; wrong routes take a recoverable detour. Rivals share your regular top speed and earn fuel for boosts. Nitro waits through tasks and crossings. Use 1 / 2 / 3 for the road signs or repair blocks. Use ← / → at crosswalks. Escape / P pauses. Missed words return later, with an optional review lap after the finish.</p></details><button id="help-done" class="primary">${startAfter?'LET’S DRIVE':'GOT IT'} ↗</button>`);
-  $('help-done').onclick=()=>{closeModal();if(startAfter){saved.crosswalkTutorial=true;persist();begin();}else if(autoResume){C.resume(race);autoResume=false;}};
+  $('help-done').onclick=()=>{closeModal();if(startAfter){saved.crosswalkTutorial=true;saved.tutorial.done=true;persist();begin();}else if(autoResume){C.resume(race);autoResume=false;}};
+}
+// Driving School: hold to drive, swipe to steer, slide up for Nitro (each with
+// a practice pad), the four English tasks, then fuel, bumps and winning.
+let practice=null,practiceAt=0;
+const keyCap=k=>`<kbd>${k}</kbd>`;
+const TUTORIAL_TASKS=[
+  {kind:'light',name:'GREEN LIGHT',see:'Three answer signs across the road.',touch:'Steer into the lane with the right answer, or tap its sign.',keys:`Steer with ${keyCap('←')} ${keyCap('→')} or press ${keyCap('1')} ${keyCap('2')} ${keyCap('3')}.`},
+  {kind:'fork',name:'SHORTCUT',see:'The road splits at answer signs.',touch:'Steer into the right sign: it opens a shortcut and a ride!',keys:`Steer with ${keyCap('←')} ${keyCap('→')} or press ${keyCap('1')} ${keyCap('2')} ${keyCap('3')}.`},
+  {kind:'bridge',name:'BRIDGE OUT',see:'A gap in the road and three word blocks.',touch:'Your car drives itself. Draw one line through the blocks in sentence order.',keys:`Your car drives itself. Press ${keyCap('1')} ${keyCap('2')} ${keyCap('3')} in sentence order.`},
+  {kind:'walk',name:'CROSSWALK',see:'People carry words to two groups.',touch:'Swipe each word left or right into its group before you arrive.',keys:`Sort each word with ${keyCap('←')} ${keyCap('→')} before you arrive.`}];
+const GOAL_TEXT={hold:['Hold your thumb on the road','Hold ↑ for a moment'],coast:['Let go to slow down','Let go of ↑ to slow down'],left:['Swipe left','Press ← or A'],right:['Swipe right','Press → or D'],boost:['Slide up for Nitro','Hold Space for Nitro'],save:['Slide down or let go to save the rest','Let go of Space to save the rest']};
+function taskIcon(kind){
+  const icons={
+    light:'<rect x="25" y="6" width="14" height="30" rx="4" class="ti-dark"/><circle cx="32" cy="14" r="4" class="ti-dim"/><circle cx="32" cy="27" r="4" class="ti-go"/><rect x="4" y="44" width="16" height="9" rx="2" class="ti-sign"/><rect x="24" y="44" width="16" height="9" rx="2" class="ti-sign ti-right"/><rect x="44" y="44" width="16" height="9" rx="2" class="ti-sign"/>',
+    fork:'<path d="M32 60V38L14 10M32 38l18-28" class="ti-road"/><path d="M32 38l18-28" class="ti-path"/><rect x="40" y="6" width="20" height="9" rx="2" class="ti-sign ti-right"/><rect x="4" y="6" width="20" height="9" rx="2" class="ti-sign"/>',
+    bridge:'<rect x="4" y="38" width="14" height="10" class="ti-dark"/><rect x="46" y="38" width="14" height="10" class="ti-dark"/><rect x="20" y="38" width="7" height="6" rx="1" class="ti-sign ti-right"/><rect x="28.5" y="38" width="7" height="6" rx="1" class="ti-sign ti-right"/><rect x="37" y="38" width="7" height="6" rx="1" class="ti-sign"/><path d="M10 20h14l8 8 14-14" class="ti-path"/><circle cx="10" cy="20" r="3" class="ti-go"/><circle cx="32" cy="28" r="3" class="ti-go"/><circle cx="46" cy="14" r="3" class="ti-go"/>',
+    walk:'<rect x="4" y="44" width="56" height="10" class="ti-stripes"/><circle cx="32" cy="16" r="5" class="ti-sign"/><path d="M32 22v14M26 28h12M32 36l-5 8M32 36l5 8" class="ti-person"/><path d="M20 20l-10 0M14 15l-5 5 5 5" class="ti-path"/><path d="M44 20h10M50 15l5 5-5 5" class="ti-path"/>'};
+  return `<svg viewBox="0 0 64 64" aria-hidden="true" class="task-icon">${icons[kind]}</svg>`;
+}
+function practicePad(step){
+  const touch=touchControls,demo=touch?`<span class="pp-hand pp-hand-${step}" aria-hidden="true"><svg viewBox="0 0 40 52"><path d="M15 22V7a4 4 0 0 1 8 0v13l9 2c4 1 6 4 5 8l-3 13c-1 4-4 7-8 7h-7c-3 0-5-1-7-4L4 32c-2-3 1-6 4-5l7 4" /></svg></span>`:`<span class="pp-keys" aria-hidden="true">${step==='drive'?keyCap('↑'):step==='steer'?keyCap('←')+keyCap('→'):keyCap('Space')+keyCap('N')}</span>`;
+  const label={drive:touch?'Practice pad: hold your thumb here to drive.':'Practice: hold the Up arrow key to drive.',steer:touch?'Practice pad: swipe left or right to change lanes.':'Practice: press Left and Right to change lanes.',nitro:touch?'Practice pad: hold, then slide up for Nitro.':'Practice: hold Space for Nitro.'}[step];
+  return `<div id="practice" class="practice-pad" data-step="${step}" tabindex="0" role="application" aria-label="${label}"><div class="pp-road"><i class="pp-lines"></i><span id="pp-car" class="pp-car" aria-hidden="true"></span>${demo}</div><div class="pp-gauges"><span class="pp-speed"><b id="pp-speed">0</b> KM/H</span>${step==='nitro'?`<span class="pp-nitro" aria-label="Nitro level"><i></i><i></i><i></i></span><span class="pp-fuel">FUEL <b id="pp-fuel">90</b></span>`:''}</div></div><ul id="pp-goals" class="pp-goals">${PRACTICE_GOALS[step].map(g=>`<li data-goal="${g}">${GOAL_TEXT[g][touch?0:1]}</li>`).join('')}</ul>`;
+}
+function tutorialStep(i,startAfter){
+  const step=TUTORIAL_STEPS[i],touch=touchControls,last=i===TUTORIAL_STEPS.length-1;
+  const copy={
+    drive:[touch?'Hold to drive.':'Hold ↑ to drive.',touch?'Put your thumb anywhere on the road and keep it there: your car speeds up. Let go to slow down.':`Hold ${keyCap('↑')} (or hold the speed button) to speed up. Let go to slow down.`],
+    steer:[touch?'Swipe to change lanes.':'Change lanes.',touch?'Keep your thumb down and swipe left or right. You can swipe again without lifting.':`Tap ${keyCap('←')} ${keyCap('→')} or ${keyCap('A')} ${keyCap('D')}, or the arrow buttons on screen.`],
+    nitro:[touch?'Slide up for Nitro.':'Hold Space for Nitro.',touch?'While you drive, slide your thumb up for Nitro. Slide higher for level 2 and 3. Slide down, or let go, to save the rest for later.':`Hold ${keyCap('Space')} or the NITRO button to boost. Press ${keyCap('N')} or +30 to add a level. Let go to save the rest for later.`],
+    tasks:['Answer with your car.','The road asks you English questions. Slow motion gives you time to read.'],
+    race:['Win the race.','Good English fills your tank. Clean driving keeps your car in one piece.']}[step];
+  let body='';
+  if(PRACTICE_GOALS[step])body=practicePad(step)+(step==='nitro'?'<p class="tutorial-note">Each new Nitro level costs 30 fuel. In the race you earn fuel with right answers.</p>':'');
+  else if(step==='tasks')body=`<div class="tutorial-tasks">${TUTORIAL_TASKS.map(t=>`<div class="tutorial-task">${taskIcon(t.kind)}<div><b>${t.name}</b><span>${t.see}</span><p>${touch?t.touch:t.keys}</p></div></div>`).join('')}</div><p class="tutorial-note">A wrong answer costs 1.5 seconds. It never damages your car.</p>`;
+  else body=`<div class="tutorial-tiles"><div><b>FUEL</b><span>Right first time: +10 fuel. Every third in a row: +5 more. 30 fuel loads one Nitro.</span></div><div><b>YOUR CAR</b><span>Three bumps end the race. Change lanes into clear gaps.</span></div><div><b>THE FINISH</b><span>Finish first to open the next arena. Stars reward your English.</span></div></div>`;
+  const dots=TUTORIAL_STEPS.map((_,k)=>`<i class="${k===i?'on':k<i?'past':''}"></i>`).join('');
+  return `${host(i===0?'point':last?'smile':'think')}<span class="modal-kicker">DRIVING SCHOOL · ${i+1} OF ${TUTORIAL_STEPS.length}</span><h2 id="modal-title">${copy[0]}</h2><p class="tutorial-lead">${copy[1]}</p>${body}<div class="tutorial-dots" aria-hidden="true">${dots}</div><div class="modal-actions tutorial-actions">${i>0?'<button id="tutorial-back" class="secondary">BACK</button>':startAfter?'<button id="tutorial-skip" class="secondary">SKIP</button>':''}${last?'<button id="tutorial-rules" class="secondary">ALL RULES</button>':''}<button id="tutorial-next" class="primary">${last?(startAfter?'LET’S DRIVE ↗':'DONE'):'NEXT'}</button></div>`;
+}
+function stopPractice(){practice=null;}
+function renderPractice(dt){
+  if(!practice||!$('practice')){stopPractice();return;}
+  // Until the first touch or key, the pad plays the move by itself.
+  const pad=$('practice'),tried=pad.classList.contains('tried');let p=practice;
+  if(!tried){const d=practiceDemo(p.step,(performance.now()-p.demoStart)/1000),demo=p.demo||=createPractice(p.step);if(d.level>0&&d.level>demo.level)demo.charges=Math.max(demo.charges,d.level);if(!d.held)demo.charges=0;demo.held=d.held;demo.lane=d.lane;demo.boost=d.level>0;demo.level=d.level;demo.fuel=90-30*demo.charges;practiceTick(demo,dt);p=demo;}
+  p.offset=((p.offset||0)+p.speed*dt*4)%64;pad.style.setProperty('--pp-offset',p.offset.toFixed(1)+'px');
+  setText('pp-speed',Math.round(p.speed));if($('pp-fuel'))setText('pp-fuel',p.fuel);
+  pad.dataset.lane=String(p.lane);pad.dataset.level=String(p.boost?p.level:0);pad.classList.toggle('held',p.held||p.keyBoost);pad.style.setProperty('--pp-speed',String(p.speed/200));
+  for(const li of $('pp-goals').querySelectorAll('[data-goal]'))li.classList.toggle('done',!!practice.goals[li.dataset.goal]);
+  const done=practiceDone(practice);if(done&&!practice.cheered){practice.cheered=true;sound.tone('chime');$('tutorial-next').classList.add('ready');}
+}
+// Ticked from the main frame loop (real time, so slow devices hold just as long).
+function stepPractice(now){const dt=Math.max(0,Math.min(.25,(now-practiceAt)/1000));practiceAt=now;practiceTick(practice,dt);renderPractice(dt);}
+function tutorial(startAfter=false,i=0){
+  if(race&&!['finished','failed','paused'].includes(race.status))autoResume=C.pause(race);
+  stopPractice();showModal(tutorialStep(i,startAfter));$('modal').classList.add('tutorial-modal');practiceAt=performance.now();
+  const step=TUTORIAL_STEPS[i],finish=()=>{stopPractice();saved.tutorial.done=true;saved.crosswalkTutorial=true;persist();closeModal();$('modal').classList.remove('tutorial-modal');if(startAfter)begin();else if(autoResume){C.resume(race);autoResume=false;}};
+  $('tutorial-next').onclick=()=>{sound.tone('click');if(i<TUTORIAL_STEPS.length-1)tutorial(startAfter,i+1);else finish();};
+  if($('tutorial-back'))$('tutorial-back').onclick=()=>{sound.tone('click');tutorial(startAfter,i-1);};
+  if($('tutorial-skip'))$('tutorial-skip').onclick=finish;
+  if($('tutorial-rules'))$('tutorial-rules').onclick=()=>{stopPractice();saved.tutorial.done=true;saved.crosswalkTutorial=true;persist();$('modal').classList.remove('tutorial-modal');rules(startAfter);};
+  if(!PRACTICE_GOALS[step])return;
+  practice=createPractice(step);practice.demoStart=performance.now();const pad=$('practice');
+  pad.addEventListener('pointerdown',e=>{if(e.button>0||practice.pointer!=null)return;e.preventDefault();sound.unlock();practice.pointer=e.pointerId;pad.setPointerCapture?.(e.pointerId);pad.classList.add('tried');practicePress(practice,e.clientX,e.clientY);});
+  pad.addEventListener('pointermove',e=>{if(practice?.pointer!==e.pointerId)return;e.preventDefault();const lane=practice.lane,level=practice.boost?practice.level:0;practiceMove(practice,e.clientX,e.clientY);if(lane!==practice.lane){sound.tone('click');haptic('click');}if(practice.boost&&practice.level>level){sound.tone('nitro'+practice.level);haptic('go');}});
+  const up=e=>{if(practice?.pointer!==e.pointerId)return;practice.pointer=null;practiceRelease(practice);};
+  for(const n of ['pointerup','pointercancel','lostpointercapture'])pad.addEventListener(n,up);
+  practiceAt=performance.now();setTimeout(()=>pad.focus(),0);
+}
+function practiceKeys(e,down){
+  if(!practice||$('modal-backdrop').hidden||!$('practice'))return false;
+  if(down&&e.repeat&&e.key!==' '&&e.key!=='ArrowUp')return false;if(e.repeat){e.preventDefault();return true;}
+  const lane=practice.lane,level=practice.boost?practice.level:0;if(!practiceKey(practice,e.key,down))return false;
+  e.preventDefault();$('practice').classList.add('tried');if(lane!==practice.lane)sound.tone('click');if(practice.boost&&practice.level>level)sound.tone('nitro'+practice.level);return true;
+}
+const help=()=>tutorial(false);
+// First-race coach: hold to drive, then change lanes, then (once fuel allows)
+// Nitro. Each prompt goes away for good once the move is done.
+const COACH_TEXT={drive:[['HOLD THE ROAD TO DRIVE','Keep your thumb down'],['HOLD ↑ TO DRIVE','or hold the speed button']],steer:[['SWIPE ← → TO CHANGE LANES','Keep your thumb down while you swipe'],['PRESS ← → TO CHANGE LANES','or A / D']],nitro:[['NITRO READY! SLIDE YOUR THUMB UP','Slide down to save the rest'],['NITRO READY! HOLD SPACE','or hold the NITRO button']]};
+let coachRun=null,coachAt=0;
+function updateCoach(now){
+  const el=$('coach'),dt=Math.max(0,Math.min(.25,(now-coachAt)/1000));coachAt=now;
+  if(!race||!$('modal-backdrop').hidden||mode!=='race'){el.hidden=true;return;}
+  if(coachRun?.race!==race)coachRun={race};
+  const before=coachPrompt(race,saved.tutorial,C.canNitro(race),coachRun);
+  if(coachProgress(race,saved.tutorial,coachRun,dt,before))persist();
+  const prompt=coachPrompt(race,saved.tutorial,C.canNitro(race),coachRun);
+  if(!prompt){el.hidden=true;el.dataset.prompt='';return;}
+  const [text,sub]=COACH_TEXT[prompt][touchControls?0:1];el.hidden=false;
+  if(el.dataset.prompt!==prompt||el.dataset.touch!==String(touchControls)){el.dataset.prompt=prompt;el.dataset.touch=String(touchControls);setText('coach-text',text);setText('coach-sub',sub);}
 }
 function begin(reviewItems=null){
   if(!teamById(saved.teamId)){goHome();return;}
@@ -422,6 +515,7 @@ function updateUI(now){
   document.body.dataset.focusPhase=returning?'return':cruising?'cruise':'off';
   $('throttle').disabled=false;$('throttle').setAttribute('aria-label',cruising?(quickReturn?'Hold to return to normal pace sooner.':drivingHeld()?'Acceleration held. Quick return begins after your choice is ready.':'Autopilot holds your entry speed. After choosing, hold to return to normal pace sooner.'):'Hold to accelerate');
   document.body.classList.toggle('accelerating',!!race?.accelerating&&race.speedFactor>.05);
+  if(practice)stepPractice(now);updateCoach(now);
   if(!race){updateAnnouncements(now,context);return;}
   $('controls').hidden=touchControls||!['driving','task','resolving'].includes(race.status);
   settleLearning();
@@ -526,7 +620,7 @@ $('league-button').onclick=leaguePanel;refreshLeagueButton();if(league.enabled){
 $('lesson-picker').onclick=lessonChooser;
 document.querySelectorAll('[data-diff]').forEach(b=>b.onclick=()=>{saved.difficulty=b.dataset.diff;selectedArena=0;refreshHome();});
 $('settings').onclick=settings;
-$('start').onclick=()=>{sound.unlock();if(saved.crosswalkTutorial)begin();else help(true);};$('help').onclick=()=>help();$('progress-button').onclick=journal;$('garage-button').onclick=garage;$('nitro').onclick=e=>{if(e.detail===0&&race&&race.nitro<=0)requestNitro();};$('nitro-stack').onclick=requestNitro;$('pause').onclick=pauseRace;$('brand-home').onclick=e=>{e.preventDefault();askExit();};for(const [id,direction]of [['left',-1],['right',1]]){$(id).onpointerdown=e=>{if(e.button>0)return;e.preventDefault();steer(direction);};$(id).onclick=e=>{if(e.detail===0)steer(direction);};}
+$('start').onclick=()=>{sound.unlock();if(saved.tutorial.done)begin();else tutorial(true);};$('help').onclick=()=>help();$('progress-button').onclick=journal;$('garage-button').onclick=garage;$('nitro').onclick=e=>{if(e.detail===0&&race&&race.nitro<=0)requestNitro();};$('nitro-stack').onclick=requestNitro;$('pause').onclick=pauseRace;$('brand-home').onclick=e=>{e.preventDefault();askExit();};for(const [id,direction]of [['left',-1],['right',1]]){$(id).onpointerdown=e=>{if(e.button>0)return;e.preventDefault();steer(direction);};$(id).onclick=e=>{if(e.detail===0)steer(direction);};}
 $('sound').onclick=()=>{saved.sound=!saved.sound;sound.unlock();soundButton();persist();sound.tone('click');};
 $('throttle').addEventListener('pointerdown',e=>{if(e.button>0||heldThrottleId!==null||!race||!['driving','task','resolving'].includes(race.status))return;e.preventDefault();heldThrottleId=e.pointerId;$('throttle').setPointerCapture(e.pointerId);sound.unlock();applyAcceleration();});
 for(const event of ['pointerup','pointercancel','lostpointercapture'])$('throttle').addEventListener(event,e=>{if(heldThrottleId!==e.pointerId)return;heldThrottleId=null;applyAcceleration();if($('throttle').hasPointerCapture?.(e.pointerId))$('throttle').releasePointerCapture(e.pointerId);});
@@ -584,6 +678,7 @@ $('world').addEventListener('pointercancel',e=>{if(heldRoadNitroId===e.pointerId
 $('world').addEventListener('lostpointercapture',e=>{if(heldRoadNitroId===e.pointerId){heldRoadNitroId=null;applyAcceleration();}if(heldCarId===e.pointerId){heldCarId=null;applyAcceleration();}if(pointerStart?.id===e.pointerId)pointerStart=null;});
 document.addEventListener('keydown',e=>{
   if(['SELECT','INPUT'].includes(document.activeElement.tagName))return;
+  if(practiceKeys(e,true))return;
   if(!$('modal-backdrop').hidden){
     if(e.key==='Tab'){let focusable=[...$('modal').querySelectorAll('button:not(:disabled),select,summary,[tabindex="0"]')],first=focusable[0],last=focusable.at(-1);if(e.shiftKey&&(document.activeElement===first||document.activeElement===$('modal'))){last?.focus();e.preventDefault();}else if(!e.shiftKey&&document.activeElement===last){first?.focus();e.preventDefault();}}
     if(e.key==='Escape'&&$('lesson-cancel')){$('lesson-cancel').click();return;}if(e.key==='Escape'&&$('settings-done')){$('settings-done').click();return;}if(e.key==='Escape'&&race?.status==='paused'){$('resume')?.click();if(!$('resume')&&$('help-done'))$('help-done').click();}return;
@@ -597,7 +692,7 @@ document.addEventListener('keydown',e=>{
   if(race?.status==='task'&&/^[1-3]$/.test(e.key)){if(race.task.kind==='repair')connectHit(race.task.order[Number(e.key)-1]);else if(race.task.kind==='pedestrian'){if(e.key!=='2')C.sortPerson(race,e.key==='1'?0:1);}else C.choose(race,Number(e.key)-1);e.preventDefault();}
   if(mode==='home'&&e.key==='Enter')$('start').click();
 });
-document.addEventListener('keyup',e=>{if(e.key===' '){spaceHeld=false;applyAcceleration();if(race)e.preventDefault();}if(e.key==='ArrowUp'){upHeld=false;applyAcceleration();if(race)e.preventDefault();}});
+document.addEventListener('keyup',e=>{if(practiceKeys(e,false))return;if(e.key===' '){spaceHeld=false;applyAcceleration();if(race)e.preventDefault();}if(e.key==='ArrowUp'){upHeld=false;applyAcceleration();if(race)e.preventDefault();}});
 window.addEventListener('blur',()=>{clearAcceleration();pauseRace();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseRace();else refreshUltiUI();});
 document.addEventListener('graphicslost',()=>{pauseRace();$('graphics-error').hidden=false;});
@@ -610,4 +705,4 @@ function frame(now){let rawDt=(now-previous)/1000,dt=Math.min(rawDt,.06);previou
   const idleBehindModal=!$('modal-backdrop').hidden&&(!race||['paused','finished','failed'].includes(race.status));idleFrames=idleBehindModal?idleFrames+1:0;
   if(idleFrames%6===0)scene?.update(dt,race,mode);updateUI(now);sound.update(race,scene?.spectators?.proximity||0);if(now>toastEnd)$('toast').classList.remove('visible');if(roadFeedbackEnd&&now>roadFeedbackEnd){setText('road-feedback','');roadFeedbackEnd=0;}requestAnimationFrame(frame);}
 requestAnimationFrame(frame);setTimeout(()=>$('loading').hidden=true,500);
-window.WORDRAMP=window.WORDRIFT=window.WORDSHIFT={version:'0.27.1',ulti:Object.freeze({snapshot:grade=>league.snapshot(grade??saved.grade),enabled:league.enabled}),get race(){return race;},get settings(){return saved;},get scene(){return scene;}};
+window.WORDRAMP=window.WORDRIFT=window.WORDSHIFT={version:'0.28.0',ulti:Object.freeze({snapshot:grade=>league.snapshot(grade??saved.grade),enabled:league.enabled}),get race(){return race;},get settings(){return saved;},get scene(){return scene;}};

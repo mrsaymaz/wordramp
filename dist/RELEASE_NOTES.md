@@ -1,3 +1,27 @@
+# v0.28.0 · Driving School
+
+A short tutorial for first-time players
+- The first START opens a five-step Driving School. Steps 1–3 each have a
+  practice pad with a self-playing demo until the player tries it:
+  hold to drive (and let go to slow down), swipe left and right to change
+  lanes, and slide up for Nitro (levels 2 and 3 higher up; slide down or let
+  go to save the rest). Small checkmarks turn green as each move is done.
+- On phones and tablets the pads use exactly the same gesture reader as the
+  race. On computers they practise with the race keys (hold Up, Left/Right or
+  A/D, hold Space, N for another level).
+- Step 4 shows the four English tasks (Green Light, Shortcut, Bridge Out,
+  Crosswalk) with one picture each and how to answer by touch or keys.
+  Step 5 covers fuel, the three-bump limit and finishing first.
+- SKIP is always available. The ? button and Help in Pause reopen the
+  Driving School; ALL RULES on its last step opens the full rules.
+- First-race coach: HOLD THE ROAD TO DRIVE, then SWIPE ← → TO CHANGE LANES,
+  then, once 30 fuel is earned, NITRO READY! SLIDE YOUR THUMB UP (HOLD ↑ /
+  PRESS ← → / HOLD SPACE on computers). Prompts never show during English
+  tasks, the countdown or review laps, and each one stops for good once the
+  move is done. The Nitro prompt rests after 12 seconds in a race.
+- Players who already saw the old welcome guide skip both automatically.
+- Race rules, scoring, balance and the League connection are unchanged.
+
 # v0.27.1 · Rides & Bridges (fix)
 
 - Bridge Builder slabs now bend with the road and fill the whole gap: each
