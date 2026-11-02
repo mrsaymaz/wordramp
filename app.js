@@ -1,5 +1,6 @@
 import {createLeague,leagueApi,LEAGUE_TEAMS,strengthLabel,hoursLabel} from './league.js';
 import {TEAMS,teamById,newIdentity,ultiWinStatus,ULTI_MIN_STARS,ULTI_MIN_RELAXED_ACCURACY,isFinishEligible} from './teams-ulti.js';
+import {needsStudent,savedStudent,studentRecord,pickerMarkup,pickerStep,studentPillMarkup,studentPillLabel} from './student-picker.js';
 import {Sound} from './audio.js';
 import {normalisePreferences,roadGesture,createTouchDrive,touchDriveGesture,TASK_TIPS,fingerPose,TUTORIAL_STEPS,PRACTICE_GOALS,createPractice,practiceDone,practicePress,practiceMove,practiceRelease,practiceKey,practiceTick,practiceDemo,coachPrompt,coachProgress,touchContentBottom,displaySpeed,raceHudContext,GRADE_LEVELS,lessonSummary} from './presentation.js';
 import {RallyScene} from './scene.js';
@@ -29,6 +30,8 @@ normaliseProgress(saved);
 if(!saved.tutorial||typeof saved.tutorial!=='object'){const known=!!saved.crosswalkTutorial;saved.tutorial={done:known,drive:known,steer:known,nitro:known};}
 if(!saved.tutorial.tasks||typeof saved.tutorial.tasks!=='object'){const known=!!(saved.tutorial.drive&&saved.tutorial.steer&&saved.tutorial.nitro);saved.tutorial.tasks=Object.fromEntries(TASK_TIPS.map(k=>[k,known]));}
 if(!C.DIFFICULTIES[saved.difficulty])saved.difficulty='relaxed';
+// "Who are you?": the League student chosen on this device (or none).
+saved.student=savedStudent(saved.student);if(!saved.student)delete saved.student;saved.studentSkip=!!saved.studentSkip;
 let selectedArena=0,race=null,scene,mode='home',lastStatus='',lastTask='',lastResult=null,toastEnd=0,modalFocus=null,autoResume=false;
 let settledAnswers=0,latestUnlock=0;
 const unit=()=>BANK.find(g=>g.grade===saved.grade).units.find(u=>u.id===saved.unit)||BANK.find(g=>g.grade===saved.grade).units[0];
@@ -175,7 +178,7 @@ const leagueGrade=r=>r?.unit?.grade??(Number(String(r?.unit?.id||saved.unit).mat
 function leagueStart(r){
   if(!league.enabled||!r||r.reviewLap||r.leagueTicket||leagueStarting||!teamById(r.teamId)||['finished','failed'].includes(r.status))return;
   leagueStarting=true;leagueStartAt=performance.now();
-  league.start({runId:r.runId,grade:leagueGrade(r),team:r.teamId,arena:r.arenaIndex,pace:r.difficulty==='challenge'?'challenge':'relaxed',unit:r.unit.id}).then(ticket=>{if(ticket)r.leagueTicket=ticket;}).finally(()=>{leagueStarting=false;});
+  league.start({runId:r.runId,grade:leagueGrade(r),team:r.teamId,arena:r.arenaIndex,pace:r.difficulty==='challenge'?'challenge':'relaxed',unit:r.unit.id,student:r.studentId}).then(ticket=>{if(ticket)r.leagueTicket=ticket;}).finally(()=>{leagueStarting=false;});
 }
 function leagueMessage(result,grade,team){
   const name=team?.name||'your team';
@@ -193,7 +196,66 @@ function leagueMessage(result,grade,team){
   return null;
 }
 function renderLeagueResult(result,grade,team){const el=$('league-result');const m=leagueMessage(result,grade,team);if(!el||!m)return;el.textContent=m.text;el.classList.toggle('good',!!m.good);el.classList.remove('pending');}
-function refreshLeagueButton(){if(!league.enabled){$('league-button').hidden=true;return;}$('league-button').hidden=false;setText('league-label',`LEAGUE · GRADE ${saved.grade}`);}
+function refreshLeagueButton(){refreshStudentPill();if(!league.enabled){$('league-button').hidden=true;return;}$('league-button').hidden=false;setText('league-label',` · GRADE ${saved.grade}`);}
+// "Who are you?" pill beside LEAGUE: who is playing, tap to change.
+function refreshStudentPill(){
+  const pill=$('student-button');if(!pill)return;pill.hidden=!league.enabled;if(!league.enabled)return;
+  const key=JSON.stringify(saved.student||null);if(pill.dataset.shown===key)return;pill.dataset.shown=key;
+  pill.innerHTML=studentPillMarkup(saved.student);pill.title=saved.student?`${saved.student.name} · ${saved.student.className}`:'';pill.classList.toggle('empty',!saved.student);pill.setAttribute('aria-label',studentPillLabel(saved.student));
+}
+// The picker (student-picker.js). With the League on, the first START on a
+// device asks once, after the team and grade are chosen; the choice (or
+// "Play without a name") is remembered. Closing returns to the garage and
+// START asks again. Never waits for the League: a cached class list shows at
+// once and refreshes in the background.
+let picker=null;
+function openStudentPicker(fromPlay=false){
+  if(!league.enabled||mode!=='home')return false;
+  picker={grade:saved.grade,team:saved.teamId||'',all:false,className:null,studentId:null,roster:null,loading:true,offline:false,fromPlay,shown:false};
+  loadPickerRoster();return true;
+}
+function loadPickerRoster(){
+  const p=picker;if(!p)return;const grade=p.grade;
+  p.roster=league.cachedRoster(grade);p.loading=true;p.offline=false;drawPicker();
+  const view=()=>JSON.stringify([pickerStep(p).step,p.roster?.students||[]]);
+  league.roster(grade).catch(()=>null).then(fresh=>{
+    if(picker!==p||p.grade!==grade)return;
+    const before=view();p.loading=false;if(fresh?.online)p.roster=fresh;p.offline=!fresh?.online&&!p.roster?.students?.length;
+    if(view()!==before)drawPicker();
+  });
+}
+function drawPicker(){
+  const p=picker;if(!p)return;
+  const html=pickerMarkup(p,{host:host(pickerStep(p).step==='confirm'?'smile':'point')});
+  if(p.shown&&!$('modal-backdrop').hidden){$('modal').innerHTML=html;$('modal').focus();}else{showModal(html);p.shown=true;}
+  $('modal').classList.add('student-modal');
+  $('modal').querySelectorAll('[data-student]').forEach(b=>b.onclick=()=>pickerAction(b.dataset.student,b.dataset.value));
+}
+function pickerAction(action,value){
+  const p=picker;if(!p)return;sound.tone('click');
+  if(action==='close')return finishPicker(false);
+  if(action==='skip'){saved.studentSkip=true;persist();return finishPicker(true);}
+  if(action==='confirm'){
+    const s=p.roster?.students?.find(x=>x.id===p.studentId);if(!s)return;
+    saved.student=studentRecord(s);saved.studentSkip=false;
+    // Chosen before any team: start with their League team (they can switch).
+    if(!teamById(saved.teamId))saved.teamId=s.team;
+    persist();if(!p.fromPlay)toast(`Welcome, ${s.name}!`);return finishPicker(true);
+  }
+  if(action==='retry')return loadPickerRoster();
+  if(action==='grade'){const g=Number(value);if(g===p.grade||![5,6,7,8].includes(g))return;Object.assign(p,{grade:g,className:null,studentId:null});return loadPickerRoster();}
+  if(action==='all')Object.assign(p,{all:true,className:null,studentId:null});
+  else if(action==='class')p.className=value;
+  else if(action==='pick')p.studentId=value;
+  else if(action==='back')Object.assign(p,{className:null,studentId:null});
+  else if(action==='back-names')p.studentId=null;
+  drawPicker();
+}
+function finishPicker(ok){
+  const p=picker;picker=null;closeModal();refreshHome();
+  if(ok&&p?.fromPlay)play();
+}
+function play(){if(saved.tutorial.done)begin();else tutorial(true);}
 function leagueHelp(snap){
   if(!snap.known)return '<p class="save-note">The English League will show its Ulti rules here once it can be reached.</p>';
   if(!snap.game)return '<p class="league-help">Ulti points are not switched on for this game yet.</p>';
@@ -237,8 +299,8 @@ function clearAcceleration(){
   if(worldId!=null&&$('world').hasPointerCapture?.(worldId))$('world').releasePointerCapture(worldId);
   if(race){C.setAccelerating(race,false);C.setNitroHeld(race,false);}
 }
-function showModal(html){pendingToast=null;toastEnd=0;$('toast').classList.remove('visible');clearAcceleration();if(connection.pointerId!==null)endStroke({pointerId:connection.pointerId});$('modal').classList.remove('finish-modal','dnf-result','tutorial-modal');$('modal').classList.remove('lessons-modal');modalFocus=document.activeElement;$('modal').innerHTML=html;$('modal-backdrop').hidden=false;setTimeout(()=>$('modal').focus(),0);}
-function closeModal(){$('modal-backdrop').hidden=true;$('modal').classList.remove('lessons-modal');$('modal').innerHTML='';modalFocus?.focus?.();}
+function showModal(html){pendingToast=null;toastEnd=0;$('toast').classList.remove('visible');clearAcceleration();if(connection.pointerId!==null)endStroke({pointerId:connection.pointerId});$('modal').classList.remove('finish-modal','dnf-result','tutorial-modal','student-modal');$('modal').classList.remove('lessons-modal');modalFocus=document.activeElement;$('modal').innerHTML=html;$('modal-backdrop').hidden=false;setTimeout(()=>$('modal').focus(),0);}
+function closeModal(){$('modal-backdrop').hidden=true;$('modal').classList.remove('lessons-modal','student-modal');$('modal').innerHTML='';modalFocus?.focus?.();}
 function rules(startAfter=false){
   const driveHelp=(touchControls?'Hold anywhere on the road to accelerate. Keep your thumb down and swipe left or right to change lanes. You can swipe again without lifting.':'Swipe the road, tap the arrows, or use ← → / A D. Hold your car or the speed button to accelerate. On a computer, hold ↑.')+' Release acceleration and Nitro to coast and brake for traffic.';
   const boostHelp=touchControls?'Slide your driving thumb forward to use Nitro, then hold it there. Slide down to save the remaining charge and keep regular acceleration. Slide farther forward for a second or third charge, up to three levels. Each new charge costs 30 fuel; resuming a saved charge is free. Lifting your thumb releases acceleration and Nitro. Fuel and Nitro status sit beside your race position.':'Hold NITRO or Space to boost; release to save the remaining charge. An upward swipe also boosts while your finger stays down. A new charge costs 30 fuel. Tap +30 or press N to stack up to three levels. Holding acceleration also uses a loaded charge. Regular acceleration displays up to 90 km/h; maximum Nitro displays 200 km/h.';
@@ -378,7 +440,7 @@ function begin(reviewItems=null){
   if(!Array.isArray(reviewItems)&&!arenaOpen(selectedArena)){goHome();toast('Finish first to unlock the next arena.');return;}
   clearGameSelection();
   $('launch-caption').textContent=touchControls?'HOLD TO DRIVE · SWIPE TO STEER · SLIDE ↑ FOR NITRO':'READ THE ROAD. RACE YOUR RIVALS.';
-  invalidateLayout();launchNumber=0;lastPlace=null;pendingToast=null;toastEnd=0;$('toast').classList.remove('visible');$('celebration').hidden=true;$('celebration').innerHTML='';document.body.classList.remove('race-finished','car-critical','car-breaking');const items=Array.isArray(reviewItems)?reviewItems:null;settleLearning();clearAcceleration();closeModal();race=items?C.createReviewLap(unit(),items,saved.difficulty,Date.now(),{fuel:saved.fuel}):C.createRace(unit(),saved.difficulty,selectedArena,Date.now(),{fuel:saved.fuel,reviews:saved.reviewQueue[unit().id]||[]});preloadPictures(race);race.teamId=saved.teamId;race.runId=newIdentity('run');if(!items)leagueStart(race);settledAnswers=0;latestUnlock=0;mode='race';lastStatus='';lastTask='';lastResult=null;scene.setup(items?0:selectedArena);scene.clearGate();scene.currentLane=0;scene.setCosmetics(resolvedLook(saved));$('rival-tags').innerHTML=race.rivals.map(r=>`<span data-rival="${r.id}" style="--rival:#${r.color.toString(16)}">${r.name}<small></small></span>`).join('');document.body.classList.add('racing');$('home').hidden=true;$('hud').hidden=false;$('pause').hidden=false;$('countdown').hidden=false;$('warning').hidden=true;$('road-learning').hidden=true;$('controls').hidden=true;
+  invalidateLayout();launchNumber=0;lastPlace=null;pendingToast=null;toastEnd=0;$('toast').classList.remove('visible');$('celebration').hidden=true;$('celebration').innerHTML='';document.body.classList.remove('race-finished','car-critical','car-breaking');const items=Array.isArray(reviewItems)?reviewItems:null;settleLearning();clearAcceleration();closeModal();race=items?C.createReviewLap(unit(),items,saved.difficulty,Date.now(),{fuel:saved.fuel}):C.createRace(unit(),saved.difficulty,selectedArena,Date.now(),{fuel:saved.fuel,reviews:saved.reviewQueue[unit().id]||[]});preloadPictures(race);race.teamId=saved.teamId;race.runId=newIdentity('run');race.studentId=saved.student?.id||'';if(!items)leagueStart(race);settledAnswers=0;latestUnlock=0;mode='race';lastStatus='';lastTask='';lastResult=null;scene.setup(items?0:selectedArena);scene.clearGate();scene.currentLane=0;scene.setCosmetics(resolvedLook(saved));$('rival-tags').innerHTML=race.rivals.map(r=>`<span data-rival="${r.id}" style="--rival:#${r.color.toString(16)}">${r.name}<small></small></span>`).join('');document.body.classList.add('racing');$('home').hidden=true;$('hud').hidden=false;$('pause').hidden=false;$('countdown').hidden=false;$('warning').hidden=true;$('road-learning').hidden=true;$('controls').hidden=true;
   previousBoostLevel=0;$('launch-kicker').textContent=race.arena.name.toUpperCase();$('launch-caption').textContent=race.reviewLap?'A SHORT LAP. A STRONGER NEXT DRIVE.':'YOU · COBALT · EMBER';sound.unlock();sound.tone('click');
 }
 function goHome(){document.body.dataset.nitroLevel='0';settleLearning();clearAcceleration();race=null;mode='home';lastTask='';lastStatus='';lastResult=null;autoResume=false;scene?.clearGate();closeModal();document.body.classList.remove('racing','nitro-active','race-finished','nitro-ready','car-critical','car-breaking');pendingToast=null;toastEnd=0;$('toast').classList.remove('visible');$('celebration').hidden=true;$('celebration').innerHTML='';$('rival-tags').innerHTML='';for(let id of['route-status','hud','pause','countdown','warning','road-learning','controls'])$(id).hidden=true;$('home').hidden=false;refreshHome();sound.update(null);}
@@ -532,7 +594,7 @@ function result(){
   // The League counts only first places that meet this game's accuracy rule
   // and decides the points itself.
   const ultiStatus=league.enabled?ultiWinStatus(race,position,stars):'none',leagueClaim=ultiStatus==='qualified',leagueTeam=teamById(race.teamId),leagueGradeNow=leagueGrade(race);
-  if(leagueClaim){const claimed=race;league.claim(claimed.runId).then(r=>{if(race===claimed)renderLeagueResult(r,leagueGradeNow,leagueTeam);refreshUltiUI();return league.flush();}).catch(()=>{});}
+  if(leagueClaim){const claimed=race;league.claim(claimed.runId).then(r=>{if(race===claimed)renderLeagueResult(r,r.grade??leagueGradeNow,teamById(r.team)||leagueTeam);refreshUltiUI();return league.flush();}).catch(()=>{});}
   const ultiMissed=ultiStatus==='accuracy'?(race.difficulty==='challenge'?`English League Ulti points need ${ULTI_MIN_STARS} stars on Challenge: answer 3 in 4 tasks right first time.`:`English League Ulti points need ${Math.round(ULTI_MIN_RELAXED_ACCURACY*100)}% of tasks right first time on Relaxed.`):'';
   lastResult={finished,stars};sound.tone(finished?'finish':broken?'breakdown':'wrong');$('road-learning').hidden=true;$('controls').hidden=true;$('warning').hidden=true;$('pause').hidden=true;
   const review=race.review.filter(i=>!i.recovered),mastery=masteryStats(saved,race.unit.id),next=finished&&position===1&&!race.reviewLap&&race.arenaIndex<2&&arenaUnlocked(saved,race.unit.id,race.difficulty,race.arenaIndex+1);
@@ -657,7 +719,7 @@ $('league-button').onclick=leaguePanel;refreshLeagueButton();if(league.enabled){
 $('lesson-picker').onclick=lessonChooser;
 document.querySelectorAll('[data-diff]').forEach(b=>b.onclick=()=>{saved.difficulty=b.dataset.diff;selectedArena=0;refreshHome();});
 $('settings').onclick=settings;
-$('start').onclick=()=>{sound.unlock();if(saved.tutorial.done)begin();else tutorial(true);};$('help').onclick=()=>help();$('progress-button').onclick=journal;$('garage-button').onclick=garage;$('nitro').onclick=e=>{if(e.detail===0&&race&&race.nitro<=0)requestNitro();};$('nitro-stack').onclick=requestNitro;$('pause').onclick=pauseRace;$('brand-home').onclick=e=>{e.preventDefault();askExit();};for(const [id,direction]of [['left',-1],['right',1]]){$(id).onpointerdown=e=>{if(e.button>0)return;e.preventDefault();steer(direction);};$(id).onclick=e=>{if(e.detail===0)steer(direction);};}
+$('start').onclick=()=>{sound.unlock();if(needsStudent({enabled:league.enabled,student:saved.student,skip:saved.studentSkip})&&openStudentPicker(true))return;play();};$('student-button').onclick=()=>{sound.tone('click');openStudentPicker(false);};$('help').onclick=()=>help();$('progress-button').onclick=journal;$('garage-button').onclick=garage;$('nitro').onclick=e=>{if(e.detail===0&&race&&race.nitro<=0)requestNitro();};$('nitro-stack').onclick=requestNitro;$('pause').onclick=pauseRace;$('brand-home').onclick=e=>{e.preventDefault();askExit();};for(const [id,direction]of [['left',-1],['right',1]]){$(id).onpointerdown=e=>{if(e.button>0)return;e.preventDefault();steer(direction);};$(id).onclick=e=>{if(e.detail===0)steer(direction);};}
 $('sound').onclick=()=>{saved.sound=!saved.sound;sound.unlock();soundButton();persist();sound.tone('click');};
 $('throttle').addEventListener('pointerdown',e=>{if(e.button>0||heldThrottleId!==null||!race||!['driving','task','resolving'].includes(race.status))return;e.preventDefault();heldThrottleId=e.pointerId;$('throttle').setPointerCapture(e.pointerId);sound.unlock();applyAcceleration();});
 for(const event of ['pointerup','pointercancel','lostpointercapture'])$('throttle').addEventListener(event,e=>{if(heldThrottleId!==e.pointerId)return;heldThrottleId=null;applyAcceleration();if($('throttle').hasPointerCapture?.(e.pointerId))$('throttle').releasePointerCapture(e.pointerId);});
@@ -719,7 +781,7 @@ document.addEventListener('keydown',e=>{
   if(coachRun&&race?.status==='task'&&race.task&&/^([1-3]|Arrow(Left|Right)|[adAD])$/.test(e.key))coachRun.touched=race.task.id;
   if(!$('modal-backdrop').hidden){
     if(e.key==='Tab'){let focusable=[...$('modal').querySelectorAll('button:not(:disabled),select,summary,[tabindex="0"]')],first=focusable[0],last=focusable.at(-1);if(e.shiftKey&&(document.activeElement===first||document.activeElement===$('modal'))){last?.focus();e.preventDefault();}else if(!e.shiftKey&&document.activeElement===last){first?.focus();e.preventDefault();}}
-    if(e.key==='Escape'&&$('lesson-cancel')){$('lesson-cancel').click();return;}if(e.key==='Escape'&&$('settings-done')){$('settings-done').click();return;}if(e.key==='Escape'&&race?.status==='paused'){$('resume')?.click();if(!$('resume')&&$('help-done'))$('help-done').click();}return;
+    if(e.key==='Escape'&&picker){finishPicker(false);return;}if(e.key==='Escape'&&$('lesson-cancel')){$('lesson-cancel').click();return;}if(e.key==='Escape'&&$('settings-done')){$('settings-done').click();return;}if(e.key==='Escape'&&race?.status==='paused'){$('resume')?.click();if(!$('resume')&&$('help-done'))$('help-done').click();}return;
   }
   if(e.key==='ArrowUp'&&race&&['driving','task','resolving'].includes(race.status)){if(!e.repeat){upHeld=true;sound.unlock();applyAcceleration();}e.preventDefault();return;}
   if(e.key===' '&&race){if(!e.repeat&&C.engageNitro(race)){spaceHeld=true;sound.unlock();applyAcceleration();}e.preventDefault();return;}
@@ -743,4 +805,4 @@ function frame(now){let rawDt=(now-previous)/1000,dt=Math.min(rawDt,.06);previou
   const idleBehindModal=!$('modal-backdrop').hidden&&(!race||['paused','finished','failed'].includes(race.status));idleFrames=idleBehindModal?idleFrames+1:0;
   if(idleFrames%6===0)scene?.update(dt,race,mode);updateUI(now);sound.update(race,scene?.spectators?.proximity||0);if(now>toastEnd)$('toast').classList.remove('visible');if(roadFeedbackEnd&&now>roadFeedbackEnd){setText('road-feedback','');roadFeedbackEnd=0;}requestAnimationFrame(frame);}
 requestAnimationFrame(frame);setTimeout(()=>$('loading').hidden=true,500);
-window.WORDRAMP=window.WORDRIFT=window.WORDSHIFT={version:'0.28.0',ulti:Object.freeze({snapshot:grade=>league.snapshot(grade??saved.grade),enabled:league.enabled}),get race(){return race;},get settings(){return saved;},get scene(){return scene;}};
+window.WORDRAMP=window.WORDRIFT=window.WORDSHIFT={version:'0.29.0',ulti:Object.freeze({snapshot:grade=>league.snapshot(grade??saved.grade),enabled:league.enabled}),get race(){return race;},get settings(){return saved;},get scene(){return scene;}};

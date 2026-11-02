@@ -751,3 +751,46 @@ body.reduced-motion .home-host,body.reduced-motion .modal-host img{animation:non
 .reduced-motion .fd-hand{animation:none;left:50%;top:31%}.reduced-motion .fd-stage polyline{animation:none;stroke-dashoffset:0}.reduced-motion .ft-hand,.reduced-motion #finger-tip::before{transition:none}
 #finger-demo[data-touch="false"]{bottom:128px}
 #finger-tip[data-mode="sort"] .ft-keys{left:74px;top:-40px;transform:none}#finger-tip.press[data-mode="sort"] .ft-keys{transform:translateY(3px)}
+/* "Who are you?" (English League v11.7.0): the student pill beside LEAGUE and the class/name picker. */
+#home .team-heading .field-label{flex:none}
+#home .team-links{flex:1 1 auto;min-width:0;flex-wrap:nowrap;align-items:center}
+#home #league-button{flex:none}
+#home .student-pill{display:inline-flex;align-items:center;gap:6px;min-width:0;max-width:100%;min-height:30px;padding:3px 3px 3px 9px;border:1px solid #bfe3d666;border-radius:99px;background:#0b2033c7;color:#e6f1ef;font-size:10px;font-weight:750;letter-spacing:0;text-align:left;box-shadow:0 2px 0 #06142499}
+#home .student-pill.empty{border-style:dashed;border-color:#f2d28d99;color:#ffe9b8;padding-left:11px}
+.student-pill-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.student-pill em{font-style:normal;color:#a9c4cc}
+.student-pill b{font-weight:850;color:#fff}
+.student-pill small{flex:none;padding:4px 8px;border-radius:99px;background:#f0d28e;color:#263b48;font-size:9px;font-weight:850;letter-spacing:.3px}
+.student-dot{flex:none;width:9px;height:9px;border-radius:50%;background:var(--team);box-shadow:0 0 0 2px #0b2033,0 0 0 3px var(--team)}
+/* Phones: the grade is on the lesson card, so LEAGUE drops it to give the pill room in the same row. */
+@media(max-width:480px){.student-pill em{display:none}#home .league-grade{display:none}#home .team-heading{gap:8px}#home .student-pill small{padding:4px 7px}}
+@media(max-width:370px){#home .student-pill{gap:4px;padding-left:7px}#home .student-pill small{padding:3px 5px;font-size:8.5px}#home .student-dot{display:none}#home .team-heading{gap:6px}#home .team-links{gap:4px}}
+#modal.student-modal{width:min(540px,100%)}
+.student-heading{display:flex;align-items:flex-start;gap:10px}
+.student-heading>div{flex:1;min-width:0;padding-top:4px}
+.student-heading #modal-title{margin:6px 0 0}
+.student-heading .modal-host{float:none;order:1;flex:none;width:78px;height:98px;margin:-12px -4px -14px 0}
+.student-heading .student-close{order:2}
+#modal .student-ask{margin:14px 0 12px;font-size:16px;line-height:1.4;font-weight:800;color:#f3f5ff}
+.student-grades{margin:0 0 12px}
+.student-classes{display:flex;flex-wrap:wrap;gap:8px}
+.student-class{flex:1 1 110px;min-height:62px;border:1px solid #bddfdc40;border-radius:14px;background:linear-gradient(150deg,#2a5068,#123047);box-shadow:inset 0 1px #fff2,0 3px 0 #06142499;color:#fff4d9;font-size:24px;font-weight:900;font-style:italic;letter-spacing:.5px}
+.student-class:hover,.student-name:hover{border-color:#f3d18b}
+.student-names{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px;max-height:min(46dvh,400px);overflow-y:auto;overscroll-behavior:contain;padding:2px 3px 4px 1px;scrollbar-width:thin;scrollbar-color:#88adba55 transparent}
+.student-name{display:flex;align-items:center;gap:9px;min-height:48px;padding:8px 11px;border:1px solid #bddfdc40;border-radius:12px;background:#0b2636aa;color:#eef5f3;font-size:14px;font-weight:750;line-height:1.2;text-align:left;overflow-wrap:anywhere}
+.student-name i{flex:none;width:7px;height:26px;border-radius:4px;background:var(--team);box-shadow:0 0 8px color-mix(in srgb,var(--team) 50%,transparent)}
+.student-name span{min-width:0}
+.student-card{display:flex;flex-direction:column;gap:5px;padding:16px 18px;border:1px solid var(--team);border-left:10px solid var(--team);border-radius:16px;background:linear-gradient(120deg,color-mix(in srgb,var(--team) 14%,#13253b),#13253b)}
+.student-card b{font-size:28px;line-height:1.1;font-weight:900;font-style:italic;color:#fff;overflow-wrap:anywhere}
+.student-card span{font-size:13px;font-weight:800;color:var(--team)}
+.student-card small{font-size:13px;line-height:1.45;color:#d6e1ed}
+.student-actions{margin-top:18px}
+.student-actions .secondary{min-height:54px}
+#modal .student-note{font-size:14px;line-height:1.5;color:#e6eef5;margin:6px 0 12px}
+.student-retry,.student-back{flex:none;padding:12px 20px;min-height:44px}
+.student-back{margin-top:10px}
+.student-links{display:flex;flex-wrap:wrap;justify-content:center;gap:0 18px;margin-top:10px}
+.student-link{min-height:44px;padding:0 4px;background:none;color:#b8cfe0;font-size:12px;text-decoration:underline;text-underline-offset:3px}
+.student-link:hover{color:#ffe09b}
+@media(max-width:560px){#modal.student-modal{padding:20px 16px}.student-names{grid-template-columns:repeat(2,minmax(0,1fr));max-height:min(44dvh,400px)}.student-name{font-size:13px;padding:8px 9px;gap:7px}.student-heading .modal-host{width:64px;height:82px}#modal .student-ask{font-size:15px}.student-class{font-size:21px;min-height:56px}}
+@media(max-height:620px){.student-heading .modal-host{display:none}.student-names{max-height:40dvh}}

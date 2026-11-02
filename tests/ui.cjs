@@ -37,7 +37,7 @@ global.innerWidth=390;global.innerHeight=844;global.navigator={};let storage=JSO
 global.localStorage={getItem:()=>storage,setItem:(k,v)=>storage=v};global.window={visualViewport:{width:390,height:672,scale:1,listeners:{},addEventListener(n,f){(this.listeners[n]||=[]).push(f);}},listeners:{},matchMedia:()=>({matches:false,addEventListener(){}}),addEventListener(n,f){(this.listeners[n]||=[]).push(f);}};
 let selectedRanges=1,selectionClears=0;window.getSelection=()=>({get rangeCount(){return selectedRanges;},removeAllRanges(){selectedRanges=0;selectionClears++;}});
 for(const file of ['language-bank','repair-bank','match-bank','emoji-bank','game-core'])require('../dist/'+file+'.js');
-Object.assign(global,require('./presentation-compiled.cjs'),require('./progression-compiled.cjs'),require('./layout-compiled.cjs'),require('./ulti-compiled.cjs'),require('./league-compiled.cjs'));
+Object.assign(global,require('./presentation-compiled.cjs'),require('./progression-compiled.cjs'),require('./layout-compiled.cjs'),require('./ulti-compiled.cjs'),require('./league-compiled.cjs'),require('./student-picker-compiled.cjs'));
 // Practice-only copy: config.js ultiApi '' means no League UI and no requests.
 let leagueRequests=0;global.fetch=async()=>{leagueRequests++;throw new Error('No network in UI tests');};window.WORDRAMP_CONFIG={ultiApi:''};
 global.Sound=class{unlock(){}tone(){}update(){}};
@@ -45,7 +45,7 @@ global.RallyScene=class{constructor(){this.currentLane=0;}resize(){}setup(){}cle
 let nextFrame;global.requestAnimationFrame=cb=>nextFrame=cb;global.setTimeout=fn=>fn();
 const source=fs.readFileSync('app.js','utf8').replace(/^import .*;\n/gm,'');vm.runInThisContext(source,{filename:'app-ui-test.js'});
 const el=findId,C=window.RallyCore;
-assert.equal(window.WORDRIFT,window.WORDSHIFT,'The old API remains an alias after rebranding');assert.equal(window.WORDRAMP,window.WORDRIFT,'Wordramp is the current API name; older names stay aliases');assert.equal(window.WORDRIFT.version,'0.28.0');assert.equal(window.WORDRIFT.settings.fuel,60,'Existing saved fuel loads after renaming');
+assert.equal(window.WORDRIFT,window.WORDSHIFT,'The old API remains an alias after rebranding');assert.equal(window.WORDRAMP,window.WORDRIFT,'Wordramp is the current API name; older names stay aliases');assert.equal(window.WORDRIFT.version,'0.29.0');assert.equal(window.WORDRIFT.settings.fuel,60,'Existing saved fuel loads after renaming');
 assert(el('pause').closest('.hud-top'));assert(el('fuel-value').closest('.nitro-pod'));assert(el('streak-count').closest('.nitro-pod'));assert(!el('hud').querySelector('.race-meta'));assert(!el('hud').querySelector('.accuracy-pill'));assert(!el('race-position-feedback'));assert(!el('nitro-hint'));
 assert.equal(document.documentElement.style['--play-height'],'672px','Browser controls reserve space even when innerHeight stays 844');
 window.visualViewport.height=396;for(const f of window.visualViewport.listeners.resize)f();assert(document.body.classList.contains('short-viewport'));assert.equal(document.documentElement.style['--play-height'],'396px');
@@ -296,5 +296,5 @@ console.log(`PASS: touch-mode control removal, compact HUD status, retained capt
 
 // Running out of time while leading is also DNF, with no finishing position.
 race.status='driving';race.tasks=[];race.obstacles=[];race.distance=500;race.rivals.forEach((r,i)=>r.at=300-i*30);race.time=.001;C.tick(race,.01,race.lane);assert.equal(race.status,'failed');result();updateUI(now+220);assert.equal(el('modal-title').textContent,'Time ran out.');assert.equal(el('race-place').textContent,'DNF');assert(el('modal').querySelector('.result-dnf'));assert(el('modal').classList.contains('dnf-result'));assert(!el('modal').querySelector('.podium'));assert(!el('next-arena'));assert(!lastResult.finished);
-assert(el('league-button').hidden,'No League button when ultiApi is empty');assert(!el('modal').textContent.includes('English League'));assert.equal(leagueRequests,0,'ultiApi "" makes no network requests');
+assert(el('league-button').hidden,'No League button when ultiApi is empty');assert(el('student-button').hidden,'No "Who are you?" pill or picker when ultiApi is empty');assert(!el('modal').textContent.includes('Who are you'));assert(!el('modal').textContent.includes('English League'));assert.equal(leagueRequests,0,'ultiApi "" makes no network requests');
 console.log('PASS: failed leaders and stale first-place/finished metadata never show a podium or finishing place; breakdown and timeout are DNF with no win rewards.');

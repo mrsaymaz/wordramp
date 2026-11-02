@@ -28,6 +28,21 @@ export function gameSettings(settings){
   return settings&&settings.enabled!==false&&game&&game.enabled!==false?game:null;
 }
 export function hoursLabel(hours){return hours%24===0?`${hours/24} day${hours===24?'':'s'}`:`${hours} hours`;}
+// League v11.7.0 "Who are you?": a Student ID as the League's Roster tab
+// writes them (e.g. "5-A:slytherin:0"). Only this form is ever sent.
+export const validStudentId=id=>typeof id==='string'&&/^[A-Za-z0-9:_-]{1,100}$/.test(id);
+export const LEAGUE_GRADES=Object.freeze([5,6,7,8]);
+// Keep only well-formed roster entries of this grade. Names stay plain text
+// (the picker escapes them); a bad id, class or team drops the entry.
+export function cleanRoster(data,grade){
+  const g=Number(grade),seen=new Set(),students=[];
+  for(const p of Array.isArray(data?.students)?data.students:[]){
+    if(!validStudentId(p?.id)||seen.has(p.id)||typeof p.name!=='string'||!p.name.trim()||typeof p.className!=='string'||!/^[5-8]-[A-Z]$/.test(p.className)||Number(p.className[0])!==g||!LEAGUE_TEAMS.includes(p.team))continue;
+    seen.add(p.id);students.push({id:p.id,name:p.name.trim().slice(0,60),className:p.className,team:p.team});
+  }
+  const classes=[...new Set(students.map(p=>p.className))].sort();
+  return {grade:g,classes,students};
+}
 
 function randomId(length=24){
   const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',bytes=new Uint8Array(length);
@@ -85,10 +100,12 @@ export function createLeague({api=LEAGUE_URL,storage=globalThis.localStorage,fet
   }
   // Ask for a ticket when an arena run begins. Kept in the save under its run
   // so a paused or reloaded game can still claim. null when offline.
-  async function start({runId,grade,team,arena,pace,unit=''}){
+  // A named student's Student ID rides along (League v11.7.0); without a
+  // valid one the start request is exactly as before.
+  async function start({runId,grade,team,arena,pace,unit='',student=''}){
     if(!enabled)return null;
     const existing=state().tickets[runId];if(existing)return existing.ticket;
-    const reply=await request({action:'start',game:LEAGUE_GAME,grade,team,arena,pace,unit:String(unit).replace(/[^A-Za-z0-9_-]/g,'').slice(0,24),device:device()});
+    const reply=await request({action:'start',game:LEAGUE_GAME,grade,team,arena,pace,unit:String(unit).replace(/[^A-Za-z0-9_-]/g,'').slice(0,24),device:device(),...(validStudentId(student)?{student}:{})});
     if(reply.kind!=='ok'||typeof reply.data.ticket!=='string')return null;
     const s=state();forgetOld(s);s.tickets[runId]={ticket:reply.data.ticket,at:now(),grade,team};save(s);
     return reply.data.ticket;
@@ -96,7 +113,12 @@ export function createLeague({api=LEAGUE_URL,storage=globalThis.localStorage,fet
   const ticketFor=runId=>state().tickets[runId]?.ticket||null;
   async function send(ticket){
     const reply=await request({action:'claim',ticket,device:device()});
-    if(reply.kind==='ok'){remember(reply.data);const d=reply.data;return {state:'counted',points:d.points||0,requested:d.requested,deviceWins:d.deviceWins,reason:d.reason||null,duplicate:!!d.duplicate};}
+    if(reply.kind==='ok'){
+      remember(reply.data);const d=reply.data;
+      // The grade and team the League actually credited: for a named student,
+      // their own class grade and League team (League v11.7.0).
+      return {state:'counted',points:d.points||0,requested:d.requested,deviceWins:d.deviceWins,reason:d.reason||null,duplicate:!!d.duplicate,...(LEAGUE_GRADES.includes(d.grade)?{grade:d.grade}:{}),...(LEAGUE_TEAMS.includes(d.team)?{team:d.team}:{})};
+    }
     if(reply.kind==='refused')return {state:'refused',reason:reply.data?.reason||'refused'};
     return {state:'retry'};
   }
@@ -123,5 +145,23 @@ export function createLeague({api=LEAGUE_URL,storage=globalThis.localStorage,fet
     return results;
   }
   const outbox=()=>state().outbox.slice();
-  return {enabled,device,refresh,snapshot,start,ticketFor,claim,flush,outbox};
+  // "Who are you?" class lists (public, no key). The last good reply per
+  // grade stays on the device, so the picker opens at once and offline.
+  function cachedRoster(grade){
+    const r=state().rosters?.[grade];
+    return r&&Array.isArray(r.students)&&Array.isArray(r.classes)?{grade:Number(grade),classes:r.classes,students:r.students,at:r.at,online:false}:null;
+  }
+  // The League's roster for a grade (online:true), else the cached one
+  // (online:false), else null. Never throws.
+  async function roster(grade){
+    if(!enabled||!LEAGUE_GRADES.includes(Number(grade)))return null;
+    const reply=await request({action:'roster',grade:Number(grade)});
+    if(reply.kind==='ok'&&Array.isArray(reply.data.students)){
+      const clean=cleanRoster(reply.data,grade),s=state(),at=now();
+      s.rosters={...(s.rosters||{}),[clean.grade]:{classes:clean.classes,students:clean.students,at}};save(s);
+      return {...clean,at,online:true};
+    }
+    return cachedRoster(grade);
+  }
+  return {enabled,device,refresh,snapshot,start,ticketFor,claim,flush,outbox,roster,cachedRoster};
 }

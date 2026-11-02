@@ -1,3 +1,49 @@
+# v0.29.0 · Who are you? · Vercel
+
+"Who are you?" (English League v11.7.0)
+- With the English League on, the first START on a device asks the student
+  to tap their name, after they have chosen their team and lesson grade. The
+  list shows only that grade's classes and, in a class, only that team's
+  names, sorted in Turkish alphabet order (Ç after C, İ after I, Ş after S).
+  A grade with one class for the team (6-C, 7-A, 8-B) skips the class step.
+- A confirmation card asks "Are you Zeynep?" with the class and team, and
+  says "Your wins add Ulti to Grade 5 Slytherin." (No, go back / Yes, that's
+  me!). The choice is saved on the device and START does not ask again.
+- Two small links on every list: "Not here? Show everyone" (grade tabs 5–8,
+  every team, for a student playing another team or grade) and "Not on the
+  list? Play without a name" (plays as before and does not ask again).
+  Closing the picker returns to the garage; START asks again next time.
+- A small pill beside LEAGUE in the garage says "Zeynep · 5-A  Change" (or
+  "Who are you?  Choose"); tapping it reopens the picker for shared tablets.
+  It shares the existing row, so the garage is no taller on phones. On phones
+  LEAGUE drops "· GRADE n" (the grade is on the lesson card) to make room.
+- Each race's League start ticket carries the chosen Student ID
+  (`student: '5-A:slytherin:0'`). The League credits the win to the
+  student's own class grade and team, and the result screen uses the grade
+  and team the League reports ("+8 Ulti for Grade 5 Slytherin!"), falling
+  back to the race's own grade and team. Without a name the start ticket is
+  exactly as before.
+- The class list comes from the League (`{action:'roster', grade}`, public,
+  no key). The last list for each grade is kept on the device and shows at
+  once, then refreshes in the background. If the League cannot be reached
+  and nothing is kept, the picker says "The class list can't be loaded right
+  now" with Try again; the student can always play without a name. Entries
+  with a malformed id, class or team are dropped, and names are shown as
+  plain text. With `ultiApi: ''` there is no pill and no picker.
+
+Deploying on Vercel
+- `vercel.json` builds with `npm ci` and `npm run build` and publishes `dist`
+  (framework: none). Netlify had no header, redirect or rewrite rules to copy,
+  and the game uses no Netlify Functions, Edge Functions, Forms, Identity or
+  build-time environment variables, so Vercel needs no extra settings.
+  `netlify.toml` is unchanged; `npm run test:vercel` checks both stay alike.
+- `scripts/package-release.py` also writes `Wordramp-v0.29.0-Vercel.zip`:
+  the published folder itself (index.html at the top) plus a `vercel.json`
+  with only the header rules, for drag and drop.
+- The English League stays at https://mrsaymaz.netlify.app/api/ulti. A new
+  web address starts with empty browser storage: stars, arena wins and the
+  chosen name saved on the Netlify address do not move to the Vercel one.
+
 # v0.28.0 · Driving School
 
 A short tutorial for first-time players

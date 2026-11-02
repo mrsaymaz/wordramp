@@ -5,7 +5,69 @@ Browser saves and `window.WORDRIFT` / `window.WORDSHIFT` keep working: the
 save key is unchanged, and the old API names are aliases of `window.WORDRAMP`.
 Ulti points live only in Mr. Saymaz's English League (`league.js`, `public/config.js`).
 
+## Who are you? (English League v11.7.0)
+
+With the League on, the first START on a device asks the student to tap their
+name from the League's class list (`student-picker.js`), after they have chosen
+their team and lesson grade. Only that grade's classes and that team's names
+are listed (a one-class grade such as 6-C goes straight to the names), sorted
+in Turkish alphabet order. "Not here? Show everyone" lists every grade and
+team; "Not on the list? Play without a name" plays as before. The choice is
+saved with the game's progress, and the pill beside LEAGUE in the garage
+("Zeynep · 5-A  Change") reopens the picker for shared tablets. Every race's
+League start ticket then carries the Student ID, and the result screen names
+the grade and team the League credited. The class list is cached per grade,
+so the picker opens at once and never blocks play. With `ultiApi: ''` there is
+no picker. Run `npm run test:student` for the roster, ticket and picker checks.
+
+## Deploy on Vercel
+
+Version 0.29.0 is published on Vercel. The English League itself stays on
+Netlify: the game keeps sending wins to `https://mrsaymaz.netlify.app/api/ulti`
+(`public/config.js`), which accepts requests from any site.
+
+The included `vercel.json` configures:
+
+| Setting | Value |
+| --- | --- |
+| Framework preset | Other (`"framework": null`) |
+| Root directory | Project root (leave blank) |
+| Install command | `npm ci` |
+| Build command | `npm run build` |
+| Output directory | `dist` |
+
+**From GitHub (recommended).** In Vercel choose *Add New → Project*, import
+this GitHub repository and keep the settings above (they come from
+`vercel.json`). Then open *Settings → Git* and set the **Production Branch**
+to the branch that holds this version (for example
+`claude/zen-lovelace-cbbg2v`, or `main` once it is merged there). Otherwise
+Vercel publishes the repository's default branch, which may be an older
+version. Every push to that branch publishes a new production version.
+
+**Drag and drop.** Run `npm run build` and `python3 scripts/package-release.py`,
+unzip `Wordramp-v0.29.0-Vercel.zip` and drop the folder on Vercel's
+new-project page (or run `vercel deploy` inside it). That folder is the
+published game itself, with `index.html` at its top level, plus a
+`vercel.json` holding only the header rules, because a dropped folder is
+published as it is, with no build step. Dropping the `dist` folder of a build
+works the same way.
+
+**No extra Vercel settings are needed.** The game has no Netlify Functions,
+Edge Functions, Forms or Identity, reads no environment variables at build
+time, and `netlify.toml` has no header, redirect or rewrite rules, so
+`vercel.json` lists none either. There is no service worker. Run
+`npm run test:vercel` to check that `vercel.json` and the Netlify files keep
+the same build, header, redirect and rewrite rules.
+
+**Fresh saves on the new address.** Browsers keep saved data per web address.
+Stars, arena wins, fuel, the Driving School tick and the chosen "Who are
+you?" name saved on the Netlify address do not move to the Vercel address:
+students start fresh there (this move does not migrate saves). Ulti points
+already sent are safe in the English League.
+
 ## Deploy on Netlify
+
+Netlify still works exactly as before (`netlify.toml` is unchanged).
 
 The included `netlify.toml` configures:
 
@@ -42,7 +104,7 @@ The release keeps the project layout intact, includes prebuilt `dist`, and
 excludes dependencies, local hosting identity and compiled test files.
 
 See `dist/QUICK_START.txt` for controls and `dist/ULTI_INTEGRATION.md` for the
-English League connection. Version 0.28.0 adds a Driving School for first-time players (hands-on practice pads for holding to drive, swiping and sliding up for Nitro, the four English tasks, a first-race coach, and finger tips on the car and on each English task the first time it appears); 0.27.1 put a ride behind every route choice (escalating Sky Coasters in Sunlit, a Sea Jump on the Coastal Overpass, a Cliff Plunge in Stormcrest) and turns road repairs into a Bridge Builder; 0.26.0 added the launch, loop, corkscrew and helix to the Sky Coaster, which arrived in 0.25.0: in Sunlit
+English League connection. Version 0.29.0 adds the "Who are you?" student picker and Vercel deployment; 0.28.0 added a Driving School for first-time players (hands-on practice pads for holding to drive, swiping and sliding up for Nitro, the four English tasks, a first-race coach, and finger tips on the car and on each English task the first time it appears); 0.27.1 put a ride behind every route choice (escalating Sky Coasters in Sunlit, a Sea Jump on the Coastal Overpass, a Cliff Plunge in Stormcrest) and turns road repairs into a Bridge Builder; 0.26.0 added the launch, loop, corkscrew and helix to the Sky Coaster, which arrived in 0.25.0: in Sunlit
 Boulevard the right answer at a route choice rides a raised coaster track
 (`coaster-track.js` builds it; the ride itself lives in `public/game-core.js`).
 Version 0.24.0 rebuilt the cars and the three arenas, fixed the phone HUD

@@ -42,19 +42,39 @@ is missing, the same League URL is used.
   `arena` is 0–2 (Sunlit, Coastal, Stormcrest), `pace` is `relaxed` or
   `challenge`, and `unit` is the lesson id (for example `g5u1`). The ticket is
   kept with the run in this browser. If the device is offline at the start
-  line, it asks again at each task checkpoint.
+  line, it asks again at each task checkpoint. When the student has chosen
+  their name ("Who are you?", below), the start also carries
+  `student: '5-A:slytherin:0'`, their League Student ID; it is sent only if
+  it matches `/^[A-Za-z0-9:_-]{1,100}$/`, and without it the start is
+  unchanged.
 - **Claim:** `{action:'claim', ticket, device}` is sent only after a claimed
   win (above). The game never sends a points value and holds no key.
   - A network failure, a 5xx reply or `retry: true` keeps the ticket in an
     outbox, which is resent on the next launch or win. Outbox items are
     dropped after 47 hours.
   - A 400 refusal (`too-fast`, `expired` or any other) is final.
+  - The reply's `grade` and `team` (League v11.7.0) are the grade and team the
+    League credited: for a named student, their own class grade and League
+    team. The result message uses them, or the race's own when absent.
+- **Roster:** `{action:'roster', grade}` (public, no key) when the picker
+  opens. Entries whose id, class (`/^[5-8]-[A-Z]$/`), grade or team is not
+  valid are dropped. The last good list per grade is cached in this browser
+  and shown at once; the fresh one replaces it in the background.
 - **Pools:** `{action:'pools', grade}` on launch and when the League panel
   opens. The last reply (settings and pools) is cached in this browser.
 - `device` is a random 24-character id made once and kept in localStorage.
 
 ## What students see
 
+- **Who are you?** With the League on, the first START on a device (after
+  the team and lesson are chosen) asks the student to tap their class and
+  name: only the chosen grade's classes, and only the chosen team's names,
+  sorted in Turkish order. A one-class grade (6-C, 7-A, 8-B) goes straight
+  to the names. "Not here? Show everyone" adds grade tabs 5–8 and every team;
+  "Not on the list? Play without a name" plays without the `student` field and
+  is remembered. The choice is saved with the game's progress; the garage
+  pill beside LEAGUE ("Zeynep · 5-A  Change") reopens the picker. With
+  `ultiApi: ''` there is no picker.
 - **Garage team cards:** each card shows its team's live League points for the
   student's grade (last known values, hidden until the League has answered).
 - **LEAGUE · GRADE n** button (also in the Race Journal): the four team pools

@@ -1,8 +1,17 @@
 WORDRAMP — by Mr. Saymaz
-v0.28.0 · Driving School
+v0.29.0 · Who are you? · Vercel
 
 Wordramp is the new name of Wordrift. Saved progress, stars and arena wins
 carry over unchanged.
+
+WHO ARE YOU? (ENGLISH LEAGUE)
+The first START on a device asks "Who are you?": tap your class, then your
+name (only your grade and your team are listed), then "Yes, that's me!".
+Your Ulti wins then count for your own class grade and team. "Not here?
+Show everyone" lists every grade and team; "Not on the list? Play without a
+name" plays as before. The pill beside LEAGUE in the garage shows who is
+playing; tap it to change (shared tablets). There is no picker when
+config.js sets ultiApi: ''.
 
 DRIVING SCHOOL (FIRST-TIME PLAYERS)
 The first START opens a five-step Driving School (SKIP is always there):
@@ -62,6 +71,15 @@ word lights up under the wheels, with a small hop off the end.
 PICTURE SIGNS
 Some vocabulary signs show a 3D Fluent Emoji picture: choose the word that
 matches the picture, or steer into the picture that shows the word.
+
+VERCEL DEPLOYMENT
+Import the GitHub repository in Vercel (Add New → Project). vercel.json sets
+Install command npm ci, Build command npm run build and Output directory
+dist, so no settings need changing. In Settings → Git, set the Production
+Branch to the branch that holds this version. For drag and drop, unzip
+Wordramp-vX-Vercel.zip and drop the folder (index.html at the top) on
+Vercel's new-project page. A new web address starts with empty browser
+storage: progress saved on the Netlify address does not move to Vercel.
 
 NETLIFY DEPLOYMENT
 For a build-based deployment, use the whole extracted project. The included
