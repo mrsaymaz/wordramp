@@ -1,5 +1,5 @@
 WORDRAMP — by Mr. Saymaz
-v0.29.0 · Who are you? · Vercel
+v0.30.0 · Learning log
 
 Wordramp is the new name of Wordrift. Saved progress, stars and arena wins
 carry over unchanged.
@@ -12,6 +12,13 @@ Show everyone" lists every grade and team; "Not on the list? Play without a
 name" plays as before. The pill beside LEAGUE in the garage shows who is
 playing; tap it to change (shared tablets). There is no picker when
 config.js sets ultiApi: ''.
+
+LEARNING LOG (ENGLISH LEAGUE)
+When the English League switches it on for Wordramp, each League race sends a
+short record of the English tasks answered right or wrong (and the wrong
+choice) to Mr. Saymaz's League sheet, for planning lessons. Students see
+"Your answers help Mr. Saymaz plan your lessons." on the "Who are you?" card.
+See LEARNING_LOG.md.
 
 DRIVING SCHOOL (FIRST-TIME PLAYERS)
 The first START opens a five-step Driving School (SKIP is always there):

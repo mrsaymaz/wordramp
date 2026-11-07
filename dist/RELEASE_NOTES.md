@@ -1,3 +1,24 @@
+# v0.30.0 · Learning log
+
+What students get wrong at home, for lessons in class
+- After every English League race, won or lost, Wordramp can send one short
+  learning record: each English task the student reached, what it tested
+  (vocabulary, grammar, sentence order or reading, and the word or sentence),
+  whether it was right first time, right on a retry, missed or left too late,
+  and the wrong choice. With "Who are you?" the League knows which student it
+  was. Nothing the student types is sent, and no points value.
+- It stays off until the English League's settings for Wordramp say
+  `learning: true`, so this version is safe to publish before the League is
+  ready. Practice-only copies (`ultiApi: ''`) and review laps send nothing.
+- Records travel with the race's start ticket (before the win claim), once per
+  race, and wait in a queue when the device is offline (dropped after 47 hours).
+- While it is on, the "Who are you?" card adds "Your answers help Mr. Saymaz
+  plan your lessons." and the rules mention it.
+- `public/LEARNING_LOG.md` describes the format every League game shares, so
+  answers from different games about the same English add up.
+  `npm run test:learning` drives real races with chosen mistakes and checks the
+  records and the League request.
+
 # v0.29.0 · Who are you? · Vercel
 
 "Who are you?" (English League v11.7.0)

@@ -9,7 +9,7 @@ export const LEAGUE_TEAMS=Object.freeze(['gryffindor','hufflepuff','slytherin','
 // answered. Point values are never invented: without League settings the
 // panel says so instead of showing numbers.
 export const LEAGUE_FALLBACK=Object.freeze({capacity:100,maxStrength:2,hours:72});
-const STORE='wordramp-league.v1',TICKET_MS=48*3600000,OUTBOX_MS=47*3600000;
+const STORE='wordramp-league.v1',TICKET_MS=48*3600000,OUTBOX_MS=47*3600000,LEARN_OUTBOX_MAX=30;
 
 // config.js may be missing (use the League URL) or set ultiApi:'' (fully off).
 export function leagueApi(config){return config&&typeof config.ultiApi==='string'?config.ultiApi.trim():LEAGUE_URL;}
@@ -55,7 +55,7 @@ export function createLeague({api=LEAGUE_URL,storage=globalThis.localStorage,fet
   let memory={};
   const load=()=>{try{const raw=storage?.getItem(STORE);if(raw){const data=JSON.parse(raw);if(data&&typeof data==='object')return data;}}catch{}return memory;};
   const save=data=>{memory=data;try{storage?.setItem(STORE,JSON.stringify(data));}catch{}};
-  const state=()=>{const s=load();s.pools||={};s.outbox||=[];s.tickets||={};return s;};
+  const state=()=>{const s=load();s.pools||={};s.outbox||=[];s.tickets||={};s.learnOutbox||=[];return s;};
   function device(){
     const s=state();
     if(typeof s.device!=='string'||!/^[A-Za-z0-9_-]{8,64}$/.test(s.device)){s.device=randomId();save(s);}
@@ -97,6 +97,7 @@ export function createLeague({api=LEAGUE_URL,storage=globalThis.localStorage,fet
     const t=now();
     for(const [runId,entry] of Object.entries(s.tickets))if(!entry||t-entry.at>TICKET_MS)delete s.tickets[runId];
     s.outbox=s.outbox.filter(item=>item&&t-item.at<=OUTBOX_MS);
+    s.learnOutbox=s.learnOutbox.filter(item=>item&&t-item.at<=OUTBOX_MS).slice(-LEARN_OUTBOX_MAX);
   }
   // Ask for a ticket when an arena run begins. Kept in the save under its run
   // so a paused or reloaded game can still claim. null when offline.
@@ -145,6 +146,39 @@ export function createLeague({api=LEAGUE_URL,storage=globalThis.localStorage,fet
     return results;
   }
   const outbox=()=>state().outbox.slice();
+  // Learning log (LEARNING_LOG.md): one record per League race, won or lost,
+  // sent with that race's start ticket so the League knows the game, grade,
+  // team, student and unit. Off until the League's settings for this game say
+  // learning:true. Call it before claim(), which uses up the ticket here.
+  const learningOn=()=>enabled&&gameSettings(state().settings)?.learning===true;
+  async function sendLearn(ticket,log){
+    const reply=await request({action:'learn',game:LEAGUE_GAME,ticket,device:device(),log});
+    return reply.kind==='ok'?'sent':reply.kind==='refused'?'refused':'retry';
+  }
+  async function learn(runId,log){
+    if(!learningOn())return {state:'off'};
+    const s=state(),entry=s.tickets[runId];
+    if(!entry)return {state:'no-ticket'};
+    if(entry.learned)return {state:'duplicate'};
+    entry.learned=true;save(s);
+    const result=await sendLearn(entry.ticket,log);
+    if(result==='retry'){const q=state();q.learnOutbox.push({ticket:entry.ticket,at:entry.at,log});forgetOld(q);save(q);return {state:'queued'};}
+    return {state:result};
+  }
+  // Resend queued learning records (on launch, after the next race). Stops at
+  // the first network failure so a long queue offline makes one request.
+  async function flushLearning(){
+    if(!learningOn())return [];
+    const s=state();forgetOld(s);save(s);const results=[];
+    for(const item of s.learnOutbox.slice()){
+      const result=await sendLearn(item.ticket,item.log);
+      results.push(result);
+      if(result==='retry')break;
+      const q=state();q.learnOutbox=q.learnOutbox.filter(x=>x.ticket!==item.ticket);save(q);
+    }
+    return results;
+  }
+  const learnOutbox=()=>state().learnOutbox.slice();
   // "Who are you?" class lists (public, no key). The last good reply per
   // grade stays on the device, so the picker opens at once and offline.
   function cachedRoster(grade){
@@ -163,5 +197,5 @@ export function createLeague({api=LEAGUE_URL,storage=globalThis.localStorage,fet
     }
     return cachedRoster(grade);
   }
-  return {enabled,device,refresh,snapshot,start,ticketFor,claim,flush,outbox,roster,cachedRoster};
+  return {enabled,device,refresh,snapshot,start,ticketFor,claim,flush,outbox,roster,cachedRoster,learningOn,learn,flushLearning,learnOutbox};
 }

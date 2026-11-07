@@ -20,9 +20,19 @@ the grade and team the League credited. The class list is cached per grade,
 so the picker opens at once and never blocks play. With `ultiApi: ''` there is
 no picker. Run `npm run test:student` for the roster, ticket and picker checks.
 
+## Learning log (English League)
+
+From 0.30.0, every English League race (won or lost) can send one learning
+record to the League: each English task reached, what it tested (skill and
+word or sentence), whether it was right first time, a retry, missed or too
+late, and the wrong choice (`learning-log.js`). It is off until the League's
+settings for `wordramp` include `learning: true`, so the game can be published
+before the League side is ready. The shared format for all League games is in
+`public/LEARNING_LOG.md`. Run `npm run test:learning`.
+
 ## Deploy on Vercel
 
-Version 0.29.0 is published on Vercel. The English League itself stays on
+From version 0.29.0 the game is published on Vercel. The English League itself stays on
 Netlify: the game keeps sending wins to `https://mrsaymaz.netlify.app/api/ulti`
 (`public/config.js`), which accepts requests from any site.
 
@@ -45,7 +55,7 @@ Vercel publishes the repository's default branch, which may be an older
 version. Every push to that branch publishes a new production version.
 
 **Drag and drop.** Run `npm run build` and `python3 scripts/package-release.py`,
-unzip `Wordramp-v0.29.0-Vercel.zip` and drop the folder on Vercel's
+unzip `Wordramp-vX-Vercel.zip` and drop the folder on Vercel's
 new-project page (or run `vercel deploy` inside it). That folder is the
 published game itself, with `index.html` at its top level, plus a
 `vercel.json` holding only the header rules, because a dropped folder is
@@ -104,7 +114,7 @@ The release keeps the project layout intact, includes prebuilt `dist`, and
 excludes dependencies, local hosting identity and compiled test files.
 
 See `dist/QUICK_START.txt` for controls and `dist/ULTI_INTEGRATION.md` for the
-English League connection. Version 0.29.0 adds the "Who are you?" student picker and Vercel deployment; 0.28.0 added a Driving School for first-time players (hands-on practice pads for holding to drive, swiping and sliding up for Nitro, the four English tasks, a first-race coach, and finger tips on the car and on each English task the first time it appears); 0.27.1 put a ride behind every route choice (escalating Sky Coasters in Sunlit, a Sea Jump on the Coastal Overpass, a Cliff Plunge in Stormcrest) and turns road repairs into a Bridge Builder; 0.26.0 added the launch, loop, corkscrew and helix to the Sky Coaster, which arrived in 0.25.0: in Sunlit
+English League connection. Version 0.30.0 adds the learning log; 0.29.0 added the "Who are you?" student picker and Vercel deployment; 0.28.0 added a Driving School for first-time players (hands-on practice pads for holding to drive, swiping and sliding up for Nitro, the four English tasks, a first-race coach, and finger tips on the car and on each English task the first time it appears); 0.27.1 put a ride behind every route choice (escalating Sky Coasters in Sunlit, a Sea Jump on the Coastal Overpass, a Cliff Plunge in Stormcrest) and turns road repairs into a Bridge Builder; 0.26.0 added the launch, loop, corkscrew and helix to the Sky Coaster, which arrived in 0.25.0: in Sunlit
 Boulevard the right answer at a route choice rides a raised coaster track
 (`coaster-track.js` builds it; the ride itself lives in `public/game-core.js`).
 Version 0.24.0 rebuilt the cars and the three arenas, fixed the phone HUD

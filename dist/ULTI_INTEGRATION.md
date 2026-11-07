@@ -60,6 +60,10 @@ is missing, the same League URL is used.
   opens. Entries whose id, class (`/^[5-8]-[A-Z]$/`), grade or team is not
   valid are dropped. The last good list per grade is cached in this browser
   and shown at once; the fresh one replaces it in the background.
+- **Learn** (0.30.0): after every League race, won or lost, and before the
+  claim, `{action:'learn', game:'wordramp', ticket, device, log}`: one learning
+  record (see `LEARNING_LOG.md`). Sent only while the League's settings for
+  `wordramp` say `learning: true`; once per ticket; queued offline like wins.
 - **Pools:** `{action:'pools', grade}` on launch and when the League panel
   opens. The last reply (settings and pools) is cached in this browser.
 - `device` is a random 24-character id made once and kept in localStorage.

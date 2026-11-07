@@ -1,6 +1,6 @@
 {
   "name": "wordramp",
-  "version": "0.29.0",
+  "version": "0.30.0",
   "private": true,
   "dependencies": {
     "three": "0.180.0"
@@ -48,6 +48,7 @@
     "test:coaster": "esbuild driving-feel.js --bundle --platform=node --format=cjs --outfile=tests/driving-feel-compiled.cjs && node tests/sky-coaster.cjs",
     "test:bridge": "node tests/bridge-builder.cjs",
     "test:student": "esbuild league.js --bundle --platform=node --format=cjs --outfile=tests/league-compiled.cjs && esbuild student-picker.js --bundle --platform=node --format=cjs --outfile=tests/student-picker-compiled.cjs && node tests/student-picker.cjs",
+    "test:learning": "esbuild learning-log.js --bundle --platform=node --format=cjs --outfile=tests/learning-log-compiled.cjs && esbuild league.js --bundle --platform=node --format=cjs --outfile=tests/league-compiled.cjs && esbuild student-picker.js --bundle --platform=node --format=cjs --outfile=tests/student-picker-compiled.cjs && node tests/learning-log.cjs",
     "test:vercel": "node tests/vercel-config.cjs",
     "test:tutorial": "esbuild presentation.js --bundle --platform=node --format=cjs --outfile=tests/presentation-compiled.cjs && node tests/tutorial.cjs"
   }

@@ -56,13 +56,13 @@ function gradeTabs(grade){
   return `<div class="grades student-grades" role="group" aria-label="Grade">${LEAGUE_GRADES.map(g=>`<button type="button" data-student="grade" data-value="${g}" class="${g===grade?'selected':''}" aria-pressed="${g===grade}">Grade ${g}</button>`).join('')}</div>`;
 }
 // The whole picker body for one step. host: Mr. Saymaz's picture markup.
-export function pickerMarkup(p,{host=''}={}){
+export function pickerMarkup(p,{host='',learning=false}={}){
   const view=pickerStep(p),team=teamName(p.team),grade=p.grade;
   const head=(kicker,figure='')=>`<div class="student-heading">${figure}<div><span class="modal-kicker">${kicker}</span><h2 id="modal-title">Who are you?</h2></div><button type="button" class="lesson-close student-close" data-student="close" aria-label="Close and go back to the garage">×</button></div>`;
   const kicker=p.all?'ENGLISH LEAGUE · EVERYONE':`ENGLISH LEAGUE · GRADE ${esc(grade)}${team?' '+esc(team.toUpperCase()):''}`;
   if(view.step==='confirm'){
     const s=view.student,name=teamName(s.team),g=s.className.charAt(0);
-    return `${head('ENGLISH LEAGUE',host)}${ask(`Are you ${esc(s.name)}?`)}<div class="student-card" style="--team:${teamColour(s.team)}"><b>${esc(s.name)}</b><span>${esc(s.className)} · Team ${esc(name)}</span><small>Your wins add Ulti to Grade ${esc(g)} ${esc(name)}.</small></div><div class="modal-actions student-actions"><button type="button" class="secondary" data-student="back-names">No, go back</button><button type="button" class="primary" data-student="confirm">Yes, that's me!</button></div>`;
+    return `${head('ENGLISH LEAGUE',host)}${ask(`Are you ${esc(s.name)}?`)}<div class="student-card" style="--team:${teamColour(s.team)}"><b>${esc(s.name)}</b><span>${esc(s.className)} · Team ${esc(name)}</span><small>Your wins add Ulti to Grade ${esc(g)} ${esc(name)}.${learning?' Your answers help Mr. Saymaz plan your lessons.':''}</small></div><div class="modal-actions student-actions"><button type="button" class="secondary" data-student="back-names">No, go back</button><button type="button" class="primary" data-student="confirm">Yes, that's me!</button></div>`;
   }
   if(view.step==='names'){
     const list=sortStudents(teammates(p.roster?.students||[],p.team,p.all).filter(s=>s.className===view.className));
